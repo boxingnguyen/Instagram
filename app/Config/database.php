@@ -77,6 +77,19 @@ class DATABASE_CONFIG {
 		//'encoding' => 'utf8',
 	);
 
+/**
+ * database config for tw_account_info
+ * @var array
+ */
+	public $mgInsatagram = array(
+			'datasource' => 'Mongodb.MongodbSource',
+			'persistent' => true,
+			'host' => 'localhost',
+			'port' => 27017,
+			'database' => 'int_account',
+			'prefix' => ''
+	);
+	
 	public $test = array(
 		'datasource' => 'Database/Mysql',
 		'persistent' => false,
