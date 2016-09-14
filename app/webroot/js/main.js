@@ -1,39 +1,48 @@
+var instagram_data;
+
 $(document).ready(function() {
-	google.charts.load('current', {packages: ['corechart', 'bar']});
-	google.charts.setOnLoadCallback(drawBasic);
+	$.ajax({
+		url: '/chart/getHashtags',
+		dataType: 'json',
+		type: "POST",
+		success: function(data) {
+			instagram_data = data;
+			google.charts.load('current', {packages: ['corechart', 'bar']});
+			google.charts.setOnLoadCallback(drawBasic);
+		},
+		error: function() {
+			alert('Ajax error!');
+		}
+	});
 });
 
 function drawBasic() {
-
     var data = new google.visualization.DataTable();
-    data.addColumn('timeofday', 'Time of Day');
-    data.addColumn('number', 'Motivation Level');
+    data.addColumn('string', 'Hashtags name');
+    data.addColumn('number', 'Hashtags count');
+    var chart_data = [];
+    var tmp_data = {};
+    $.each(instagram_data, function(key, value) {
+    	hashtag = value.tags[0]
+    	if (typeof tmp_data[hashtag] === 'undefined') {
+    		tmp_data[hashtag] = 1;
+    	} else {
+    		tmp_data[hashtag] += 1;
+    	}
+    });
+    
+    for (var key in tmp_data) {
+    	if (tmp_data.hasOwnProperty(key)) {
+    		chart_data.push([('#' + key), tmp_data[key]]);
+    	}
+    }
 
-    data.addRows([
-      [{v: [8, 0, 0], f: '8 am'}, 20],
-      [{v: [9, 0, 0], f: '9 am'}, 2],
-      [{v: [10, 0, 0], f:'10 am'}, 33],
-      [{v: [11, 0, 0], f: '11 am'}, 14],
-      [{v: [12, 0, 0], f: '12 pm'}, 57],
-      [{v: [13, 0, 0], f: '1 pm'}, 66],
-      [{v: [14, 0, 0], f: '2 pm'}, 47],
-      [{v: [15, 0, 0], f: '3 pm'}, 82],
-      [{v: [16, 0, 0], f: '4 pm'}, 90],
-      [{v: [17, 0, 0], f: '5 pm'}, 10],
-    ]);
+    data.addRows(chart_data);
 
     var options = {
-      title: 'Motivation Level Throughout the Day',
-      hAxis: {
-        title: 'Time of Day',
-        format: 'h:mm a',
-        viewWindow: {
-          min: [1, 0, 0],
-          max: [23, 0, 0]
-        }
-      },
+      title: 'Most popular hashtags',
       vAxis: {
-        title: 'Rating (scale of 1-10)'
+        title: 'Number of hashtags'
       }
     };
 
