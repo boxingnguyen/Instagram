@@ -26,19 +26,17 @@ class InfoController extends AppController {
 		$code = $_GET['code'];
 		$data = $this->instagram->getOAuthToken($code);
 		$this->instagram->setAccessToken($data);
-// 		$mediaId = $this->instagram->getUserMedia('2124049456');
-		
-		$account = array('2124049456','3579361643','2996660725');
-		$arrMedia = array();
-		foreach ($account as $arrId) {
+// 		3089104174(dat), 3723129539(t.anh), 1970242460(Quy),1576391553(Son), 3597381506(hoc),3878933194(Thao),1943948110(Duc)
+		$account = array('2124049456','3579361643','2996660725','3089104174','3723129539','1970242460','1576391553','3597381506','3878933194','1943948110');
+		$arrMedia = array();$i = 0;
+		foreach ($account as $arrKey => $arrId) {
 			$mediaId = $this->instagram->getUserMedia($arrId);
-			$arrMedia[$arrId] = $mediaId->data;
+			if(isset($mediaId) && !empty($mediaId->data)){
+				$collection->batchInsert($mediaId->data);
+			} else {
+				continue;
+			}
+			
 		}
-		
-		$collection->batchInsert($arrMedia);
-		
-		echo "<pre>";
-		print_r($arrMedia);
-		echo "</pre>";
 	}
 }
