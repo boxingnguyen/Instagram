@@ -8,7 +8,7 @@ class InfoController extends AppController {
 		$this->instagram = new Instagram(array(
 			'apiKey'      => 'f31c3725215449c6bde2871932e7bc15',
 			'apiSecret'   => '0a64babe62df4bba919dcd685e85eead',
-			'apiCallback' => 'http://192.168.33.20/PHPInstagram/Info/mediaRecent',
+			'apiCallback' => 'http://192.168.0.145/PHPInstagram/Info/mediaRecent',
 			'scope'       => array( 'likes', 'comments', 'relationships','basic','public_content','follower_list' )
 		));
 	}
@@ -25,16 +25,17 @@ class InfoController extends AppController {
 		
 		$code = $_GET['code'];
 		$data = $this->instagram->getOAuthToken($code);
+		$this->instagram->setAccessToken($data);
+// 		$mediaId = $this->instagram->getUserMedia('2124049456');
 		
 		$account = array('2124049456','3579361643','2996660725');
 		$arrMedia = array();
 		foreach ($account as $arrId) {
 			$mediaId = $this->instagram->getUserMedia($arrId);
-			print_r($mediaId);
-// 			$arrMedia[$arrId] = $mediaId->data;
+			$arrMedia[$arrId] = $mediaId->data;
 		}
 		
-// 		$collection->batchInsert($arrMedia);
+		$collection->batchInsert($arrMedia);
 		
 		echo "<pre>";
 		print_r($arrMedia);
