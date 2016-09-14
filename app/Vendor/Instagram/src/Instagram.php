@@ -587,21 +587,19 @@ class Instagram
             $authMethod = '?access_token=' . $this->getAccessToken();
         }
         
+        
         $paramString = null;
 
         if (isset($params) && is_array($params)) {
             $paramString = '&' . http_build_query($params);
         }
-        echo $paramString; echo "<pre>";
         $apiCall = self::API_URL . $function . $authMethod . (('GET' === $method) ? $paramString : null);
-       
         // we want JSON
         $headerData = array('Accept: application/json');
 
         if ($this->_signedheader) {
             $apiCall .= (strstr($apiCall, '?') ? '&' : '?') . 'sig=' . $this->_signHeader($function, $authMethod, $params);
         }
-//         sig = '163dc914d77e2c59706cab4179a46cf53d0951c9b66982ba7290e547a4aab577';
         print_r($apiCall);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $apiCall);
@@ -629,7 +627,7 @@ class Instagram
         $headers = $this->processHeaders($headerContent);
 
         // get the 'X-Ratelimit-Remaining' header value
-        $this->_xRateLimitRemaining = $headers['X-Ratelimit-Remaining'];
+//         $this->_xRateLimitRemaining = $headers['X-Ratelimit-Remaining'];
 
         if (!$jsonData) {
             throw new InstagramException('Error: _makeCall() - cURL error: ' . curl_error($ch));
