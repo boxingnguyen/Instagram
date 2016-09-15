@@ -8,7 +8,7 @@ class InfoController extends AppController {
 		$this->instagram = new Instagram(array(
 			'apiKey'      => 'f31c3725215449c6bde2871932e7bc15',
 			'apiSecret'   => '0a64babe62df4bba919dcd685e85eead',
-			'apiCallback' => 'http://192.168.33.20/PHPInstagram/Info/getNotAPI',
+			'apiCallback' => 'http://192.168.33.20/PHPInstagram/Info/getUseNotAPI',
 			'scope'       => array( 'likes', 'comments', 'relationships','basic','public_content','follower_list' )
 		));
 	}
@@ -61,13 +61,39 @@ class InfoController extends AppController {
 				do {
 					$notAPI = $this->instagram->getMediaNotApi($name, $max_id);
 					// insert to mongo
-					if(isset($notAPI) && !empty($notAPI)) {
+					if(isset($notAPI) && !empty($notAPI) && !empty($notAPI->items)) {
 						$collection->batchInsert($notAPI->items);
 					}
 					$max_id = end($notAPI->items);
 					$max_id = $max_id->id;
 				}
 				while (($notAPI->more_available == true) || ($notAPI->more_available == 1));
+			}
+		}
+	}
+	public function getUseNotAPI() {
+		$this->layout = false;
+		$this->autoRender = false;
+		
+		$m = new MongoClient();
+		$db = $m->Instagram;
+		$collection = $db->accountNotAPI;
+		
+		$nameAccount = array();
+		$file = "../Vendor/username.txt";
+		$fl = fopen($file,'r');
+		
+		while (!feof($fl)) {
+			$nameAccount[] = trim(preg_replace('/\s\s+/', ' ', fgets($fl)));;
+		}
+		
+// 		$nameAccount = array('smsaruae','kicks4sale');
+		if (isset($nameAccount) && !empty($nameAccount)) {
+			foreach ($nameAccount as $name) {
+				$dataAccount = $this->instagram->getUserNotAPI($name);
+				if(isset($dataAccount) && !empty($dataAccount)) {
+					$collection->insert($dataAccount->user);
+				}
 			}
 		}
 	}

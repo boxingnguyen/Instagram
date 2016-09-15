@@ -20,6 +20,7 @@ class Instagram
      * The API base URL.
      */
     const API_URL = 'https://api.instagram.com/v1/';
+    const LINK_URL = 'https://www.instagram.com';
 
     /**
      * The API OAuth URL.
@@ -165,6 +166,14 @@ class Instagram
         }
         return $this->_makeCall('users/' . $id, $auth);
     }
+    
+    public function getUserNotAPI($name)
+    {
+    	if($name) {
+    		return $this->_makeCall(self::LINK_URL.'/'.$name.'/?__a=1');
+    	}
+    }
+    
 
     /**
      * Get user activity feed.
@@ -331,7 +340,15 @@ class Instagram
     {
         return $this->_makeCall('media/' . $id, isset($this->_accesstoken));
     }
-
+	
+    public function getMediaNotApi($userName, $max_id = null)
+    {
+    	if ($max_id == null) {
+    		return $this->_makeCall(self::LINK_URL.'/'.$userName.'/media/');
+    	} else {
+    		return $this->_makeCall(self::LINK_URL.'/'.$userName.'/media/?max_id='.$max_id);
+    	}
+    }   
     /**
      * Get the most popular media.
      *
@@ -575,31 +592,37 @@ class Instagram
      */
     protected function _makeCall($function, $auth = false, $params = null, $method = 'GET')
     {
-        if (!$auth) {
-            // if the call doesn't requires authentication
-            $authMethod = '?client_id=' . $this->getApiKey();
-        } else {
-            // if the call needs an authenticated user
-            if (!isset($this->_accesstoken)) {
-                throw new InstagramException("Error: _makeCall() | $function - This method requires an authenticated users access token.");
-            }
-
-            $authMethod = '?access_token=' . $this->getAccessToken();
-        }
+    	if(strpos($function, 'https://www.instagram.com') !== false) {
+    		$apiCall = $function;
+    	} else {
+    		if (!$auth) {
+    			// if the call doesn't requires authentication
+    			$authMethod = '?client_id=' . $this->getApiKey();
+    		} else {
+    			// if the call needs an authenticated user
+    			if (!isset($this->_accesstoken)) {
+    				throw new InstagramException("Error: _makeCall() | $function - This method requires an authenticated users access token.");
+    			}
+    		
+    			$authMethod = '?access_token=' . $this->getAccessToken();
+    		}
+    		
+    		$paramString = null;
+    		
+    		if (isset($params) && is_array($params)) {
+    			$paramString = '&' . http_build_query($params);
+    		}
+    		$apiCall = self::API_URL . $function . $authMethod . (('GET' === $method) ? $paramString : null);
+    	}
         
-        
-        $paramString = null;
-
-        if (isset($params) && is_array($params)) {
-            $paramString = '&' . http_build_query($params);
-        }
-        $apiCall = self::API_URL . $function . $authMethod . (('GET' === $method) ? $paramString : null);
+//         self::LINK_URL
         // we want JSON
         $headerData = array('Accept: application/json');
 
         if ($this->_signedheader) {
             $apiCall .= (strstr($apiCall, '?') ? '&' : '?') . 'sig=' . $this->_signHeader($function, $authMethod, $params);
         }
+        
         print_r($apiCall);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $apiCall);
