@@ -2,13 +2,29 @@ var instagram_data;
 
 $(document).ready(function() {
 	$.ajax({
-		url: '/chart/getHashtags',
+		url: '/chart/getReaction',
 		dataType: 'json',
 		type: "POST",
 		success: function(data) {
-			instagram_data = data;
-			google.charts.load('current', {packages: ['corechart', 'bar']});
-			google.charts.setOnLoadCallback(drawBasic);
+			for (var i = 0; i < data.length; i++) {
+				for (var j = i; j < data.length; j++) {
+					if (data[i].reaction < data[j].reaction) {
+						tmp_obj = data[i];
+						data[i] = data[j];
+						data[j] = tmp_obj;
+					}
+				}
+			}
+			tmp_data = [];
+			var header = ['Username', 'Total Reaction', 'Likes', 'Comments'];
+			tmp_data.push(header);
+			$.each (data, function(key, value) {
+				var row = [value.username, value.reaction, value.total_likes, value.total_comments]
+				tmp_data.push(row);
+			});
+			instagram_data = tmp_data;
+			google.charts.load('current', {'packages':['bar']});
+			google.charts.setOnLoadCallback(drawChart);
 		},
 		error: function() {
 			alert('Ajax error!');
@@ -16,38 +32,20 @@ $(document).ready(function() {
 	});
 });
 
-function drawBasic() {
-    var data = new google.visualization.DataTable();
-    data.addColumn('string', 'Hashtags name');
-    data.addColumn('number', 'Hashtags count');
-    var chart_data = [];
-    var tmp_data = {};
-    $.each(instagram_data, function(key, value) {
-    	hashtag = value.tags[0]
-    	if (typeof tmp_data[hashtag] === 'undefined') {
-    		tmp_data[hashtag] = 1;
-    	} else {
-    		tmp_data[hashtag] += 1;
-    	}
-    });
-    
-    for (var key in tmp_data) {
-    	if (tmp_data.hasOwnProperty(key)) {
-    		chart_data.push([('#' + key), tmp_data[key]]);
-    	}
-    }
-
-    data.addRows(chart_data);
-
+function drawChart() {
+    var data = google.visualization.arrayToDataTable(instagram_data);
     var options = {
-      title: 'Most popular hashtags',
-      vAxis: {
-        title: 'Number of hashtags'
-      }
+      chart: {
+        title: 'Number of Likes/Comments'
+      },
+      bars: 'vertical',
+      vAxis: {format: 'decimal'},
+      height: 500,
+      colors: ['#12922e', '#d02020', '#1500ff']
     };
 
-    var chart = new google.visualization.ColumnChart(
-      document.getElementById('chart_div'));
+    var chart = new google.charts.Bar(document.getElementById('chart_div'));
 
-    chart.draw(data, options);
-}
+    chart.draw(data, google.charts.Bar.convertOptions(options));
+
+  }
