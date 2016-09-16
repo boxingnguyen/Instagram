@@ -8,7 +8,7 @@ class InfoController extends AppController {
 		$this->instagram = new Instagram(array(
 			'apiKey'      => 'f31c3725215449c6bde2871932e7bc15',
 			'apiSecret'   => '0a64babe62df4bba919dcd685e85eead',
-			'apiCallback' => 'http://192.168.0.145/PHPInstagram/Info/mediaRecent',
+			'apiCallback' => 'http://192.168.33.20/PHPInstagram/Info/getUseNotAPI',
 			'scope'       => array( 'likes', 'comments', 'relationships','basic','public_content','follower_list' )
 		));
 	}
@@ -26,19 +26,92 @@ class InfoController extends AppController {
 		$code = $_GET['code'];
 		$data = $this->instagram->getOAuthToken($code);
 		$this->instagram->setAccessToken($data);
-// 		$mediaId = $this->instagram->getUserMedia('2124049456');
-		
-		$account = array('2124049456','3579361643','2996660725');
-		$arrMedia = array();
-		foreach ($account as $arrId) {
+// 		3089104174(dat), 3723129539(t.anh), 1970242460(Quy),1576391553(Son), 3597381506(hoc),3878933194(Thao),1943948110(Duc)
+		$account = array('2124049456','3579361643','2996660725','3089104174','3723129539','1970242460','1576391553','3597381506','3878933194','1943948110');
+		$arrMedia = array();$i = 0;
+		foreach ($account as $arrKey => $arrId) {
 			$mediaId = $this->instagram->getUserMedia($arrId);
-			$arrMedia[$arrId] = $mediaId->data;
+			if(isset($mediaId) && !empty($mediaId->data)){
+				$collection->batchInsert($mediaId->data);
+			} else {
+				continue;
+			}
+			
+		}
+	}
+	public function getNotAPI($max_id = null) {
+		$this->layout = false;
+		$this->autoRender = false;
+		
+		$m = new MongoClient();
+		$db = $m->Instagram;
+		$collection = $db->mediaNotAPI;
+		
+		$nameAccount = array();
+		$file = "../Vendor/username.txt";
+		$fl = fopen($file,'r');
+				
+		while (!feof($fl)) {
+			$nameAccount[] = trim(preg_replace('/\s\s+/', ' ', fgets($fl)));;
 		}
 		
-		$collection->batchInsert($arrMedia);
+		if (isset($nameAccount) && !empty($nameAccount)) {
+			foreach ($nameAccount as $name) {
+				$max_id = null;
+				do {
+					$notAPI = $this->instagram->getMediaNotApi($name, $max_id);
+					// insert to mongo
+					if(isset($notAPI) && !empty($notAPI) && !empty($notAPI->items)) {
+						$collection->batchInsert($notAPI->items);
+					}
+					$max_id = end($notAPI->items);
+					$max_id = $max_id->id;
+				}
+				while (($notAPI->more_available == true) || ($notAPI->more_available == 1));
+			}
+		}
+	}
+	public function getUseNotAPI() {
+		$this->layout = false;
+		$this->autoRender = false;
 		
-		echo "<pre>";
-		print_r($arrMedia);
-		echo "</pre>";
+		$m = new MongoClient();
+		$db = $m->Instagram;
+		$collection = $db->accountNotAPI;
+		
+		$nameAccount = array();
+		$file = "../Vendor/username.txt";
+		$fl = fopen($file,'r');
+		
+		while (!feof($fl)) {
+			$nameAccount[] = trim(preg_replace('/\s\s+/', ' ', fgets($fl)));;
+		}
+		
+// 		$nameAccount = array('smsaruae','kicks4sale');
+		if (isset($nameAccount) && !empty($nameAccount)) {
+			foreach ($nameAccount as $name) {
+				$dataAccount = $this->instagram->getUserNotAPI($name);
+				if(isset($dataAccount) && !empty($dataAccount)) {
+					$collection->insert($dataAccount->user);
+				}
+			}
+		}
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
