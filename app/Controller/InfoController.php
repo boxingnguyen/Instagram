@@ -6,9 +6,9 @@ class InfoController extends AppController {
 	public $instagram;
 	public function beforeFilter() {
 		$this->instagram = new Instagram(array(
-			'apiKey'      => 'f31c3725215449c6bde2871932e7bc15',
-			'apiSecret'   => '0a64babe62df4bba919dcd685e85eead',
-			'apiCallback' => 'http://192.168.33.20/PHPInstagram/Info/getUseNotAPI',
+			'apiKey'      => '9a0eb7b3e06949b98980256fccf93599',
+			'apiSecret'   => 'eeaeda3bc5774eb196e53d064e41c7b5',
+			'apiCallback' => 'http://192.168.33.30/Info/getUseNotAPI',
 			'scope'       => array( 'likes', 'comments', 'relationships','basic','public_content','follower_list' )
 		));
 	}
