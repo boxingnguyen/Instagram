@@ -146,8 +146,11 @@ footer p {
   width: 40px;
 }
 .login {
-            display: block;
-            font-size: 20px;
-            font-weight: bold;
-            margin-top: 50px;
-        }
+    display: block;
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 50px;
+}
+th.center, .center td {
+	text-align: center;	
+}
