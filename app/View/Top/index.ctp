@@ -6,11 +6,11 @@
 		<th class='center'>Likes</th>
 		<th class='center'>Comments</th>
 		<tr class='center'>
-			<td><a href="https://www.instagram.com/jeff_seid">jeffseid</a></td>
-			<td><a href="#">982173987</a></td>
-			<td><a href="#">8413</a></td>
-			<td><a href="#">2480932840932</a></td>
-			<td><a href="#">3294814</a></td>
+			<td><a class="badge inst_username" href="https://www.instagram.com/jeff_seid" target="_blank">jeffseid</a></td>
+			<td><a class="badge inst_follower" href="/follower">982173987</a></td>
+			<td><a class="badge inst_media" href="/media">8413</a></td>
+			<td><a class="badge inst_like" href="/like">2480932840932</a></td>
+			<td><a class="badge inst_comment" href="/comment">3294814</a></td>
 		</tr>
 	</table>
 </div>
