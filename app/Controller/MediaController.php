@@ -71,11 +71,11 @@ class MediaController extends AppController {
 		$db = $m->instagram_account_info;
 		$collections = $db->account_info;
 		
-		$query = array('user.id' => $id);
+		$query = array('id' => $id);
 		$cursor = $collections->find($query,array());
 		$total = 0;
 		foreach ($cursor as $value){
-			$total = $value['user']['media']['count'];
+			$total = $value['media']['count'];
 		}
 		return $total;
 	}
