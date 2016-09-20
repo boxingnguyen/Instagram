@@ -18,7 +18,7 @@ class CalculateReactionShell extends AppShell {
 				array('$match' => array('date_add_to_mongo' => $date_now)),
 				array(
 					'$group' => array(
-						'_id' => '$user.id',
+						'_id' => '$id',
 						'username' => array('$first' => '$username'),
 						'fullname' => array('$first' => '$full_name'),
 						'followers' => array('$first' => '$followed_by.count'),
