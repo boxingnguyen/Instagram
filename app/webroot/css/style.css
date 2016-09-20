@@ -158,13 +158,18 @@ th.center, .center td {
 	font-size: 13px;
 	padding: 10px;
 	text-decoration: none;
+	width: 100px;
+}
+.badge.inst_order {
+	width: 50px;
 }
 .badge.inst_username {
 	background-color: #2e4bd8;
 	color: white;
+	width: 200px;
 }
 .badge.inst_follower {
-	background-color: #f40000;
+	background-color: #959600;
 	color: white;
 }
 .badge.inst_media {
