@@ -36,5 +36,6 @@
 	<div style="text-align: center;" >
 		<a href="javascript:void(0)" class="cd-read-more loadMore">Load more</a>
 	</div>
+	<a href="#" class="back-to-top">Back to Top</a>
 </body>
 </html>
