@@ -75,7 +75,7 @@ class MediaController extends AppController {
 		$cursor = $collections->find($query,array());
 		$total = 0;
 		foreach ($cursor as $value){
-			$total = $value['user']['media']['count'];
+			$total = $value['media']['count'];
 		}
 		return $total;
 	}
