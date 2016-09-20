@@ -16,7 +16,7 @@ class MediaController extends AppController {
 			$db = $m->instagram_account_info;
 			$collections = $db->account_info;
 			
-			$query = array('user.id' => $id);
+			$query = array('id' => $id);
 			$cursor = $collections->find($query,array());
 			$acc = array();
 			foreach ($cursor as $value){
@@ -31,8 +31,7 @@ class MediaController extends AppController {
 	public function more(){
 		$this->layout = false;
 		$this->autoRender = false;
-		
-// 		$id = '3579361643';
+
 		if($this->Session->check('User.id')){
 			$id = $this->Session->read('User.id');
 		}else{
@@ -52,6 +51,8 @@ class MediaController extends AppController {
 		
 		$data= array();
 		foreach ($cursor as $value){
+			$value['likes']['count'] = number_format($value['likes']['count']);
+			$value['comments']['count'] = number_format($value['comments']['count']);
 			$data[]=$value;
 		}
 		return json_encode($data);
@@ -60,7 +61,6 @@ class MediaController extends AppController {
 		$this->layout = false;
 		$this->autoRender = false;
 		
-// 		$id = '3579361643';
 		if($this->Session->check('User.id')){
 			$id = $this->Session->read('User.id');
 		}else{

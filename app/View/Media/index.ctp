@@ -22,12 +22,12 @@
 	<?php 
 		if(!empty($inforAcc)){
 			echo '<header>';
-				echo '<h1>'. $inforAcc['user']['full_name'].'</h1>';
+				echo '<h1>'. $inforAcc['full_name'].'</h1>';
 				echo '<p class="infor">';
-					echo '<span>'.$inforAcc['user']['media']['count'].' posts</span><span>'.$inforAcc['user']['followed_by']['count'].' followers</span><span>'.$inforAcc['user']['follows']['count'].' following</span>';
+					echo '<span>'.number_format($inforAcc['media']['count']).' posts</span><span>'.number_format($inforAcc['followed_by']['count']).' followers</span><span>'.number_format($inforAcc['follows']['count']).' following</span>';
 				echo '</p>';
 			echo '</header>';
-			echo '<img class="pre-media avatar" src="'. $inforAcc['user']['profile_pic_url'] .'" >';
+			echo '<img class="pre-media avatar" src="'. $inforAcc['profile_pic_url'] .'" >';
 		}
 	?>
 	<div id='notification'></div>
