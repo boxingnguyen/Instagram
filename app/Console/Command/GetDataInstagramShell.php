@@ -5,7 +5,7 @@ class GetDataInstagramShell extends Shell {
 	}
 	private function __getAccount() {
 		$nameAccount = array();
-		$file = "./Vendor/username.txt";
+		$file = APP."Vendor/username.txt";
 		$fl = fopen($file,'r');
 		
 		while (!feof($fl)) {
