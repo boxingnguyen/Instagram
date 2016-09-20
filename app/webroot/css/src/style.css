@@ -492,7 +492,7 @@ header h1 {
 h2{
 	margin-bottom: 10px;
 }
-img.pre-media {
+.pre-media {
 	display: block;
     margin-left: auto;
     margin-right: auto;

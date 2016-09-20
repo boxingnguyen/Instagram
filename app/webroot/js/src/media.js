@@ -26,7 +26,7 @@ $().ready(function(){
 						var post = '<img class="pre-media" src="'+ data[i].images.low_resolution.url +'" >';
 						if(data[i].type == 'video'){
 							typeOfPost = '<div class="cd-timeline-img cd-movie"><img src="/img/cd-icon-movie.svg" alt="Movie"></div>';
-							post = '<video controls width="320" height="320"><source src="'+data[i].alt_media_url+'" type="video/mp4"></video>';
+							post = '<video class="pre-media" controls width="320" height="320"><source src="'+data[i].alt_media_url+'" type="video/mp4"></video>';
 						}
 						
 						var location = '';
