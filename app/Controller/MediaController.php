@@ -3,27 +3,41 @@ App::uses('AppController', 'Controller');
 class MediaController extends AppController {
 	public function index () {
 		$this->layout = false;
-		
-		$id = '3579361643';
-		
-		$m = new MongoClient();
-		$db = $m->instagram;
-		$collections = $db->accounts;
-		
-		$query = array('user.id' => $id);
-		$cursor = $collections->find($query,array());
-		$acc = array();
-		foreach ($cursor as $value){
-			$acc = $value;
+		if (isset($this->params->query['id']) && !empty($this->params->query['id'])){
+			$id = $this->params->query['id'];
+			if($this->Session->check('User.id')){
+				$this->Session->delete('User.id');
+				$this->Session->write('User.id',$id);
+			}else{
+				$this->Session->write('User.id',$id);
+			}
+			
+			$m = new MongoClient();
+			$db = $m->instagram_account_info;
+			$collections = $db->account_info;
+			
+			$query = array('user.id' => $id);
+			$cursor = $collections->find($query,array());
+			$acc = array();
+			foreach ($cursor as $value){
+				$acc = $value;
+			}
+			$this->set('inforAcc', $acc);
+		}else {
+			$this->redirect(array("controller" => "top","action" => "index"));
 		}
-		$this->set('inforAcc', $acc);
 	}
 	
 	public function more(){
 		$this->layout = false;
 		$this->autoRender = false;
 		
-		$id = '3579361643';
+// 		$id = '3579361643';
+		if($this->Session->check('User.id')){
+			$id = $this->Session->read('User.id');
+		}else{
+			$id = '';
+		}
 		
 		$m = new MongoClient();
 		$db = $m->instagram;
@@ -46,11 +60,16 @@ class MediaController extends AppController {
 		$this->layout = false;
 		$this->autoRender = false;
 		
-		$id = '3579361643';
+// 		$id = '3579361643';
+		if($this->Session->check('User.id')){
+			$id = $this->Session->read('User.id');
+		}else{
+			$id = '';
+		}
 		
 		$m = new MongoClient();
-		$db = $m->instagram;
-		$collections = $db->accounts;
+		$db = $m->instagram_account_info;
+		$collections = $db->account_info;
 		
 		$query = array('user.id' => $id);
 		$cursor = $collections->find($query,array());
