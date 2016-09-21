@@ -65,7 +65,7 @@ a {
   line-height: 38px;
   margin: 0 auto;
   font-weight: 700;
-  color: #333;
+  color: #555 ;
 }
 
 .container > header h1 span {
@@ -151,36 +151,60 @@ footer p {
     font-weight: bold;
     margin-top: 50px;
 }
-th.center, .center td {
-	text-align: center;	
+.responstable {
+  margin: 1em 0;
+  width: 100%;
+  overflow: hidden;
+  background: #FFF;
+  color: #024457;
+  border-radius: 10px;
+  border: 1px solid #167F92;
 }
-.badge {
-	font-size: 13px;
-	padding: 10px;
-	text-decoration: none;
-	width: 100px;
+.responstable tr {
+  border: 1px solid #D9E4E6;
 }
-.badge.inst_order {
-	width: 50px;
+.responstable tr:nth-child(odd) {
+  background-color: #E9F0F5;
 }
-.badge.inst_username {
-	background-color: #2e4bd8;
-	color: white;
-	width: 200px;
+.responstable th {
+  display: none;
+  border: 1px solid #FFF;
+  background-color: #024457;
+  color: #FFF;
+  padding: 1em;
 }
-.badge.inst_follower {
-	background-color: #959600;
-	color: white;
+.responstable td {
+  display: block;
+  word-wrap: break-word;
+  max-width: 7em;
 }
-.badge.inst_media {
-	background-color: #7e002d;
-	color: white;
+.responstable td:first-child {
+  display: table-cell;
+  text-align: center;
+  border-right: 1px solid #D9E4E6;
+} 
+.responstable td:nth-child(2) {
+  text-align: left !important;
 }
-.badge.inst_like {
-	background-color: #009490;
-	color: white;
+.responstable th, .responstable td {
+  margin: .5em 1em;
+  text-align: center;
 }
-.badge.inst_comment {
-	background-color: #007e0f;
-	color: white;
+@media (min-width: 480px) {
+  .responstable td {
+    border: 1px solid #D9E4E6;
+  }
+  .responstable th, .responstable td {
+    display: table-cell;
+    padding: 1em;
+  }
+  #chart_div {
+  	display: block;
+    margin: 0 auto;
+	width: 900px; 
+	height: 500px;
+  }
+  #body_chart {
+	background: #E9F0F5;
+  }
 }

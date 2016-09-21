@@ -5,7 +5,6 @@ class GetMediaShell extends AppShell {
 		$m = new MongoClient();
 		$db = $m->instagram;
 		$collection = $db->media;
-		$collection->drop();
 		
 		$all_account = array();
 
@@ -18,13 +17,14 @@ class GetMediaShell extends AppShell {
 		fclose($file);
 		
 		if (!empty($all_account)) {
-			// we get data of 20 accounts at a time
+			// drop old data
+			$collection->drop();
+			// we get data of 25 accounts at a time
 			$account_chunks = array_chunk($all_account, 25);
 			foreach ($account_chunks as $account) {
 				foreach ($account as $name) {
 					// create 2 processes here
 					$pid = pcntl_fork();
-				
 					if ($pid == -1) {
 						die('could not fork');
 					} else if ($pid) {
@@ -53,12 +53,15 @@ class GetMediaShell extends AppShell {
 					}
 				}
 				foreach ($pids as $pid) {
-					if (count($pids) <= 5) break;
 					pcntl_waitpid($pid, $status);
 					unset($pids[$pid]);
 				}
-				echo "Total documents: " . $collection->count();
 			}
+			// indexing
+			echo "Indexing..." . PHP_EOL;
+			$collection->createIndex(array('user.id' => true), array($option = array('background' => true)));
+			echo "Indexing completed!" . PHP_EOL;
+			echo "Total documents: " . $collection->count();
 		}
 	}
 	

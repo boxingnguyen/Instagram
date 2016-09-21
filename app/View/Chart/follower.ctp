@@ -1,5 +1,6 @@
 <html>
   <head>
+  	<link href='/css/style.css' rel='stylesheet' type='text/css'>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
       google.charts.load('current', {'packages':['corechart']});
@@ -18,7 +19,7 @@
       ]);
 
     var options = {
-      title : 'Monthly Instagram Comment',
+      title : 'Monthly Instagram Follows',
       vAxis: {title: 'Total'},
       hAxis: {title: 'Day'},
       seriesType: 'bars',
@@ -30,8 +31,8 @@
   }
     </script>
   </head>
-  <body>
-    <div id="chart_div" style="width: 900px; height: 500px;"></div>
+  <body id='body_chart'>
+    <div id="chart_div"></div>
   </body>
 </html>
 
