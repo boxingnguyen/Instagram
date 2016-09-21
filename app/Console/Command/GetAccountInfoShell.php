@@ -4,10 +4,10 @@ class GetAccountInfoShell extends AppShell {
 		$m = new MongoClient();
 		$db = $m->instagram_account_info;
 		$collection = $db->account_info;
-		$collection->drop();
+// 		$collection->drop();
 		
 		// readfile
-		$file = fopen("/www/html/instagram/app/Vendor/username.txt", "r");
+		$file = fopen("/www/htdocs/PHPInstagram/app/Vendor/username.txt", "r");
 		
 		// read file line by line and assign into array
 		while(!feof($file)){
