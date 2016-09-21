@@ -7,7 +7,7 @@ class GetAccountInfoShell extends AppShell {
 // 		$collection->drop();
 		
 		// readfile
-		$file = fopen("/www/htdocs/PHPInstagram/app/Vendor/username.txt", "r");
+		$file = fopen(APP."Vendor/username.txt", "r");
 		
 		// read file line by line and assign into array
 		while(!feof($file)){
