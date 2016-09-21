@@ -31,7 +31,7 @@ class CalculateReactionShell extends AppShell {
 			$reaction = $this->__calculateReaction($value['_id']);
 			$result[$key]['likes'] = $reaction['likes'];
 			$result[$key]['comments'] = $reaction['comments'];
-			echo $count . ". " . $value['username'] . " completed!" . PHP_EOL;
+			echo $count . ". Reaction of " . $value['username'] . " completed!" . PHP_EOL;
 			$count ++;
 		}
 		
