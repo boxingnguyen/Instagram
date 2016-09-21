@@ -25,7 +25,7 @@ class ChartController extends AppController {
 		$id = $this->request->query['id'];
 		$arrComment = array();
 		if($id) {
-			$data = $cllChart->find(array('_id' => $id));
+			$data = $cllChart->find(array('accuntID' => $id));
 			if (isset($data) && $data->count() > 0) {
 				foreach ($data as $vComment) {
 					$arrComment[$vComment['time']] = $vComment['comments'];
@@ -41,7 +41,7 @@ class ChartController extends AppController {
 		$id = $this->request->query['id'];
 		$arrLikes = array();
 		if($id) {
-			$data = $cllChart->find(array('_id' => $id));
+			$data = $cllChart->find(array('accuntID' => $id));
 			if (isset($data) && $data->count() > 0) {
 				foreach ($data as $vlike) {
 					$arrLikes[$vlike['time']] = $vlike['likes'];
@@ -56,7 +56,6 @@ class ChartController extends AppController {
 		$m = new MongoClient();
 		$db = $m->instagram_account_info;
 		$collection = $db->reaction;
-		
 		$dbChart = $m->chart;
 		$cllChart = $dbChart->selectCollection(date('Y_m'));
 		
@@ -74,7 +73,7 @@ class ChartController extends AppController {
 						$cllChart->update(array('time' => $valChart['time']), $col);
 					}
 				} else {
-					$col = array('_id' => $val['_id'], 'username' => $val['username'], 'likes' => $val['likes'], 'comments' => $val['comments'], 'time' => $currentDate);
+					$col = array('accuntID' => $val['_id'], 'username' => $val['username'], 'likes' => $val['likes'], 'comments' => $val['comments'], 'time' => $currentDate);
 					$cllChart->insert($col);
 				}
 			}
