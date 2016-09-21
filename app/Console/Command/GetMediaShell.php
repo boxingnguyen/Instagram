@@ -59,8 +59,8 @@ class GetMediaShell extends AppShell {
 			}
 			// indexing
 			echo "Indexing media ..." . PHP_EOL;
-			$collection->createIndex(array('user.id' => true), array($option = array('background' => true)));
-			$collection->createIndex(array('created_time' => true), array($option = array('background' => true)));
+			$collection->createIndex(array('user.id' => true), array($option = array('background' => true, 'timeout' => -1)));
+			$collection->createIndex(array('created_time' => true), array($option = array('background' => true, 'timeout' => -1)));
 			echo "Indexing media completed!" . PHP_EOL;
 			echo "Total documents: " . $collection->count();
 		}
