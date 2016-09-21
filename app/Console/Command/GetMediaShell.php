@@ -53,7 +53,6 @@ class GetMediaShell extends AppShell {
 					}
 				}
 				foreach ($pids as $pid) {
-					if (count($pids) <= 5) break;
 					pcntl_waitpid($pid, $status);
 					unset($pids[$pid]);
 				}
