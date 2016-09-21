@@ -22,7 +22,7 @@ class GetAccountInfoShell extends AppShell {
 				if (isset($data->user)) {
 					$date_now = date('d M Y');
 					$result[] = $data->user;
-					echo $count . ". " . $name . " completed!" . PHP_EOL;
+					echo $count . ". Account " . $name . " completed!" . PHP_EOL;
 					$count ++;
 				} else {
 					echo $name . " Failed !!!!!!!!!!!!!!!!!!!!!!!!!!" . PHP_EOL;
@@ -34,9 +34,9 @@ class GetAccountInfoShell extends AppShell {
 			// insert new data
 			$collection->batchInsert($result);
 			// indexing
-			echo "Indexing..." . PHP_EOL;
+			echo "Indexing account_info ..." . PHP_EOL;
 			$collection->createIndex(array('id' => true), array($option = array('background' => true)));
-			echo "Indexing completed!" . PHP_EOL;
+			echo "Indexing account_info completed!" . PHP_EOL;
 			echo "Total documents: " . $collection->count();
 		}
 	}
