@@ -65,7 +65,7 @@ class CalculateReactionShell extends AppShell {
 		return $result;
 	}
 	
-	private function insertMonthlyReaction() {
+	private function __insertMonthlyReaction() {
 		$m = new MongoClient();
 		$db = $m->instagram_account_info;
 		$collection = $db->reaction;
