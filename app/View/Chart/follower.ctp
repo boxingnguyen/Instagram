@@ -19,7 +19,7 @@
       ]);
 
     var options = {
-      title : 'Monthly Instagram Comment',
+      title : 'Monthly Instagram Follows',
       vAxis: {title: 'Total'},
       hAxis: {title: 'Day'},
       seriesType: 'bars',

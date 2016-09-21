@@ -20,7 +20,7 @@
 					echo $this->Html->link(
 							number_format($value['followers']),
 							array('controller' => 'Chart', 'action' => 'follower','?' => array('id' => $value['_id'])),
-							array('class' => 'inst_follower','target' => '_blank')
+							array('target' => '_blank', 'class' => 'inst_follower')
 						)
 				?>
 			</td>
