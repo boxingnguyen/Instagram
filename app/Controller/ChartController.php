@@ -1,7 +1,7 @@
 <?php
 class ChartController extends AppController {
 	public function follower() {
-		$this->layout = false;
+// 		$this->layout = false;
 		$m = new MongoClient();
 		$db = $m->instagram_account_info;
 		$collection = $db->account_info;
