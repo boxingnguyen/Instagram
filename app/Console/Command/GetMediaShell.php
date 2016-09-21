@@ -34,7 +34,7 @@ class GetMediaShell extends AppShell {
 					} else {
 						// we are the child
 						$max_id = null;
-						echo "Get data of " . $name . PHP_EOL;
+						echo "Get media of " . $name . PHP_EOL;
 						$data = $this->__getMedia($name, $max_id);
 						do {
 							$data = $this->__getMedia($name, $max_id);
@@ -48,7 +48,7 @@ class GetMediaShell extends AppShell {
 						}
 						while (isset ($data->more_available) && ($data->more_available == true || $data->more_available == 1));
 						// Jump out of loop in this child. Parent will continue.
-						echo "Get data of " . $name . " completed!" . PHP_EOL;
+						echo "Get media of " . $name . " completed!" . PHP_EOL;
 						exit;
 					}
 				}
@@ -58,9 +58,10 @@ class GetMediaShell extends AppShell {
 				}
 			}
 			// indexing
-			echo "Indexing..." . PHP_EOL;
+			echo "Indexing media ..." . PHP_EOL;
 			$collection->createIndex(array('user.id' => true), array($option = array('background' => true)));
-			echo "Indexing completed!" . PHP_EOL;
+			$collection->createIndex(array('created_time' => true), array($option = array('background' => true)));
+			echo "Indexing media completed!" . PHP_EOL;
 			echo "Total documents: " . $collection->count();
 		}
 	}
