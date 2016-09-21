@@ -56,10 +56,20 @@ class GetAccountInfoShell extends AppShell {
 		$currentDate = date('Y-m-d');
 
 		$data = $collection->find(array(), array('id' => 1, 'followed_by.count' => 1));
+		
 		if(isset($data) && $data->count() > 0) {
 			foreach($data as $val) {
-				$val['time'] = $currentDate;
-				$follows->insert($val);
+				$dataFollow = $follows->find(array('id' => $val['id'], 'time' => $currentDate));
+				if($dataFollow->count() > 0){
+					$follows->update(array(), array('$set' => array('follows' => $val['followed_by']['count'])));
+				} else {
+					$val['follows'] = $val['followed_by']['count'];
+					$val['time'] = $currentDate;
+					$follows->insert($val);
+				}
+				
+				
+				
 			}
 		}
 	}
