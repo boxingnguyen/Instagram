@@ -1,6 +1,7 @@
 <?php
 class GetAccountInfoShell extends AppShell {
 	public function main() {
+		$this->__saveFollows();
 		$m = new MongoClient();
 		$db = $m->instagram_account_info;
 		$collection = $db->account_info;
@@ -65,6 +66,7 @@ class GetAccountInfoShell extends AppShell {
 				} else {
 					$val['follows'] = $val['followed_by']['count'];
 					$val['time'] = $currentDate;
+					unset($val['followed_by']);
 					$follows->insert($val);
 				}
 				
