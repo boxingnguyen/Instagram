@@ -3,7 +3,8 @@ class ChartController extends AppController {
 	public function follower() {
 		$m = new MongoClient();
 		$db = $m->instagram_account_info;
-		$collection = $db->account_info;
+		$collection = $db->follows;
+		$currentDate = date('Y-m-d');
 		
 		$id = $this->request->query['id'];
 		$data = $collection->find( array('id' => $id));
@@ -11,9 +12,9 @@ class ChartController extends AppController {
 		$arr = array();
 		foreach ($data as $val) {
 			$follow = $val['followed_by']['count'];
-			$timedb = $currentDate;
+			$timedb = $val['time'];
 			$arr[$timedb] = $follow;
-		}		
+		}
 		$this->set('data', $arr);
 	}
 	public function like() {
