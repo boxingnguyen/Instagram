@@ -40,8 +40,6 @@ class CalculateReactionShell extends AppShell {
 		$collection = $db->reaction;
 		$collection->drop();
 		$collection->batchInsert($result);
-		// insert monthly reaction into database
-		$this->__insertMonthlyReaction();
 		
 		$time2 = microtime(true);
 		echo "Took: " . ($time2 - $time1) . PHP_EOL;
@@ -63,33 +61,5 @@ class CalculateReactionShell extends AppShell {
 		$result['likes'] = $data['result'][0]['total_likes'];
 		$result['comments'] = $data['result'][0]['total_comments'];
 		return $result;
-	}
-	
-	private function insertMonthlyReaction() {
-		$m = new MongoClient();
-		$db = $m->instagram_account_info;
-		$collection = $db->reaction;
-		$dbChart = $m->chart;
-		$cllChart = $dbChart->selectCollection(date('Y_m'));
-		
-		//total comment in collection media
-		$currentDate = date('Y/m/d');
-		$total = 0;
-		
-		$data = $collection->find(array(), array('_id' => 1, 'username' => 1, 'likes' => 1, 'comments' => 1));
-		if(isset($data) && $data->count() > 0) {
-			foreach ($data as $val) {
-				$searchTime = $cllChart->find(array('time' => $currentDate, 'username' => $val['username']));
-				if(isset($searchTime) && $searchTime->count() > 0) {
-					foreach ($searchTime as $valChart) {
-						$col = array('$set' => array('likes' => $valChart['likes'], 'comments' => $valChart['comments']));
-						$cllChart->update(array('time' => $valChart['time']), $col);
-					}
-				} else {
-					$col = array('accuntID' => $val['_id'], 'username' => $val['username'], 'likes' => $val['likes'], 'comments' => $val['comments'], 'time' => $currentDate);
-					$cllChart->insert($col);
-				}
-			}
-		}
 	}
 }
