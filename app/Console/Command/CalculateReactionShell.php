@@ -60,8 +60,8 @@ class CalculateReactionShell extends AppShell {
 		);
 		$data = $this->mongoCursor->aggregate($condition);
 		$result = array();
-		$result['likes'] = $data['result'][0]['total_likes'];
-		$result['comments'] = $data['result'][0]['total_comments'];
+		$result['likes'] = isset($data['result'][0]['total_likes']) ? $data['result'][0]['total_likes'] : 0;
+		$result['comments'] = isset($data['result'][0]['total_comments']) ? $data['result'][0]['total_comments'] : 0;
 		return $result;
 	}
 	
