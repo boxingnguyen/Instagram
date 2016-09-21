@@ -9,7 +9,7 @@ class GetMediaShell extends AppShell {
 		
 		$all_account = array();
 
-		$file = fopen("/www/html/instagram/app/Vendor/username.txt", "r");
+		$file = fopen(APP."Vendor/username.txt", "r");
 
 		while(!feof($file)){
 		    $line = fgets($file);
