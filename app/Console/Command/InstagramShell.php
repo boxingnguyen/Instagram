@@ -4,5 +4,6 @@ class InstagramShell extends AppShell {
 		passthru(ROOT."/app/Console/cake GetMedia");
 		passthru(ROOT."/app/Console/cake GetAccountInfo");
 		passthru(ROOT."/app/Console/cake CalculateReaction");
+		exec('sudo service mongod restart');
 	}
 }
