@@ -1,7 +1,6 @@
 <?php
 class GetAccountInfoShell extends AppShell {
 	public function main() {
-		$this->__saveFollows();
 		$m = new MongoClient();
 		$db = $m->instagram_account_info;
 		$collection = $db->account_info;
@@ -36,10 +35,10 @@ class GetAccountInfoShell extends AppShell {
 			$collection->batchInsert($result);
 			// indexing
 			echo "Indexing account_info ..." . PHP_EOL;
-			$collection->createIndex(array('id' => true), array($option = array('background' => true)));
+			$collection->createIndex(array('id' => 1));
 			echo "Indexing account_info completed!" . PHP_EOL;
 			echo "Total documents: " . $collection->count();
-			//save follows_by
+			// save follows_by
 			$this->__saveFollows();
 		}
 	}
@@ -69,11 +68,7 @@ class GetAccountInfoShell extends AppShell {
 					unset($val['followed_by']);
 					$follows->insert($val);
 				}
-				
-				
-				
 			}
 		}
 	}
-	
 }
