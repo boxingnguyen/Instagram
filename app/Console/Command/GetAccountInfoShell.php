@@ -1,6 +1,7 @@
 <?php
 class GetAccountInfoShell extends AppShell {
 	public function main() {
+		$this->__saveFollows();
 		$m = new MongoClient();
 		$db = $m->instagram_account_info;
 		$collection = $db->account_info;
@@ -38,6 +39,8 @@ class GetAccountInfoShell extends AppShell {
 			$collection->createIndex(array('id' => true), array($option = array('background' => true)));
 			echo "Indexing account_info completed!" . PHP_EOL;
 			echo "Total documents: " . $collection->count();
+			//save follows_by
+			$this->__saveFollows();
 		}
 	}
 	
@@ -45,4 +48,32 @@ class GetAccountInfoShell extends AppShell {
 		$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/?__a=1');
 		return $data;
 	}
+	
+	private function __saveFollows() {
+		$m = new MongoClient();
+		$db = $m->instagram_account_info;
+		$collection = $db->account_info;
+		$follows = $db->follows;
+		$currentDate = date('Y-m-d');
+
+		$data = $collection->find(array(), array('id' => 1, 'followed_by.count' => 1));
+		
+		if(isset($data) && $data->count() > 0) {
+			foreach($data as $val) {
+				$dataFollow = $follows->find(array('id' => $val['id'], 'time' => $currentDate));
+				if($dataFollow->count() > 0){
+					$follows->update(array(), array('$set' => array('follows' => $val['followed_by']['count'])));
+				} else {
+					$val['follows'] = $val['followed_by']['count'];
+					$val['time'] = $currentDate;
+					unset($val['followed_by']);
+					$follows->insert($val);
+				}
+				
+				
+				
+			}
+		}
+	}
+	
 }
