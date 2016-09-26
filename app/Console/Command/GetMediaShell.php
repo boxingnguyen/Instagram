@@ -1,5 +1,7 @@
  <?php
 class GetMediaShell extends AppShell {
+	public $media_count = 0;
+	
 	public function main() {
 		
 		$m = new MongoClient();
@@ -20,7 +22,7 @@ class GetMediaShell extends AppShell {
 			// drop old data
 			$collection->drop();
 			// we get data of 25 accounts at a time
-			$account_chunks = array_chunk($all_account, 25);
+			$account_chunks = array_chunk($all_account, 20);
 			foreach ($account_chunks as $account) {
 				foreach ($account as $name) {
 					// create 2 processes here
@@ -34,13 +36,20 @@ class GetMediaShell extends AppShell {
 					} else {
 						// we are the child
 						$max_id = null;
-						echo "Get media of " . $name . PHP_EOL;
 						$data = $this->__getMedia($name, $max_id);
 						do {
 							$data = $this->__getMedia($name, $max_id);
 							// insert to mongo
 							if(isset($data->items) && !empty($data->items)) {
 								$collection->batchInsert($data->items);
+								// reconnect mongo and re-insert if insert unsuccessfully
+								while (!$collection) {
+									exec('sudo service mongod restart');
+									$m = new MongoClient();
+									$db = $m->instagram;
+									$collection = $db->media;
+									$collection->batchInsert($data->items);
+								}
 								$max_id = end($data->items)->id;
 							} else {
 								break;
@@ -59,8 +68,8 @@ class GetMediaShell extends AppShell {
 			}
 			// indexing
 			echo "Indexing media ..." . PHP_EOL;
-			$collection->createIndex(array('user.id' => true), array($option = array('background' => true, 'timeout' => -1)));
-			$collection->createIndex(array('created_time' => true), array($option = array('background' => true, 'timeout' => -1)));
+			$collection->createIndex(array('user.id' => 1), array('timeout' => -1, 'background' => true));
+			$collection->createIndex(array('created_time' => 1), array('timeout' => -1, 'background' => true));
 			echo "Indexing media completed!" . PHP_EOL;
 			echo "Total documents: " . $collection->count();
 		}
