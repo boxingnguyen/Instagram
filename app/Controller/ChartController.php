@@ -33,11 +33,7 @@ class ChartController extends AppController {
 			$this->set('dataComments', $data);
 		}
 	}
-	public function getmounths($idMounth) {
-		$m = new MongoClient();
-		$dbChart = $m->instagram;
-		$cllChart = $dbChart->media;
-		
+	public function getmounths($idMounth) {		
 		$month = date('m');
 		$m = new MongoClient();
 		$db = $m->instagram;
