@@ -33,6 +33,14 @@ class GetAccountInfoShell extends AppShell {
 			echo "Inserting into mongo..." . PHP_EOL;
 			// insert new data
 			$collection->batchInsert($result);
+			// reconnect mongo and re-insert if insert unsuccessfully
+			while (!$collection) {
+				exec('sudo service mongod restart');
+				$m = new MongoClient();
+				$db = $m->instagram_account_info;
+				$collection = $db->account_info;
+				$collection->batchInsert($result);
+			}
 			// indexing
 			echo "Indexing account_info ..." . PHP_EOL;
 			$collection->createIndex(array('id' => 1));
