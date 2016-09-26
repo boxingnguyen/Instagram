@@ -11,16 +11,9 @@
         var data = google.visualization.arrayToDataTable([
          ['Date', 'Likes'],
          
-        <?php foreach ($dataLikes as $key => $val) { ?>
-        		[<?php echo "'".$key."'";?> ,  <?php  echo $val; ?>],
-               
-        <?php } ?>
-         
-         
-//          ['2005/06',  135,      1120,        599],
-//          ['2006/07',  157,      1167,        587],
-//          ['2007/08',  139,      1110,        615],
-//          ['2008/09',  136,      691,         629]
+        <?php foreach ($dataLikes as $key => $val) { ?> 	
+        		[<?php echo "'".$key."'";?> ,  <?php  echo $val['likes']; ?>],      
+        <?php } ?> 
          
       ]);
 
