@@ -21,25 +21,25 @@ class ChartController extends AppController {
 	}
 	public function like() {
 		$id = $this->params->query['id'];
-		$data = $this->getmounths($id);
+		$data = $this->getmonths($id);
 		if(isset($data) && !empty($data)) {
 			$this->set('dataLikes', $data);
 		}
 	}
 	public function comment() {
 		$id = $this->params->query['id'];
-		$data = $this->getmounths($id);
+		$data = $this->getmonths($id);
 		if(isset($data) && !empty($data)) {
 			$this->set('dataComments', $data);
 		}
 	}
-	public function getmounths($idMounth) {		
+	public function getmonths($idMonth) {
 		$month = date('m');
 		$m = new MongoClient();
 		$db = $m->instagram;
 		$collection = $db->media;
 		
-		$id = $idMounth;
+		$id = $idMonth;
 		date_default_timezone_set("UTC");
 		
 		$numberDaysPerMonth = cal_days_in_month(CAL_GREGORIAN, $month, 2016);
