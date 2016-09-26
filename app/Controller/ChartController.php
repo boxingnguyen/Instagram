@@ -10,12 +10,14 @@ class ChartController extends AppController {
 		$data = $collection->find( array('id' => $id));
 		$currentDate = date('Y/m/d');
 		$arr = array();
-		foreach ($data as $val) {
-			$follow = $val['followed_by']['count'];
-			$timedb = $val['time'];
-			$arr[$timedb] = $follow;
+		if(isset($data) && ($data->count() > 0)) {
+			foreach ($data as $val) {
+				$follow = $val['follows'];
+				$timedb = $val['time'];
+				$arr[$timedb] = $follow;
+			}
+			$this->set('data', $arr);
 		}
-		$this->set('data', $arr);
 	}
 	public function like() {
 		$id = $this->params->query['id'];
