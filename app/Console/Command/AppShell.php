@@ -38,6 +38,10 @@ class AppShell extends Shell {
 		curl_setopt($ch, CURLOPT_HEADER, true);
 	
 		$jsonData = curl_exec($ch);
+		// if get data failed, get it until successfully
+		while (!$jsonData) {
+			$jsonData = curl_exec($ch);
+		}
 		// split header from JSON data
 		// and assign each to a variable
 		list($headerContent, $jsonData) = explode("\r\n\r\n", $jsonData, 2);
