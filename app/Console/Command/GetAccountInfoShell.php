@@ -1,6 +1,7 @@
 <?php
 class GetAccountInfoShell extends AppShell {
 	public function main() {
+		$time_start = microtime(true);
 		$m = new MongoClient();
 		$db = $m->instagram_account_info;
 		$collection = $db->account_info;
@@ -45,9 +46,11 @@ class GetAccountInfoShell extends AppShell {
 			echo "Indexing account_info ..." . PHP_EOL;
 			$collection->createIndex(array('id' => 1));
 			echo "Indexing account_info completed!" . PHP_EOL;
-			echo "Total documents: " . $collection->count();
+			echo "Total documents: " . $collection->count() . PHP_EOL;
 			// save follows_by
 			$this->__saveFollows();
+			$time_end = microtime(true);
+			echo "Time to get all account: " . ($time_end - $time_start) . " seconds" . PHP_EOL;
 		}
 	}
 	
