@@ -90,7 +90,7 @@ class GetMediaThreeMonthShell extends AppShell {
 			echo "Indexing media ..." . PHP_EOL;
 			$collections->createIndex(array('created_time' => 1));
 			echo "Indexing media completed!" . PHP_EOL;
-			echo "Total documents: " . $collections->count();
+			echo "Total documents: " . $collections->count() . PHP_EOL;
 		}else{
 			$this->out('File '.$nameFile.' Not Found');
 		}
