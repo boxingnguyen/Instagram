@@ -101,8 +101,4 @@ class GetMediaThreeMonthShell extends AppShell {
 			$this->out('File '.$nameFile.' Not Found');
 		}
 	}
-	
-	public function test(){
-		
-	}
 }
