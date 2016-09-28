@@ -44,6 +44,12 @@ class GetMediaThreeMonthShell extends AppShell {
 							}
 							break;
 						} else {
+							if($maxTime > strtotime(date("Y-m-d 00:00:00"))){
+													
+							}
+							
+							
+							
 							foreach($data->items as $val){
 								fwrite($myfile, json_encode($val).PHP_EOL);
 							}
@@ -68,9 +74,8 @@ class GetMediaThreeMonthShell extends AppShell {
 	
 		//get time in 3months from now
 		$start = strtotime(date("Y-m-d 00:00:00",strtotime("-3 Months")));
-		$end = strtotime(date("Y-m-d 00:00:00"));
 		//query
-		$query = array('created_time' => array('$gte' => "$start",'$lt' => "$end"));
+		$query = array('created_time' => array('$gte' => "$start"));
 		//name of file json which contains data of today
 		$nameFile = date('dmY').".media.json";
 	
@@ -95,5 +100,9 @@ class GetMediaThreeMonthShell extends AppShell {
 		}else{
 			$this->out('File '.$nameFile.' Not Found');
 		}
+	}
+	
+	public function test(){
+		
 	}
 }
