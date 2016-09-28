@@ -8,6 +8,7 @@ class CalculateReactionShell extends AppShell {
 		$this->mongoCursor = $db->media;
 	}
 	public function main() {
+		$start_time = microtime(true);
 		$m = new MongoClient();
 		$db = $m->instagram_account_info;
 		$collection = $db->account_info;
@@ -22,7 +23,6 @@ class CalculateReactionShell extends AppShell {
 				)
 		);
 		$data = $collection->aggregate($condition);
-		$time1 = microtime(true);
 		$count = 1;
 		$result = $data['result'];
 		foreach ($data['result'] as $key => $value) {
@@ -39,8 +39,8 @@ class CalculateReactionShell extends AppShell {
 		$collection->drop();
 		$collection->batchInsert($result);
 		
-		$time2 = microtime(true);
-		echo "Took: " . ($time2 - $time1) . PHP_EOL;
+		$end_time = microtime(true);
+		echo "Time to calculate reaction: " . ($end_time - $start_time) . " seconds" . PHP_EOL;
 	}
 	
  	private function __calculateReaction($account_id) {
