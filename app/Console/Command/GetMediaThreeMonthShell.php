@@ -1,6 +1,10 @@
  <?php
 class GetMediaThreeMonthShell extends AppShell {	
 	public function main() {
+		$this->getData();
+		$this->saveToDb();
+	}
+	public function getData(){
 		$file = fopen(APP."Vendor/username.txt", "r");
 		while(!feof($file)){
 			$line = fgets($file);
@@ -10,7 +14,7 @@ class GetMediaThreeMonthShell extends AppShell {
 		//name file
 		date_default_timezone_set('UTC');
 		$nameFile = date('dmY');
-		$myfile = fopen("/www/htdocs/PHPInstagram/app/Vendor/Data/".$nameFile.".media.json", "w+") or die("Unable to open file!");
+		$myfile = fopen(APP."Vendor/Data/".$nameFile.".media.json", "w+") or die("Unable to open file!");
 		//find date 3 month ago
 		$fineStamp = date('Y-m-d 00:00:00');
 		$d = new DateTime($fineStamp);
@@ -51,6 +55,45 @@ class GetMediaThreeMonthShell extends AppShell {
 				echo "Complete username: ".$username.PHP_EOL;
 			}
 			fclose($myfile);
+		}
+	}
+	
+	public function saveToDb() {
+		date_default_timezone_set("UTC");
+		ini_set('memory_limit', '-1');
+		$month = date('m');
+		$m = new MongoClient();
+		$db = $m->instagram_media;
+		$collections = $db->selectCollection('2016_'.$month);
+	
+		//get time in 3months from now
+		$start = strtotime(date("Y-m-d 00:00:00",strtotime("-3 Months")));
+		$end = strtotime(date("Y-m-d 00:00:00"));
+		//query
+		$query = array('created_time' => array('$gte' => "$start",'$lt' => "$end"));
+		//name of file json which contains data of today
+		$nameFile = date('dmY').".media.json";
+	
+		//check file and update data to db
+		if(file_exists(APP."Vendor/Data/".$nameFile)){
+			//remove the same data in db
+			$collections->remove($query);
+			$data = file_get_contents(APP."Vendor/Data/".$nameFile); //read the file
+			$convert = explode("\n", $data); //create array separate by new line
+			$media = array();
+			for ($i=0;$i<count($convert);$i++){
+				if($convert[$i] != null || !empty($convert[$i])){
+					//insert new data
+					$collections->insert(json_decode($convert[$i]));
+				}
+			}
+			//create index of "created_time"
+			echo "Indexing media ..." . PHP_EOL;
+			$collections->createIndex(array('created_time' => 1));
+			echo "Indexing media completed!" . PHP_EOL;
+			echo "Total documents: " . $collections->count();
+		}else{
+			$this->out('File '.$nameFile.' Not Found');
 		}
 	}
 }
