@@ -75,3 +75,24 @@ class ChartController extends AppController {
 				
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
