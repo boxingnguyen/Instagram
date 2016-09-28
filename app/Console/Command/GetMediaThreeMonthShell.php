@@ -44,12 +44,6 @@ class GetMediaThreeMonthShell extends AppShell {
 							}
 							break;
 						} else {
-							if($maxTime > strtotime(date("Y-m-d 00:00:00"))){
-													
-							}
-							
-							
-							
 							foreach($data->items as $val){
 								fwrite($myfile, json_encode($val).PHP_EOL);
 							}
