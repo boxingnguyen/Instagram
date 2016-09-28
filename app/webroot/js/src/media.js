@@ -23,7 +23,7 @@ $().ready(function(){
 						}
 						
 						var typeOfPost = '<div class="cd-timeline-img cd-picture"><img src="/img/cd-icon-picture.svg" alt="Picture"></div>';
-						var post = '<img class="pre-media" src="'+ data[i].images.low_resolution.url +'" >';
+						var post = '<a href="'+data[i].link+'" target="_blank"><img class="pre-media" src="'+ data[i].images.low_resolution.url +'" ></a>';
 						if(data[i].type == 'video'){
 							typeOfPost = '<div class="cd-timeline-img cd-movie"><img src="/img/cd-icon-movie.svg" alt="Movie"></div>';
 							post = '<video class="pre-media" controls width="320" height="320"><source src="'+data[i].alt_media_url+'" type="video/mp4"></video>';

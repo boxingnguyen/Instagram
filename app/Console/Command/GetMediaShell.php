@@ -3,26 +3,18 @@ class GetMediaShell extends AppShell {
 	public $media_count = 0;
 	
 	public function main() {
-		
+		$start_time = microtime(true);
 		$m = new MongoClient();
 		$db = $m->instagram;
 		$collection = $db->media;
 		
-		$all_account = array();
-
-		$file = fopen(APP."Vendor/username.txt", "r");
-
-		while(!feof($file)){
-		    $line = fgets($file);
-		    $all_account[] = trim(preg_replace('/\s\s+/', ' ', $line));;
-		}
-		fclose($file);
+		$all_account = $this->__sortAccountByMedia();
 		
 		if (!empty($all_account)) {
 			// drop old data
 			$collection->drop();
 			// we get data of 25 accounts at a time
-			$account_chunks = array_chunk($all_account, 20);
+			$account_chunks = array_chunk($all_account, 15);
 			foreach ($account_chunks as $account) {
 				foreach ($account as $name) {
 					// create 2 processes here
@@ -41,14 +33,14 @@ class GetMediaShell extends AppShell {
 							$data = $this->__getMedia($name, $max_id);
 							// insert to mongo
 							if(isset($data->items) && !empty($data->items)) {
-								$collection->batchInsert($data->items);
+								$collection->batchInsert($data->items, array('timeout' => -1));
 								// reconnect mongo and re-insert if insert unsuccessfully
 								while (!$collection) {
 									exec('sudo service mongod restart');
 									$m = new MongoClient();
 									$db = $m->instagram;
 									$collection = $db->media;
-									$collection->batchInsert($data->items);
+									$collection->batchInsert($data->items, array('timeout' => -1));
 								}
 								$max_id = end($data->items)->id;
 							} else {
@@ -68,10 +60,11 @@ class GetMediaShell extends AppShell {
 			}
 			// indexing
 			echo "Indexing media ..." . PHP_EOL;
-			$collection->createIndex(array('user.id' => 1), array('timeout' => -1, 'background' => true));
-			$collection->createIndex(array('created_time' => 1), array('timeout' => -1, 'background' => true));
+			$collection->createIndex(array('user.id' => 1, 'created_time' => 1), array('timeout' => -1, 'background' => true));
 			echo "Indexing media completed!" . PHP_EOL;
-			echo "Total documents: " . $collection->count();
+			echo "Total documents: " . $collection->count() . PHP_EOL;
+			$end_time = microtime(true);
+			echo "Time to get all media: " . ($end_time - $start_time) . " seconds" . PHP_EOL;
 		}
 	}
 	
@@ -83,39 +76,17 @@ class GetMediaShell extends AppShell {
 		}
 		return $data;
 	}
+	
+	private function __sortAccountByMedia() {
+		$m = new MongoClient();
+		$db = $m->instagram_account_info;
+		$collection = $db->account_info;
+		
+		$data = $collection->find()->sort(array('media.count' => -1))->fields(array('username' => true, 'media.count' => true));
+		$result = array();
+		foreach ($data as $value) {
+			$result[] = $value['username'];
+		}
+		return $result;
+	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
