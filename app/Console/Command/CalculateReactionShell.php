@@ -7,7 +7,6 @@ class CalculateReactionShell extends AppShell {
 		$db = $m->instagram;
 		$this->mongoCursor = $db->media;
 	}
-	
 	public function main() {
 		$m = new MongoClient();
 		$db = $m->instagram_account_info;
@@ -23,7 +22,6 @@ class CalculateReactionShell extends AppShell {
 				)
 		);
 		$data = $collection->aggregate($condition);
-		
 		$time1 = microtime(true);
 		$count = 1;
 		$result = $data['result'];
@@ -31,10 +29,10 @@ class CalculateReactionShell extends AppShell {
 			$reaction = $this->__calculateReaction($value['_id']);
 			$result[$key]['likes'] = $reaction['likes'];
 			$result[$key]['comments'] = $reaction['comments'];
+			$result[$key]['media_get'] = $reaction['media_get'];
 			echo $count . ". Reaction of " . $value['username'] . " completed!" . PHP_EOL;
 			$count ++;
 		}
-		
 		// write result (after calculating reaction) into database
 		$db = $m->instagram_account_info;
 		$collection = $db->reaction;
@@ -53,13 +51,15 @@ class CalculateReactionShell extends AppShell {
 								'_id' => '$user.id',
 								'total_likes' => array('$sum' => '$likes.count'),
 								'total_comments' => array('$sum' => '$comments.count'),
+								'media_get' => array('$sum' => 1)
 						)
 				)
 		);
-		$data = $this->mongoCursor->aggregate($condition);
+		$data = $this->mongoCursor->aggregate($condition, array('maxTimeMS' => 3*60*1000));
 		$result = array();
 		$result['likes'] = isset($data['result'][0]['total_likes']) ? $data['result'][0]['total_likes'] : 0;
 		$result['comments'] = isset($data['result'][0]['total_comments']) ? $data['result'][0]['total_comments'] : 0;
+		$result['media_get'] = isset($data['result'][0]['media_get']) ? $data['result'][0]['media_get'] : 0;
 		return $result;
 	}
 }
