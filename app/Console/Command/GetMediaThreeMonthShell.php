@@ -4,23 +4,31 @@ class GetMediaThreeMonthShell extends AppShell {
 		$this->getData();
 		$this->saveToDb();
 	}
+
+/**
+ * get data write file text
+ */
 	public function getData(){
+// 		read file save $all_account
 		$file = fopen(APP."Vendor/username.txt", "r");
 		while(!feof($file)){
 			$line = fgets($file);
 			$all_account[] = trim(preg_replace('/\s\s+/', ' ', $line));;
 		}
 		fclose($file);
-		//name file
+
+// 		name file allow d-m-Y
 		date_default_timezone_set('UTC');
 		$nameFile = date('dmY');
 		$myfile = fopen(APP."Vendor/Data/".$nameFile.".media.json", "w+") or die("Unable to open file!");
-		//find date 3 month ago
+
+// 		find date 3 month ago
 		$fineStamp = date('Y-m-d 00:00:00');
 		$d = new DateTime($fineStamp);
 		$d = $d->modify('-3 month');
 		$time = strtotime($d->format('Y-m-d 00:00:00'));
 		$this->out($time);
+
 		$arrData = array();
 		if(isset($all_account) && !empty($all_account)) {
 			foreach ($all_account as $username) {
