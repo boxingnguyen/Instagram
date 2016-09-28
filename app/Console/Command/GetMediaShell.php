@@ -14,7 +14,7 @@ class GetMediaShell extends AppShell {
 			// drop old data
 			$collection->drop();
 			// we get data of 25 accounts at a time
-			$account_chunks = array_chunk($all_account, 15);
+			$account_chunks = array_chunk($all_account, 20);
 			foreach ($account_chunks as $account) {
 				foreach ($account as $name) {
 					// create 2 processes here
