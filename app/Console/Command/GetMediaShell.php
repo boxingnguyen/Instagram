@@ -36,7 +36,7 @@ class GetMediaShell extends AppShell {
 								$collection->batchInsert($data->items, array('timeout' => -1));
 								// reconnect mongo and re-insert if insert unsuccessfully
 								while (!$collection) {
-									exec('sudo service mongod restart');
+									passthru('sudo service mongod restart');
 									$m = new MongoClient();
 									$db = $m->instagram;
 									$collection = $db->media;
