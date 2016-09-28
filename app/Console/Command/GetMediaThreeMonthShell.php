@@ -1,5 +1,5 @@
  <?php
-class GetMediaShell extends AppShell {	
+class GetMediaThreeMonthShell extends AppShell {	
 	public function main() {
 		$file = fopen(APP."Vendor/username.txt", "r");
 		while(!feof($file)){
@@ -55,6 +55,5 @@ class GetMediaShell extends AppShell {
 			}
 			fclose($myfile);
 		}
-		
 	}
 }
