@@ -18,7 +18,7 @@ class GetMediaThreeMonthShell extends AppShell {
 		fclose($file);
 
 // 		name file allow d-m-Y
-		date_default_timezone_set('UTC');
+		//date_default_timezone_set('UTC');
 		$nameFile = date('dmY');
 		$myfile = fopen(APP."Vendor/Data/".$nameFile.".media.json", "w+") or die("Unable to open file!");
 
@@ -67,7 +67,7 @@ class GetMediaThreeMonthShell extends AppShell {
 	}
 	
 	public function saveToDb() {
-		date_default_timezone_set("UTC");
+		//date_default_timezone_set("UTC");
 		ini_set('memory_limit', '-1');
 		$month = date('m');
 		$m = new MongoClient();
