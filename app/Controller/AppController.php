@@ -33,5 +33,6 @@ App::uses('Controller', 'Controller');
 class AppController extends Controller {
 	public function beforeFilter() {
 		exec('sudo chmod -R 777 /www/app/tmp');
+		exec('sudo chmod -R 777 /www/app/Vendor/Data');
 	}
 }
