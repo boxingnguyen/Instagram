@@ -1,8 +1,7 @@
 <?php
 class GoogleChartShell extends AppShell {	
-	public function readReactionSaveDays() {
+	public function main() {
 		$m = new MongoClient();
-		
 		$db = $m->instagram_account_info;
 		$collection = $db->reaction;
 		$dbChart = $m->chart;
@@ -38,6 +37,7 @@ class GoogleChartShell extends AppShell {
 				}
 			}
 		}
+		echo "Complete";
 	}
 	
 }
