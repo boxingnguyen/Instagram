@@ -61,8 +61,6 @@ class ChartController extends AppController {
 				}	
 			}
 		}
-		echo "<pre>";
-		print_r($arr);
 		if(isset($arr) && !empty($arr)) {
 			$this->set('dataLikes', $arr);
 		}
