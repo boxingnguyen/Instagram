@@ -229,6 +229,7 @@ button.buttonReg:hover, button.modalReg:hover{
 	opacity: 0.5;
 }
 input[type=text]{
+	font-weight: lighter;
     width: 100%;
     padding: 18px 20px;
     margin: 10px 0;
@@ -246,8 +247,39 @@ button.modalReg {
     cursor: pointer;
     width: 100%;
 }
+button.modalReg:disabled{
+	 opacity: 0.5;
+}
 p.message{
-    color: lightgrey;
+	font-style: italic;
+    color: lightblue;
     margin-bottom: 30px;
 }
+.loader {
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid gray; /* Blue */
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    animation: spin 2s linear infinite;
+    position: fixed;
+    z-index: 999;
+    overflow: show;
+    margin: 0 auto;
+    top: 15%;
+    left: 0;
+    right: 0;
+}
 
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.messRegis{
+	text-align: center;
+    margin-top: 15%;
+    font-weight: bold;
+}
+button.cancel{
+	padding: 5px 30px;
+}
