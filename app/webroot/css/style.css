@@ -247,6 +247,9 @@ button.modalReg {
     cursor: pointer;
     width: 100%;
 }
+button.modalReg:disabled{
+	 opacity: 0.5;
+}
 p.message{
 	font-style: italic;
     color: lightblue;
