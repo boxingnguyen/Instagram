@@ -13,7 +13,7 @@
          
       		<?php if(isset($dataComments) && !empty($dataComments)) {?>
          	<?php foreach ($dataComments as $key => $val) { ?>
-         			[<?php echo "'".$key. "'";?>,  <?php echo $val['comments'] ; ?>],
+         			[<?php echo "'".$key. "'";?>,  <?php echo $val; ?>],
          	<?php } } ?>
          
       ]);

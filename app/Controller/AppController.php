@@ -35,4 +35,50 @@ class AppController extends Controller {
 		exec('sudo chmod -R 777 /www/app/tmp');
 		exec('sudo chmod -R 777 /www/app/Vendor/Data');
 	}
+	public function cURLInstagram($url) {
+		$headerData = array('Accept: application/json');
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headerData);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 300);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_HEADER, true);
+	
+		$jsonData = curl_exec($ch);
+		// if get data failed, get it until successfully
+		while (!$jsonData) {
+			$jsonData = curl_exec($ch);
+		}
+		// split header from JSON data
+		// and assign each to a variable
+		list($headerContent, $jsonData) = explode("\r\n\r\n", $jsonData, 2);
+	
+		// convert header content into an array
+		$headers = $this->__processHeaders($headerContent);
+	
+		if (!$jsonData) {
+			throw new Exception('Error: _makeCall() - cURL error: ' . curl_error($ch));
+		}
+	
+		curl_close($ch);
+	
+		return json_decode($jsonData);
+	}
+	private function __processHeaders($headerContent) {
+		$headers = array();
+	
+		foreach (explode("\r\n", $headerContent) as $i => $line) {
+			if ($i === 0) {
+				$headers['http_code'] = $line;
+				continue;
+			}
+	
+			list($key, $value) = explode(':', $line);
+			$headers[$key] = $value;
+		}
+	
+		return $headers;
+	}
 }

@@ -69,6 +69,7 @@ class GetAccountInfoShell extends AppShell {
 		return $data;
 	}
 	
+<<<<<<< HEAD
 /**
  * Check if cannot get account info
  * @param int $total_account
@@ -158,4 +159,6 @@ class GetAccountInfoShell extends AppShell {
 			}
 		}
 	}
+=======
+>>>>>>> refs/remotes/origin/master
 }
