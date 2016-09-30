@@ -40,6 +40,7 @@ class AppShell extends Shell {
 		$jsonData = curl_exec($ch);
 		// if get data failed, get it until successfully
 		while (!$jsonData) {
+			print_r(curl_error($ch));
 			$jsonData = curl_exec($ch);
 		}
 		// split header from JSON data
