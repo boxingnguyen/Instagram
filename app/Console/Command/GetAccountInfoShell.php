@@ -59,27 +59,4 @@ class GetAccountInfoShell extends AppShell {
 		return $data;
 	}
 	
-	private function __saveFollows() {
-		$m = new MongoClient();
-		$db = $m->instagram_account_info;
-		$collection = $db->account_info;
-		$follows = $db->follows;
-		$currentDate = date('Y-m-d');
-
-		$data = $collection->find(array(), array('id' => 1, 'followed_by.count' => 1));
-		
-		if(isset($data) && $data->count() > 0) {
-			foreach($data as $val) {
-				$dataFollow = $follows->find(array('id' => $val['id'], 'time' => $currentDate));
-				if($dataFollow->count() > 0){
-					$follows->update(array(), array('$set' => array('follows' => $val['followed_by']['count'])));
-				} else {
-					$val['follows'] = $val['followed_by']['count'];
-					$val['time'] = $currentDate;
-					unset($val['followed_by']);
-					$follows->insert($val);
-				}
-			}
-		}
-	}
 }
