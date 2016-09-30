@@ -13,18 +13,13 @@ $().ready(function(){
 		var input = $(this).val();
 		//remove spaces in string input
 		input = input.replace(/\s/g, '');
+		//check input
 		if (input.match(/^http([s]?):\/\/.*/)) {
 			if (!input.match(/^http([s]?):\/\/www\.instagram\.com\/.*/)) {
-				console.log('try agian');
 				$('p.message').text('Sorry! This link has the wrong format. Please re-type!').css("color",'red');
 				$('button.modalReg').prop('disabled', true);
-			}else{
-				$('button.modalReg').prop('disabled', false);
 			}
-		}else{
-			$('button.modalReg').prop('disabled', false);
 		}
-
 	});
 	$('button.modalReg').click(function(){
 		var input = $('input[type=text]').val();
