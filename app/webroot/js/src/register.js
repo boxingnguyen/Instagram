@@ -44,6 +44,7 @@ $().ready(function(){
 			$('#myModal').modal('hide');
 			$('.loader').show();
 			$('.modal-body').css('opacity','0.4');
+			$('button.cancel').prop('disabled', true);
 			
 			$.ajax({
 				method: "POST",
@@ -62,10 +63,12 @@ $().ready(function(){
 					}
 					$('.loader').hide();
 					$('.modal-body').css('opacity','1');
+					$('button.cancel').prop('disabled', false);
 				},
 				error: function(){
 					$('.loader').hide();
 					$('.modal-body').css('opacity','1');
+					$('button.cancel').prop('disabled', false);
 					$('p.messRegis').text('Sorry, Ajax has some problem!');
 				}
 			});
