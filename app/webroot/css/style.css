@@ -208,3 +208,46 @@ footer p {
 	background: #E9F0F5;
   }
 }
+button.buttonReg {
+	outline-color: white;
+	border-radius: 5px;
+	background: #F4EEE3;
+    border: solid 1px #443728;
+    margin-right: 50px;
+    MARGIN-BOTTOM: 5PX;
+    color: #443728;
+    font-weight: bold;
+    font-size: 9pt;
+    padding: 5px 20px 5px 35px;
+    text-align: center;
+    background: url('../img/insta.png') no-repeat;
+    background-size: 22%;
+    background-position: 5px 5px;
+    vertical-align: middle;
+}
+button.buttonReg:hover, button.modalReg:hover{
+	opacity: 0.5;
+}
+input[type=text]{
+    width: 100%;
+    padding: 18px 20px;
+    margin: 10px 0;
+    margin-top: 30px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+button.modalReg {
+    background-color: #024457;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+}
+p.message{
+    color: lightgrey;
+    margin-bottom: 30px;
+}
+
