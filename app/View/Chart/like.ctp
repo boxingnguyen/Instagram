@@ -12,7 +12,7 @@
          ['Date', 'Likes'],
          
         <?php foreach ($dataLikes as $key => $val) { ?> 	
-        		[<?php echo "'".$key."'";?> ,  <?php  echo $val['likes']; ?>],      
+        		[<?php echo "'".$key."'";?> ,  <?php  echo $val; ?>],      
         <?php } ?> 
          
       ]);
