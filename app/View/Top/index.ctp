@@ -1,3 +1,24 @@
+<div style = "float:right">
+	<button type="button" class="buttonReg" data-toggle="modal" data-target="#myModal">Register</button>
+	
+	<!-- Modal -->
+	<div class="modal fade " id="myModal"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-body">
+	       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <div class="form">
+			    <form class="register-form">
+			      <input type="text"  type="text" class="form-control" placeholder="name"/>
+			      <p class="message"><i>Example: https://www.instagram.com/instagram/</i></p>
+			      <button type="button" class="modalReg"><b>REGIST</b></button>
+			    </form>
+			  </div>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+</div>
 <div class='col-xs-12'>
 	<table class="table responstable">
 		<tr>
