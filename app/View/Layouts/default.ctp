@@ -32,6 +32,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 		
 		echo $this->Html->script('jquery.min');
 		echo $this->Html->script('loader');
+		echo $this->Html->script('src/register');
 
 		echo $this->fetch('meta');
 		echo $this->fetch('css');
