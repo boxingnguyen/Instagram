@@ -9,7 +9,7 @@
 	       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 	        <div class="form">
 			    <form class="register-form">
-			      <input type="text"  type="text" class="form-control" placeholder="name"/>
+			      <input type="text" id="inputUserName" class="form-control" placeholder="name"/>
 			      <p class="message"><i>Example: https://www.instagram.com/instagram/</i></p>
 			      <button type="button" class="modalReg"><b>REGIST</b></button>
 			    </form>
