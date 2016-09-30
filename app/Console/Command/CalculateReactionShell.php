@@ -86,7 +86,7 @@ class CalculateReactionShell extends AppShell {
  * @param array $account
  */
 	private function __reGetMedia($accounts) {
-		foreach ($account as $key => $name) {
+		foreach ($accounts as $key => $name) {
 			$this->collection_media->remove(array('user.id' => $key));
 			// create 2 processes here
 			$pid = pcntl_fork();
@@ -132,12 +132,16 @@ class CalculateReactionShell extends AppShell {
  * @param array list of account which have media missed before check
  * @return list of account which have media missed after check
  */
-	private function reCheckMedia($accounts) {
+	private function __reCheckMedia($accounts) {
 		$result = array();
+		print_r($accounts);
 		foreach ($accounts as $key => $value) {
 			$account_info = $this->collection_acc->find(array('username' => $value), array('media.count' => true));
+			print_r($account_info);
 			// media count (base on account_info collection)
-			$media_origin = $account_info['media']['count'];
+			foreach ($account_info as $value) {
+				$media_origin = $value['media']['count'];
+			}
 			// media count (base on what we get)
 			$media_get = $this->collection_media->count(array('user.id' => $key));
 			if ($media_get != $media_origin) {
@@ -154,6 +158,20 @@ class CalculateReactionShell extends AppShell {
  */
 	private function __getAccountInfo($username) {
 		$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/?__a=1');
+		return $data;
+	}
+
+/**
+ * Get account's media
+ * @param string $username username
+ * @param string $max_id   media's max_id
+ */
+	private function __getMedia($username, $max_id = null) {
+		if ($max_id != null) {
+			$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/media/?max_id=' . $max_id);
+		} else {
+			$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/media/');
+		}
 		return $data;
 	}
 	
