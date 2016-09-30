@@ -1,6 +1,5 @@
  <?php
 class GetMediaShell extends AppShell {
-	public $media_count = 0;
 	
 	public function main() {
 		$start_time = microtime(true);
@@ -34,14 +33,6 @@ class GetMediaShell extends AppShell {
 							// insert to mongo
 							if(isset($data->items) && !empty($data->items)) {
 								$collection->batchInsert($data->items, array('timeout' => -1));
-								// reconnect mongo and re-insert if insert unsuccessfully
-								while (!$collection) {
-									passthru('sudo service mongod restart');
-									$m = new MongoClient();
-									$db = $m->instagram;
-									$collection = $db->media;
-									$collection->batchInsert($data->items, array('timeout' => -1));
-								}
 								$max_id = end($data->items)->id;
 							} else {
 								break;
