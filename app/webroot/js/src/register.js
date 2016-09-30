@@ -30,6 +30,7 @@ $().ready(function(){
 		console.log(username);
 	});
 	$('button.modalReg').click(function(){
+		var username = $('#inputUserName').val();
 		if($('input[type=text]').val() == ''){
 			$('p.message').text('Please input the link of instagram!').css("color",'red');
 			$('button.modalReg').prop('disabled', true);
@@ -40,6 +41,7 @@ $().ready(function(){
 			$.ajax({
 				method: "POST",
 				url: '/check',
+				data: {username:username},
 				dataType: 'json',
 				success: function(data){
 					if(data == 1){
