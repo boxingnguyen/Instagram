@@ -8,15 +8,28 @@
 	      <div class="modal-body">
 	       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 	        <div class="form">
-			    <form class="register-form">
-			      <input type="text" id="inputUserName" class="form-control" placeholder="name"/>
-			      <p class="message"><i>Example: https://www.instagram.com/instagram/</i></p>
-			      <button type="button" class="modalReg"><b>REGIST</b></button>
-			    </form>
+			      <input type="text"  type="text" id="inputUserName" class="form-control" placeholder="https://www.instagram.com/instagram/"/>
+			      <p class="message">Example: https://www.instagram.com/instagram/</p>
+			      <button class="modalReg" data-toggle="modal" data-target="#regisForm"><b>REGIST</b></button>
 			  </div>
 	      </div>
 	    </div>
 	  </div>
+	  
+	</div>
+	<div class="modal fade " id="regisForm"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-body">
+	       		 <p class="messRegis">This is mess</p>
+	       		 <div style="text-align: center;margin-top: 20%;">
+				      <button type="button" class="btn btn-default cancel">Cancel</button>
+				      <button type="button" class="btn btn-primary cancel" >Ok</button>
+			      </div>
+	      </div>
+	    </div>
+	  </div>
+	  <div class="loader"></div>
 	</div>
 </div>
 <div class='col-xs-12'>
