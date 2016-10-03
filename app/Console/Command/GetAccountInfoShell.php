@@ -68,8 +68,7 @@ class GetAccountInfoShell extends AppShell {
 		$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/?__a=1');
 		return $data;
 	}
-	
-<<<<<<< HEAD
+
 /**
  * Check if cannot get account info
  * @param int $total_account
@@ -159,6 +158,4 @@ class GetAccountInfoShell extends AppShell {
 			}
 		}
 	}
-=======
->>>>>>> refs/remotes/origin/master
 }
