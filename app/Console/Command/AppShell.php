@@ -26,6 +26,10 @@ App::uses('Shell', 'Console');
  * @package       app.Console.Command
  */
 class AppShell extends Shell {
+	public function initialize() {
+		passthru('sudo chmod -R 777 /www/app/Vendor/Data/');
+	}
+	
 	public function cURLInstagram($url) {
 		$headerData = array('Accept: application/json');
 		$ch = curl_init();
