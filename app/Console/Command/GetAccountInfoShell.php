@@ -3,8 +3,9 @@ class GetAccountInfoShell extends AppShell {
 	public $m;
 	public $db;
 	const ACCOUNT_GET = "account_info";
-	const ACCOUNT_ORIGIN = "account_info";
+	const ACCOUNT_ORIGIN = "account_username";
 	
+	//public $date  = date('dmY');
 	public function initialize() {
 		$this->m = new MongoClient;
 		$this->db = $this->m->instagram_account_info;
@@ -19,10 +20,12 @@ class GetAccountInfoShell extends AppShell {
 		}
 		$count = 1;
 		$result = array();
-		
+		$date  = date('dmY');
+		$myfile = fopen(APP."Vendor/Data/".$date.".acc.json", "a") or die("Unable to open file!");
 		foreach ($all_account as $name) {
 			$data = $this->__getAccountInfo($name);
 			if (isset($data->user)) {
+				fwrite($myfile, json_encode($data->user)."\n");
 				$result[] = $data->user;
 				echo $count . ". Account " . $name . " completed!" . PHP_EOL;
 				$count ++;
@@ -30,6 +33,7 @@ class GetAccountInfoShell extends AppShell {
 				echo $name . " Failed !!!!!!!!!!!!!!!!!!!!!!!!!!" . PHP_EOL;
 			}
 		}
+		fclose($myfile);
 		$this->db->{self::ACCOUNT_GET}->drop();
 		echo "Inserting into mongo..." . PHP_EOL;
 		// insert new data
@@ -87,6 +91,8 @@ class GetAccountInfoShell extends AppShell {
  * Re-get account if any account is missing
  */
 	private function __reGetAccount() {
+		$date  = date('dmY');
+		$myfile = fopen(APP."Vendor/Data/".$date.".acc.json", "a") or die("Unable to open file!");
 		// list account after get info from instagram
 		$acc_get = $this->db->{self::ACCOUNT_GET}->find(array(), array('username' => true));
 		// list account we can get
@@ -104,6 +110,7 @@ class GetAccountInfoShell extends AppShell {
 		foreach ($acc_missed as $name) {
 			$data = $this->__getAccountInfo($name);
 			if (isset($data->user)) {
+				fwrite($myfile, json_encode($data->user)."\n");
 				$result[] = $data->user;
 				echo "Re-get " . $name . " completed!" . PHP_EOL;
 				$count ++;
@@ -111,6 +118,7 @@ class GetAccountInfoShell extends AppShell {
 				echo $name . " Re-get Failed !!!!!!!!!!!!!!!!!!!!!!!!!!" . PHP_EOL;
 			}
 		}
+		fclose($myfile);
 		// insert account's data
 		$this->db->{self::ACCOUNT_GET}->batchInsert($result);
 	}
