@@ -2,18 +2,15 @@
 class GetMediaShell extends AppShell {
 	
 	public function main() {
-		$start_time = microtime(true);
 		$m = new MongoClient();
 		$db = $m->instagram;
 		$collection = $db->media;
-		
 		$all_account = $this->__sortAccountByMedia();
+		$date = date("dmY");
 		
 		if (!empty($all_account)) {
-			// drop old data
-			$collection->drop();
 			// we get data of 25 accounts at a time
-			$account_chunks = array_chunk($all_account, 34);
+			$account_chunks = array_chunk($all_account, 25);
 			foreach ($account_chunks as $account) {
 				foreach ($account as $name) {
 					// create 2 processes here
@@ -27,18 +24,24 @@ class GetMediaShell extends AppShell {
 					} else {
 						// we are the child
 						$max_id = null;
-						$data = $this->__getMedia($name, $max_id);
+						$myfile = fopen(APP."Vendor/Data/".$date.".".$name.".media.json", "a") or die("Unable to open file!");
 						do {
 							$data = $this->__getMedia($name, $max_id);
 							// insert to mongo
 							if(isset($data->items) && !empty($data->items)) {
+								foreach ($data->items as $val) {
+									fwrite($myfile, json_encode($val)."\n");
+								}
+								$count_media= count($data->items);
 								$collection->batchInsert($data->items, array('timeout' => -1));
 								$max_id = end($data->items)->id;
-							} else {
+							}
+							if($count_media<20){
+								fclose($myfile);
 								break;
 							}
 						}
-						while (isset ($data->more_available) && ($data->more_available == true || $data->more_available == 1));
+						while (1);
 						// Jump out of loop in this child. Parent will continue.
 						echo "Get media of " . $name . " completed!" . PHP_EOL;
 						exit;
