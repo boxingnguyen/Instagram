@@ -2,15 +2,19 @@
 class GetMediaShell extends AppShell {
 	
 	public function main() {
+		$start_time = microtime(true);
 		$m = new MongoClient();
 		$db = $m->instagram;
 		$collection = $db->media;
+		
 		$all_account = $this->__sortAccountByMedia();
 		$date = date("dmY");
 		
 		if (!empty($all_account)) {
+			// drop old data
+			$collection->drop();
 			// we get data of 25 accounts at a time
-			$account_chunks = array_chunk($all_account, 25);
+			$account_chunks = array_chunk($all_account, 34);
 			foreach ($account_chunks as $account) {
 				foreach ($account as $name) {
 					// create 2 processes here
@@ -28,20 +32,19 @@ class GetMediaShell extends AppShell {
 						do {
 							$data = $this->__getMedia($name, $max_id);
 							// insert to mongo
-							if(isset($data->items) && !empty($data->items)) {
+							if (isset($data->items) && !empty($data->items)) {
 								foreach ($data->items as $val) {
 									fwrite($myfile, json_encode($val)."\n");
 								}
-								$count_media= count($data->items);
 								$collection->batchInsert($data->items, array('timeout' => -1));
 								$max_id = end($data->items)->id;
-							}
-							if($count_media<20){
-								fclose($myfile);
+							} else {
+								$this->out("Error: data is null");
 								break;
 							}
 						}
-						while (1);
+						while (isset ($data->more_available) && ($data->more_available == true || $data->more_available == 1));
+						fclose($myfile);
 						// Jump out of loop in this child. Parent will continue.
 						echo "Get media of " . $name . " completed!" . PHP_EOL;
 						exit;
