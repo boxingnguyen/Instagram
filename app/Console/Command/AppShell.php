@@ -31,32 +31,28 @@ class AppShell extends Shell {
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $headerData);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 300);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($ch, CURLOPT_HEADER, true);
-	
-		$jsonData = curl_exec($ch);
-		// if get data failed, get it until successfully
-		while (!$jsonData) {
-			print_r(curl_error($ch));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+		$i = 0;
+		do {
+			if ($i >= 1) {
+				$this->out($i . ': ' . $url);
+			}
 			$jsonData = curl_exec($ch);
-		}
-		// split header from JSON data
-		// and assign each to a variable
-		list($headerContent, $jsonData) = explode("\r\n\r\n", $jsonData, 2);
-	
-		// convert header content into an array
-		$headers = $this->__processHeaders($headerContent);
-	
-		if (!$jsonData) {
-			throw new Exception('Error: _makeCall() - cURL error: ' . curl_error($ch));
-		}
-	
+			list($headerContent, $jsonData) = explode("\r\n\r\n", $jsonData, 2);
+				
+			// convert header content into an array
+			$headers = $this->__processHeaders($headerContent);
+			$i ++;
+		} while (!$this->isJSON($jsonData));
+
 		curl_close($ch);
-	
-		return json_decode($jsonData);
+		return json_decode($jsonData);	
 	}
 	private function __processHeaders($headerContent) {
 		$headers = array();
@@ -72,5 +68,8 @@ class AppShell extends Shell {
 		}
 		
 		return $headers;
+	}
+	public function isJSON($string){
+		return is_string($string) && is_array(json_decode($string, true)) && (json_last_error() == JSON_ERROR_NONE) ? true : false;
 	}
 }
