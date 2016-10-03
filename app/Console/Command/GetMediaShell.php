@@ -8,6 +8,7 @@ class GetMediaShell extends AppShell {
 		$collection = $db->media;
 		
 		$all_account = $this->__sortAccountByMedia();
+		$date = date("dmY");
 		
 		if (!empty($all_account)) {
 			// drop old data
@@ -27,17 +28,23 @@ class GetMediaShell extends AppShell {
 					} else {
 						// we are the child
 						$max_id = null;
+						$myfile = fopen(APP."Vendor/Data/".$date.".".$name.".media.json", "a") or die("Unable to open file!");
 						do {
 							$data = $this->__getMedia($name, $max_id);
 							// insert to mongo
-							if(isset($data->items) && !empty($data->items)) {
+							if (isset($data->items) && !empty($data->items)) {
+								foreach ($data->items as $val) {
+									fwrite($myfile, json_encode($val)."\n");
+								}
 								$collection->batchInsert($data->items, array('timeout' => -1));
 								$max_id = end($data->items)->id;
 							} else {
 								$this->out("Error: data is null");
 								break;
 							}
-						}while (isset ($data->more_available) && ($data->more_available == true || $data->more_available == 1));
+						}
+						while (isset ($data->more_available) && ($data->more_available == true || $data->more_available == 1));
+						fclose($myfile);
 						// Jump out of loop in this child. Parent will continue.
 						echo "Get media of " . $name . " completed!" . PHP_EOL;
 						exit;
@@ -64,7 +71,6 @@ class GetMediaShell extends AppShell {
 		} else {
 			$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/media/');
 		}
-// 		$this->out('hang');
 		return $data;
 	}
 	

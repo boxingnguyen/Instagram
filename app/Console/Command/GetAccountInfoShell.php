@@ -19,10 +19,12 @@ class GetAccountInfoShell extends AppShell {
 		}
 		$count = 1;
 		$result = array();
-		
+		$date  = date('dmY');
+		$myfile = fopen(APP."Vendor/Data/".$date.".acc.json", "a") or die("Unable to open file!");
 		foreach ($all_account as $name) {
 			$data = $this->__getAccountInfo($name);
 			if (isset($data->user)) {
+				fwrite($myfile, json_encode($data->user)."\n");
 				$result[] = $data->user;
 				echo $count . ". Account " . $name . " completed!" . PHP_EOL;
 				$count ++;
@@ -30,6 +32,7 @@ class GetAccountInfoShell extends AppShell {
 				echo $name . " Failed !!!!!!!!!!!!!!!!!!!!!!!!!!" . PHP_EOL;
 			}
 		}
+		fclose($myfile);
 		$this->db->{self::ACCOUNT_GET}->drop();
 		echo "Inserting into mongo..." . PHP_EOL;
 		// insert new data
