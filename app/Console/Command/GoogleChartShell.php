@@ -13,7 +13,7 @@ class GoogleChartShell extends AppShell {
 		if(isset($data) && $data->count() > 0) {
 			foreach($data as $val) {
 				
-				$getChart = $chart->find(array('id' => $val['_id'], 'time' => $currentDate ));
+				$getChart = $chart->find(array('id' => $val['_id'], 'time' => $currentDate));
 				if($getChart->count() > 0){
 					$chart->update(
 							array(), 
