@@ -11,7 +11,6 @@ class GetMediaShell extends AppShell {
 		$date = date("dmY");
 		
 		if (!empty($all_account)) {
-			passthru('sudo chmod -R 777 /www/app/Vendor/Data/');
 			// drop old data
 			$collection->drop();
 			// we get data of 25 accounts at a time
