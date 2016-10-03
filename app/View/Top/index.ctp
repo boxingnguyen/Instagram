@@ -8,11 +8,9 @@
 	      <div class="modal-body">
 	       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 	        <div class="form">
-			    <form class="register-form">
 			      <input type="text"  type="text" id="inputUserName" class="form-control" placeholder="https://www.instagram.com/instagram/"/>
 			      <p class="message">Example: https://www.instagram.com/instagram/</p>
-			      <button type="button" class="modalReg" data-toggle="modal" data-target="#regisForm"><b>REGIST</b></button>
-			    </form>
+			      <button class="modalReg" data-toggle="modal" data-target="#regisForm"><b>REGIST</b></button>
 			  </div>
 	      </div>
 	    </div>

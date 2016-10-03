@@ -13,18 +13,13 @@ $().ready(function(){
 		var input = $(this).val();
 		//remove spaces in string input
 		input = input.replace(/\s/g, '');
+		//check input
 		if (input.match(/^http([s]?):\/\/.*/)) {
 			if (!input.match(/^http([s]?):\/\/www\.instagram\.com\/.*/)) {
-				console.log('try agian');
 				$('p.message').text('Sorry! This link has the wrong format. Please re-type!').css("color",'red');
 				$('button.modalReg').prop('disabled', true);
-			}else{
-				$('button.modalReg').prop('disabled', false);
 			}
-		}else{
-			$('button.modalReg').prop('disabled', false);
 		}
-
 	});
 	$('button.modalReg').click(function(){
 		var input = $('input[type=text]').val();
@@ -49,6 +44,7 @@ $().ready(function(){
 			$('#myModal').modal('hide');
 			$('.loader').show();
 			$('.modal-body').css('opacity','0.4');
+			$('button.cancel').prop('disabled', true);
 			
 			$.ajax({
 				method: "POST",
@@ -67,16 +63,35 @@ $().ready(function(){
 					}
 					$('.loader').hide();
 					$('.modal-body').css('opacity','1');
+					$('button.cancel').prop('disabled', false);
 				},
 				error: function(){
 					$('.loader').hide();
 					$('.modal-body').css('opacity','1');
+					$('button.cancel').prop('disabled', false);
 					$('p.messRegis').text('Sorry, Ajax has some problem!');
 				}
 			});
 		}
-		
 	});
+//	$('input[type=text]').keypress(function (e) {
+//		  if (e.which == 13) {
+//			  var input = $(this).val();
+//				//remove spaces in string input
+//				input = input.replace(/\s/g, '');
+//				//check input
+//				if (input.match(/^http([s]?):\/\/.*/)) {
+//					if (!input.match(/^http([s]?):\/\/www\.instagram\.com\/.*/)) {
+//						$('p.message').text('Sorry! This link has the wrong format. Please re-type!').css("color",'red');
+//						$('button.modalReg').prop('disabled', true);
+//					}else{
+//						$('button.modalReg').click();
+//					  }
+//				}else{
+//					$('button.modalReg').click();
+//				}
+//		  }
+//		});
 	
 	$('button.cancel').click(function(){
 		$('#regisForm').modal('hide');

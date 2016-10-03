@@ -1,7 +1,7 @@
 <?php
 class CalculateReactionShell extends AppShell {
 	public $mongoCursor;
-	
+
 	public function initialize() {
 		$m = new MongoClient();
 		$db = $m->instagram;
@@ -12,14 +12,14 @@ class CalculateReactionShell extends AppShell {
 		$m = new MongoClient();
 		$db = $m->instagram_account_info;
 		$collection = $db->account_info;
-		
+
 		$condition = array(
 				'$group' => array(
-					'_id' => '$id',
-					'username' => array('$first' => '$username'),
-					'fullname' => array('$first' => '$full_name'),
-					'followers' => array('$first' => '$followed_by.count'),
-					'media_count' => array('$first' => '$media.count')
+						'_id' => '$id',
+						'username' => array('$first' => '$username'),
+						'fullname' => array('$first' => '$full_name'),
+						'followers' => array('$first' => '$followed_by.count'),
+						'media_count' => array('$first' => '$media.count')
 				)
 		);
 		$data = $collection->aggregate($condition);
@@ -38,12 +38,12 @@ class CalculateReactionShell extends AppShell {
 		$collection = $db->reaction;
 		$collection->drop();
 		$collection->batchInsert($result);
-		
+
 		$end_time = microtime(true);
 		echo "Time to calculate reaction: " . ($end_time - $start_time) . " seconds" . PHP_EOL;
 	}
-	
- 	private function __calculateReaction($account_id) {
+
+	private function __calculateReaction($account_id) {
 		$condition = array(
 				array('$match' => array('user.id' => $account_id)),
 				array(
