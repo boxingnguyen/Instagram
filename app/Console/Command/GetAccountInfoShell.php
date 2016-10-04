@@ -20,7 +20,7 @@ class GetAccountInfoShell extends AppShell {
 		$count = 1;
 		$result = array();
 		$date  = date('dmY');
-		$myfile = fopen(APP."Vendor/Data/".$date.".acc.json", "a") or die("Unable to open file!");
+		$myfile = fopen(APP."Vendor/Data/".$date.".acc.json", "w+") or die("Unable to open file!");
 		foreach ($all_account as $name) {
 			$data = $this->__getAccountInfo($name);
 			if (isset($data->user)) {
@@ -43,8 +43,7 @@ class GetAccountInfoShell extends AppShell {
 		$this->db->{self::ACCOUNT_GET}->createIndex(array('id' => 1));
 		echo "Indexing account_info completed!" . PHP_EOL;
 		echo "Total documents: " . $this->db->{self::ACCOUNT_GET}->count() . PHP_EOL;
-		// save follows_by
-		$this->__saveFollows();
+		
 		$time_end = microtime(true);
 		echo "Time to get all account: " . ($time_end - $time_start) . " seconds" . PHP_EOL;
 	}
@@ -57,26 +56,5 @@ class GetAccountInfoShell extends AppShell {
 	private function __getAccountInfo($username) {
 		$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/?__a=1');
 		return $data;
-	}
-
-	private function __saveFollows() {
-		$follows = $this->db->follows;
-		$currentDate = date('Y-m-d');
-
-		$data = $this->db->{self::ACCOUNT_GET}->find(array(), array('id' => 1, 'followed_by.count' => 1));
-		
-		if(isset($data) && $data->count() > 0) {
-			foreach($data as $val) {
-				$dataFollow = $follows->find(array('id' => $val['id'], 'time' => $currentDate));
-				if($dataFollow->count() > 0){
-					$follows->update(array(), array('$set' => array('follows' => $val['followed_by']['count'])));
-				} else {
-					$val['follows'] = $val['followed_by']['count'];
-					$val['time'] = $currentDate;
-					unset($val['followed_by']);
-					$follows->insert($val);
-				}
-			}
-		}
 	}
 }
