@@ -13,7 +13,7 @@ class GetMediaShell extends AppShell {
 		if (!empty($all_account)) {
 			// drop old data
 			$collection->drop();
-			// we get data of 25 accounts at a time
+			// we get data of 34 accounts at a time
 			$account_chunks = array_chunk($all_account, 34);
 			foreach ($account_chunks as $account) {
 				foreach ($account as $name) {
@@ -36,7 +36,6 @@ class GetMediaShell extends AppShell {
 								foreach ($data->items as $val) {
 									fwrite($myfile, json_encode($val)."\n");
 								}
-								$collection->batchInsert($data->items, array('timeout' => -1));
 								$max_id = end($data->items)->id;
 							} else {
 								$this->out("Error: data is null");
@@ -45,6 +44,17 @@ class GetMediaShell extends AppShell {
 						}
 						while (isset ($data->more_available) && ($data->more_available == true || $data->more_available == 1));
 						fclose($myfile);
+						
+						// check if account's media is missing or not
+						$checkMedia = $this->__checkMedia($name);
+						$check_count = 0;
+						// re-get media if media is missing (maximum 5 times)
+						while (!$checkMedia && $check_count < 5) {
+							$checkMedia = $this->__reGetMedia($name);
+							$check_count ++;
+						}
+						// write data from json file to database
+						$this->__saveIntoDb($name);
 						// Jump out of loop in this child. Parent will continue.
 						echo "Get media of " . $name . " completed!" . PHP_EOL;
 						exit;
