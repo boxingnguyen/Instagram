@@ -47,7 +47,7 @@ class AppShell extends Shell {
 				$this->out($i . ': ' . $url);
 			}
 			$jsonData = curl_exec($ch);
-			list($headerContent, $jsonData) = explode("\r\n\r\n", $jsonData, 2);
+			list($headerContent, $jsonData) = array_pad(explode("\r\n\r\n", $jsonData, 2), 2, null);
 				
 			// convert header content into an array
 			$headers = $this->__processHeaders($headerContent);
