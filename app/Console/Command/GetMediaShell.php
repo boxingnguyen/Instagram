@@ -28,7 +28,7 @@ class GetMediaShell extends AppShell {
 					} else {
 						// we are the child
 						$max_id = null;
-						$myfile = fopen(APP."Vendor/Data/".$date.".".$name.".media.json", "a") or die("Unable to open file!");
+						$myfile = fopen(APP."Vendor/Data/".$date.".".$name.".media.json", "w+") or die("Unable to open file!");
 						do {
 							$data = $this->__getMedia($name, $max_id);
 							// insert to mongo
