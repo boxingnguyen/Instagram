@@ -113,25 +113,4 @@ class CalculateReactionShell extends AppShell {
 		$result['media_get'] = isset($data['result'][0]['media_get']) ? $data['result'][0]['media_get'] : 0;
 		return $result;
 	}
-	public function test() {
-		$m = new MongoClient();
-		$dbChart = $m->chart;
-		$cl = $dbChart->selectCollection('2016-10');
-		$data  = $cl->find(array('time'=>'2016-10-03'));
-		$arr = array();
-		foreach($data as $v) {
-			$arr['followers'] = $v['follows'];
-			$arr['id'] = $v['id'];
-			$arr['time'] = $v['time'];
-			$arr['likesAnalytic'] = $v['likes'];
-			$arr['commentsAnalytic'] = $v['comments'];
-			$nhi[] = $arr;
-		}
-		$dbCacul = $m->instagram_account_info;
-		$collection = $dbCacul->selectCollection('2016-10');
-		$collection->batchInsert($nhi);
-		
-		echo "Complete!!!!";
-		
-	}
 }
