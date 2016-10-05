@@ -4,7 +4,6 @@ class InstagramShell extends AppShell {
 		$start_time = microtime(true);
 		passthru(ROOT."/app/Console/cake GetAccountInfo");
 		passthru(ROOT."/app/Console/cake GetMedia");
-		passthru(ROOT."/app/Console/cake GetAccountInfo");
 		passthru(ROOT."/app/Console/cake CalculateReaction");
 		passthru(ROOT."/app/Console/cake GoogleChart");
 		$end_time = microtime(true);
