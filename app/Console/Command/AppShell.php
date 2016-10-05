@@ -27,7 +27,7 @@ App::uses('Shell', 'Console');
  */
 class AppShell extends Shell {
 	public function initialize() {
-		passthru('sudo chmod -R 777 /www/app/Vendor/Data/');
+		ini_set('memory_limit', '1G');
 	}
 	
 	public function cURLInstagram($url) {

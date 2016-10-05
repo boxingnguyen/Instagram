@@ -46,9 +46,11 @@
 		</tr>
 		<?php
 		$count = 1;
-		foreach ($data as $value) : 
+		foreach ($data as $value) :
+			$percentage = round($value['media_get'] / $value['media_count'] * 100, 2);
+			$miss_count = $value['media_count'] - $value['media_get'];
 		?>
-		<tr class='center'>
+		<tr class='center <?php if ($miss_count > 10) echo "hard_missing"; elseif ($miss_count > 0) echo "light_missing"; ?>'>
 			<td><a class="badge inst_order" href="javascript:void(0)"><?php echo $count; ?></a></td>
 			<td><a href="https://www.instagram.com/<?php echo $value['username']; ?>" target="_blank"><?php echo ($value['fullname'] != '') ? $value['fullname'] : $value['username']; ?></a></td>
 			<td>
@@ -69,7 +71,7 @@
 						)
 				?>
 			</td>
-			<td><?php echo number_format($value['media_get']) . " (" . round($percentage = ($value['media_get'] / $value['media_count'] * 100), 2) . "%)"?></td>
+			<td><?php echo number_format($value['media_get']) . " (" . $percentage . "%)"?></td>
 			<td>
 				<?php 
 				if ($percentage == 100) {

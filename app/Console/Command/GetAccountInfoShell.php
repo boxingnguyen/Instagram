@@ -39,7 +39,7 @@ class GetAccountInfoShell extends AppShell {
 		$checkAccCount = 0;
 		// re-get missing account (maximum 5 times)
 		while (!$checkAcc && $checkAccCount < 5) {
-			$checkAcc = $this->__reGetAccount($acc_missing);
+			$checkAcc = $this->__reGetAccount($acc_missing, $date);
 		}
 		// save account info into db
 		$this->__saveIntoDb($date);
@@ -77,7 +77,7 @@ class GetAccountInfoShell extends AppShell {
 		}
 	}
 	
-	private function __reGetAccount($acc_missing) {
+	private function __reGetAccount($acc_missing, $date) {
 		$date  = date('dmY');
 		$myfile = fopen(APP."Vendor/Data/".$date.".acc.json", "a") or die("Unable to open file!");
 		foreach ($acc_missing as $name) {
@@ -94,7 +94,7 @@ class GetAccountInfoShell extends AppShell {
 		return $this->__checkAccount();
 	}
 	
-	private function __saveIntoDb() {
+	private function __saveIntoDb($date) {
 		// name of file which store account info's data
 		$filename = APP."Vendor/Data/".$date.".acc.json";
 		$file = fopen($filename, "r");
@@ -110,7 +110,7 @@ class GetAccountInfoShell extends AppShell {
 		$this->db->{self::ACCOUNT_GET}->drop();
 		echo "Inserting into mongo..." . PHP_EOL;
 		// insert new data
-		$this->db->{self::ACCOUNT_GET}->batchInsert($data);
+		$this->db->{self::ACCOUNT_GET}->batchInsert($data, array('timeout' => -1));
 	
 		// indexing
 		echo "Indexing account_info ..." . PHP_EOL;
