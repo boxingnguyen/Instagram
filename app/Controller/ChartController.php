@@ -2,27 +2,26 @@
 class ChartController extends AppController {
 	public function follower() {
 		$m = new MongoClient();
-		$db = $m->chart;
+		$db = $m->instagram_account_info;
 		$collection = $db->selectCollection(date('Y-m'));
-		$currentDate = date('Y-m-d');
 		
 		$id = $this->request->query['id'];
 		$data = $collection->find( array('id' => $id));
-		$currentDate = date('Y/m/d');
 		$arr = array();
 		if(isset($data) && ($data->count() > 0)) {
 			foreach ($data as $val) {
-				$follow = $val['follows'];
+				$follow = $val['followers'];
 				$timedb = $val['time'];
 				$arr[$timedb] = $follow;
 			}
 			$this->set('data', $arr);
 		}
 	}
-	public function readLikeAndComment($id) {		
+	public function readLikeAndComment($id) {
 		$m = new MongoClient();
-		$dbChart = $m->chart;
-		$collection = $dbChart->selectCollection(date('Y-m'));
+		$db = $m->instagram_account_info;
+		$collection = $db->selectCollection(date('Y-m'));
+		
 		$data = $collection->find(array('id' => $id))->sort(array('time'=>1));
 
 		//last month
@@ -32,19 +31,18 @@ class ChartController extends AppController {
 		//last day
 		$d=cal_days_in_month(CAL_GREGORIAN,$date->format('m'),$date->format('Y'));
 		$time = $date->format('Y').'-'.$date->format('m').'-'.$d;
-
-		//last month collections
-		$lastCollection = $dbChart->selectCollection($lastMonth);
-		$lastdata = $lastCollection->find(array('id' => $id,'time' => $time));
-		foreach ($lastdata as $val) {
-			$like = $val['likes'];
-			$comment = $val['comments'];
-		}
 		
-// 		echo "<pre>";
-// 		echo $like."</br>";
-// 		echo $comment;
-// 		echo PHP_EOL;
+		//last month collections
+		$lastCollection = $db->selectCollection($lastMonth);
+		$lastdata = $lastCollection->find(array('id' => $id,'time' => $time));
+
+		$like = 0; $comment = 0;
+		if(isset($lastdata) && $lastdata->count() > 0) {
+			foreach ($lastdata as $val) {
+				$like = $val['likes'];
+				$comment = $val['comments'];
+			}
+		}
 		
 		$dt = array();
 		$arr = array();
@@ -52,12 +50,13 @@ class ChartController extends AppController {
 		foreach($data as $item) {
 			$dt[] = $item;
 		}
-// 		echo "<pre>";
-// 		print_r($dt);
-// 		die;
 		
 		if(isset($dt) && !empty($dt)) {
-			$arr[$dt[0]['time']] = array('comment' => ($dt[0]['comments'] - $comment), 'like' => ($dt[0]['likes'] - $like) );
+			if($like > 0 || $comment > 0) {
+				$arr[$dt[0]['time']] = array('comment' => ($dt[0]['comments'] - $comment), 'like' => ($dt[0]['likes'] - $like) );
+			} else {
+				$arr[$dt[0]['time']] = 0;
+			}
 			for ($i = 0; $i < count($dt) - 1; $i++) {
 				for ($j = $i + 1; $j < count($dt); $j++) {
 					if(strtotime($dt[$i]['time']) !=  strtotime($dt[$j]['time'])) {
