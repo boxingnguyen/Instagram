@@ -7,7 +7,7 @@ class GoogleChartShell extends AppShell {
 		$dbChart = $m->chart;
 		$chart = $dbChart->selectCollection(date('Y-m'));
 		
-		$currentDate = date('Y-m-d');
+		$currentDate = (new DateTime())->modify('-1 day')->format('Y-m-d');// date('Y-m-d');
 		$data = $collection->find(array(), array('_id' => 1, 'followers' => 1,'likes'=>1,'comments'=>1));
 	
 		if(isset($data) && $data->count() > 0) {

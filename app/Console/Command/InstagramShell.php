@@ -6,6 +6,7 @@ class InstagramShell extends AppShell {
 		passthru(ROOT."/app/Console/cake GetMedia");
 		passthru(ROOT."/app/Console/cake GetAccountInfo");
 		passthru(ROOT."/app/Console/cake CalculateReaction");
+		passthru(ROOT."/app/Console/cake GoogleChart");
 		$end_time = microtime(true);
 		echo "Time to complete this program: " . (($end_time - $start_time) / 60) . " minutes" . PHP_EOL;
 	}

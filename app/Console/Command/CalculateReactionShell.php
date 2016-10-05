@@ -41,11 +41,12 @@ class CalculateReactionShell extends AppShell {
 
 		$end_time = microtime(true);
 		echo "Time to calculate reaction: " . ($end_time - $start_time) . " seconds" . PHP_EOL;
-	}
-
+	}	
 	private function __calculateReaction($account_id) {
+		$date = (new DateTime())->format('Y-m-d 00:00:00');
+		$date = (string)strtotime($date);
 		$condition = array(
-				array('$match' => array('user.id' => $account_id)),
+				array('$match' => array('user.id' => $account_id, 'created_time' => array('$lt' => $date))),
 				array(
 						'$group' => array(
 								'_id' => '$user.id',
