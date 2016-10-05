@@ -39,10 +39,11 @@ class ChartController extends AppController {
 		$like = 0; $comment = 0;
 		if(isset($lastdata) && $lastdata->count() > 0) {
 			foreach ($lastdata as $val) {
-				$like = $val['likes'];
-				$comment = $val['comments'];
+				$like = $val['likesAnalytic'];
+				$comment = $val['commentsAnalytic'];
 			}
 		}
+// 		echo $like.PHP_EOL.$comment;die;
 		
 		$dt = array();
 		$arr = array();
@@ -53,18 +54,19 @@ class ChartController extends AppController {
 		
 		if(isset($dt) && !empty($dt)) {
 			if($like > 0 || $comment > 0) {
-				$arr[$dt[0]['time']] = array('comment' => ($dt[0]['comments'] - $comment), 'like' => ($dt[0]['likes'] - $like) );
+				$arr[$dt[0]['time']] = array('comment' => ($dt[0]['commentsAnalytic'] - $comment), 'like' => ($dt[0]['likesAnalytic'] - $like) );
 			} else {
 				$arr[$dt[0]['time']] = 0;
 			}
 			for ($i = 0; $i < count($dt) - 1; $i++) {
 				for ($j = $i + 1; $j < count($dt); $j++) {
 					if(strtotime($dt[$i]['time']) !=  strtotime($dt[$j]['time'])) {
-						$arr[$dt[$j]['time']] = array('comment' => ($dt[$j]['comments'] - $dt[$i]['comments']), 'like' => ($dt[$j]['likes'] - $dt[$i]['likes']));
+						$arr[$dt[$j]['time']] = array('comment' => ($dt[$j]['commentsAnalytic'] - $dt[$i]['commentsAnalytic']), 'like' => ($dt[$j]['likesAnalytic'] - $dt[$i]['likesAnalytic']));
 					}
 					break;
 				}
 			}
+// 			print_r($arr);die;
 			return $arr;
 		}
 		return false;
