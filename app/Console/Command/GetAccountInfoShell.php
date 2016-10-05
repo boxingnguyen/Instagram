@@ -57,4 +57,23 @@ class GetAccountInfoShell extends AppShell {
 		$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/?__a=1');
 		return $data;
 	}
+	
+	private function __checkAccount(){
+		$date = date("dmY");
+		$filename= APP."Vendor/Data/".$date.".acc.json";
+		$fp = file($filename);
+		$lines = count($fp);
+			
+		$m = new MongoClient();
+		$db = $m->instagram_account_info;
+		$collection = $db->account_username;
+		$total_acc = $collection->count();
+
+		$miss_count = $total_acc - $lines;
+		if($miss_count == 0 ){
+			return true;
+		}else {
+			return false;
+		}
+	}
 }
