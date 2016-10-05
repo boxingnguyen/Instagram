@@ -48,7 +48,7 @@
 		$count = 1;
 		foreach ($data as $value) :
 			$percentage = round($value['media_get'] / $value['media_count'] * 100, 2);
-			$miss_count = $value['media_count'] - $value['media_get'];
+			$miss_count = abs($value['media_count'] - $value['media_get']);
 		?>
 		<tr class='center <?php if ($miss_count > 10) echo "hard_missing"; elseif ($miss_count > 0) echo "light_missing"; ?>'>
 			<td><a class="badge inst_order" href="javascript:void(0)"><?php echo $count; ?></a></td>
