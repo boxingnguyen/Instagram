@@ -81,29 +81,7 @@ class CalculateReactionShell extends AppShell {
 			}
 		}		
 	}
-// 	private function __calculateReaction($account_id) {
-// 		$condition = array(
-// 				array('$match' => array('user.id' => $account_id)),
-// 				array(
-// 						'$group' => array(
-// 								'_id' => '$user.id',
-// 								'total_likes' => array('$sum' => '$likes.count'),
-// 								'total_comments' => array('$sum' => '$comments.count'),
-// 								'media_get' => array('$sum' => 1)
-// 						)
-// 				)
-// 		);
-// 		$data = $this->mongoCursor->aggregate($condition, array('maxTimeMS' => 3*60*1000));
-// 		$result = array();
-// 		$result['likes'] = isset($data['result'][0]['total_likes']) ? $data['result'][0]['total_likes'] : 0;
-// 		$result['comments'] = isset($data['result'][0]['total_comments']) ? $data['result'][0]['total_comments'] : 0;
-// 		$result['media_get'] = isset($data['result'][0]['media_get']) ? $data['result'][0]['media_get'] : 0;
-// 		return $result;
-// 	}
-	
 	private function __calculateReaction($account_id, $date = null) {
-// 		$date = (new DateTime())->format('Y-m-d 00:00:00');
-// 		$date = (string)strtotime($date);
 		if($date == null) {
 			$condition = array(
 					array('$match' => array('user.id' => $account_id)),
@@ -124,7 +102,6 @@ class CalculateReactionShell extends AppShell {
 									'_id' => '$user.id',
 									'total_likes' => array('$sum' => '$likes.count'),
 									'total_comments' => array('$sum' => '$comments.count'),
-// 									'media_get' => array('$sum' => 1)
 							)
 					)
 			);
@@ -136,5 +113,25 @@ class CalculateReactionShell extends AppShell {
 		$result['media_get'] = isset($data['result'][0]['media_get']) ? $data['result'][0]['media_get'] : 0;
 		return $result;
 	}
-	
+	public function test() {
+		$m = new MongoClient();
+		$dbChart = $m->chart;
+		$cl = $dbChart->selectCollection('2016-10');
+		$data  = $cl->find(array('time'=>'2016-10-03'));
+		$arr = array();
+		foreach($data as $v) {
+			$arr['followers'] = $v['follows'];
+			$arr['id'] = $v['id'];
+			$arr['time'] = $v['time'];
+			$arr['likesAnalytic'] = $v['likes'];
+			$arr['commentsAnalytic'] = $v['comments'];
+			$nhi[] = $arr;
+		}
+		$dbCacul = $m->instagram_account_info;
+		$collection = $dbCacul->selectCollection('2016-10');
+		$collection->batchInsert($nhi);
+		
+		echo "Complete!!!!";
+		
+	}
 }
