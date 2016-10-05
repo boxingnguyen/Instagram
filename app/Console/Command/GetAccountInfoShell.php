@@ -58,7 +58,23 @@ class GetAccountInfoShell extends AppShell {
 		return $data;
 	}
 	
-	private function __checkAccount() {
+	private function __checkAccount(){
+		$date = date("dmY");
+		$filename= APP."Vendor/Data/".$date.".acc.json";
+		$fp = file($filename);
+		$lines = count($fp);
+			
+		$m = new MongoClient();
+		$db = $m->instagram_account_info;
+		$collection = $db->account_username;
+		$total_acc = $collection->count();
+
+		$miss_count = $total_acc - $lines;
+		if($miss_count == 0 ){
+			return true;
+		}else {
+			return false;
+		}
 	}
 	
 	private function __reGetAccount($acc_missing) {
@@ -95,7 +111,7 @@ class GetAccountInfoShell extends AppShell {
 		echo "Inserting into mongo..." . PHP_EOL;
 		// insert new data
 		$this->db->{self::ACCOUNT_GET}->batchInsert($data);
-		
+	
 		// indexing
 		echo "Indexing account_info ..." . PHP_EOL;
 		$this->db->{self::ACCOUNT_GET}->createIndex(array('id' => 1));

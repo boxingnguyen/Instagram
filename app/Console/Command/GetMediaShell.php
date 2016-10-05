@@ -114,6 +114,44 @@ class GetMediaShell extends AppShell {
 		return $result;
 	}
 	
+	private function __checkMedia($name){
+		if(isset($name) && !empty($name)){
+			$date = date("dmY");
+			$filename= APP."Vendor/Data/".$date.".".$name.".media.json";
+			$fp = file($filename);
+			$lines = count($fp);
+			
+			$m = new MongoClient();
+			$db = $m->instagram_account_info;
+			$collection = $db->account_info;
+			$query = array('username' => $name);
+			$result = $collection->find($query,array('media.count','media.nodes'));
+			$total_media = 0;
+			foreach ($result as $v){
+				$total_media = $v['media']['count'];
+				$timeMediaFirst = $v['media']['nodes'][0]['date'];
+			}
+
+			$miss_count = $lines - $total_media;
+			if($miss_count >= 0 && $miss_count <= 10 ){
+				return true;
+			}elseif ( $miss_count >= -10 && $miss_count < 0){
+				//remove data is over
+				for($i=0;$i<10;$i++){
+					$current_line = json_decode($fp[$i]);
+					if($current_line['created_time']>$timeMediaFirst){
+						unset($fp[$i]);
+					}
+				}
+				file_put_contents($filename, implode("", $fp));
+			}else {
+				return false;
+			}
+		}else{
+			return false;
+		}
+	}
+	
 	private function __reGetMedia($name) {
 		$max_id = null;
 		$myfile = fopen(APP."Vendor/Data/".$date.".".$name.".media.json", "w+") or die("Unable to open file!");
