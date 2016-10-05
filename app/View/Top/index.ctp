@@ -57,7 +57,7 @@
 				<?php 
 					echo $this->Html->link(
 							number_format($value['followers']),
-							array('controller' => 'Chart', 'action' => 'follower','?' => array('id' => $value['_id'])),
+							array('controller' => 'Chart', 'action' => 'follower','?' => array('id' => $value['id'])),
 							array('target' => '_blank')
 						)
 				?>
@@ -66,7 +66,7 @@
 				<?php 
 					echo $this->Html->link(
 							number_format($value['media_count']),
-							array('controller' => '', 'action' => 'media','?' => array('id' => $value['_id'])),
+							array('controller' => '', 'action' => 'media','?' => array('id' => $value['id'])),
 							array('target' => '_blank')
 						)
 				?>
@@ -87,8 +87,8 @@
 			<td>
 				<?php 
 					echo $this->Html->link(
-							number_format($value['likes']),
-							array('controller' => 'Chart', 'action' => 'like','?' => array('id' => $value['_id'])),
+							number_format($value['likesTop']),
+							array('controller' => 'Chart', 'action' => 'like','?' => array('id' => $value['id'])),
 							array('target' => '_blank')
 						);
 				?>
@@ -96,8 +96,8 @@
 			<td>
 				<?php 
 					echo $this->Html->link(
-							number_format($value['comments']), 
-							array('controller' => 'Chart', 'action' => 'comment','?' => array('id' => $value['_id'])), 
+							number_format($value['commentsTop']), 
+							array('controller' => 'Chart', 'action' => 'comment','?' => array('id' => $value['id'])), 
 							array('target' => '_blank')
 						)
 				?>
