@@ -117,7 +117,7 @@ class GetMediaShell extends AppShell {
 	private function __checkMedia($name) {
 		if (isset($name) && !empty($name)) {
 			$date = date("dmY");
-			$filename = APP . "Vendor/Data/" . $date . " . " . $name . ".media.json";
+			$filename = APP . "Vendor/Data/" . $date . "." . $name . ".media.json";
 			$fp = file($filename);
 			$lines = count($fp);
 			
