@@ -134,8 +134,10 @@ class GetMediaShell extends AppShell {
 
 			$miss_count = $total_media - $lines;
 			if ($miss_count >= 0 && $miss_count <= 10 ) {
+				$this->out ('0 <= miss <= 10 : '.$miss_count);
 				return true;
 			} elseif ($miss_count >= -10 && $miss_count < 0) {
+				$this->out ('-10 <= miss < 0 : '.$miss_count);
 				// remove data is over
 				for ($i = 0; $i < 10; $i++) {
 					$current_line = json_decode($fp[$i]);
@@ -144,6 +146,7 @@ class GetMediaShell extends AppShell {
 					}
 				}
 				file_put_contents($filename, implode("", $fp));
+				return true;
 			} else {
 				return false;
 			}
