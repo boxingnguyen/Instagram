@@ -6,7 +6,7 @@ class ChartController extends AppController {
 		$collection = $db->selectCollection(date('Y-m'));
 		
 		$id = $this->request->query['id'];
-		$data = $collection->find( array('id' => $id));
+		$data = $collection->find( array('id' => $id))->sort(array('time' => 1));
 		$arr = array();
 		if(isset($data) && ($data->count() > 0)) {
 			foreach ($data as $val) {
