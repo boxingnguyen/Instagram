@@ -68,6 +68,7 @@ class GetMediaShell extends AppShell {
 			}
 			// re-get media if media is missing (maximum 5 times)
 			foreach ($missing_account as $name) {
+				echo "Account " . $name . " has missing mediaaaaaaaaaaa" . PHP_EOL;
 				$check_count = 0;
 				$checkMedia = false;
 				while (!$checkMedia && $check_count < 5) {
@@ -114,10 +115,10 @@ class GetMediaShell extends AppShell {
 		return $result;
 	}
 	
-	private function __checkMedia($name){
-		if(isset($name) && !empty($name)){
+	private function __checkMedia($name) {
+		if (isset($name) && !empty($name)) {
 			$date = date("dmY");
-			$filename= APP."Vendor/Data/".$date.".".$name.".media.json";
+			$filename = APP . "Vendor/Data/" . $date . "." . $name . ".media.json";
 			$fp = file($filename);
 			$lines = count($fp);
 			
@@ -127,34 +128,40 @@ class GetMediaShell extends AppShell {
 			$query = array('username' => $name);
 			$result = $collection->find($query,array('media.count','media.nodes'));
 			$total_media = 0;
-			foreach ($result as $v){
+			foreach ($result as $v) {
 				$total_media = $v['media']['count'];
 				$timeMediaFirst = $v['media']['nodes'][0]['date'];
 			}
 
-			$miss_count = $lines - $total_media;
-			if($miss_count >= 0 && $miss_count <= 10 ){
+			$miss_count = $total_media - $lines;
+			if ($miss_count >= 0 && $miss_count <= 10 ) {
+				$this->out ('0 <= miss <= 10 : ' . $miss_count . ' ~ ' . $name);
 				return true;
-			}elseif ( $miss_count >= -10 && $miss_count < 0){
-				//remove data is over
-				for($i=0;$i<10;$i++){
+			} elseif ($miss_count >= -10 && $miss_count < 0) {
+				$this->out ('-10 <= miss < 0 : ' . $miss_count . ' ~ ' . $name);
+				// remove data is over
+				for ($i = 0; $i < 10; $i++) {
 					$current_line = json_decode($fp[$i]);
-					if($current_line['created_time']>$timeMediaFirst){
+					if (intval($current_line->created_time) > $timeMediaFirst) {
 						unset($fp[$i]);
 					}
 				}
-				file_put_contents($filename, implode("", $fp));
-			}else {
+				$file = fopen($filename,'w+');
+				fwrite($file, implode("", $fp));
+				fclose($file);
+				//file_put_contents($filename, implode("", $fp));
+				return true;
+			} else {
 				return false;
 			}
-		}else{
+		} else {
 			return false;
 		}
 	}
 	
 	private function __reGetMedia($name) {
 		$max_id = null;
-		$myfile = fopen(APP."Vendor/Data/".$date.".".$name.".media.json", "w+") or die("Unable to open file!");
+		$myfile = fopen(APP . "Vendor/Data/" . $date . "." . $name . ".media.json", "w+") or die("Unable to open file!");
 		do {
 			$data = $this->__getMedia($name, $max_id);
 			// write data into json file
