@@ -13,6 +13,8 @@ class GetMediaShell extends AppShell {
 		if (!empty($all_account)) {
 			// drop old data
 			$collection->drop();
+			// empty file contain missing account
+			file_put_contents(APP."Vendor/Data/tmp_missing_acc.json", "");
 			// we get data of 34 accounts at a time
 			$account_chunks = array_chunk($all_account, 34);
 			foreach ($account_chunks as $account) {
@@ -52,7 +54,7 @@ class GetMediaShell extends AppShell {
 							$this->__saveIntoDb($name, $collection, $date);
 							echo "Get media of " . $name . " completed!" . PHP_EOL;
 						} else {
-							file_put_contents(APP."Vendor/Data/tmp_missing_acc.json", $name . "\n");
+							file_put_contents(APP."Vendor/Data/tmp_missing_acc.json", $name . "\n", FILE_APPEND | LOCK_EX);
 							echo "Media of " . $name . " is missing!!!!!!!" . PHP_EOL;
 						}
 						// Jump out of loop in this child. Parent will continue.
@@ -67,11 +69,12 @@ class GetMediaShell extends AppShell {
 			// re-get media if media is missing (maximum 5 times)
 			$missing_account = file(APP."Vendor/Data/tmp_missing_acc.json");
 			foreach ($missing_account as $name) {
+				$name = trim(preg_replace('/\s\s+/', ' ', $name));
 				echo "Account " . $name . " has missing mediaaaaaaaaaaa" . PHP_EOL;
 				$check_count = 0;
 				$checkMedia = false;
 				while (!$checkMedia && $check_count < 5) {
-					$checkMedia = $this->__reGetMedia($name);
+					$checkMedia = $this->__reGetMedia($name, $date);
 					$check_count ++;
 				}
 				if (!$checkMedia) {
@@ -155,7 +158,7 @@ class GetMediaShell extends AppShell {
 		}
 	}
 	
-	private function __reGetMedia($name) {
+	private function __reGetMedia($name, $date) {
 		$max_id = null;
 		$myfile = fopen(APP . "Vendor/Data/" . $date . "." . $name . ".media.json", "w+") or die("Unable to open file!");
 		do {
