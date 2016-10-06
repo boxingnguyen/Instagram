@@ -146,7 +146,10 @@ class GetMediaShell extends AppShell {
 						unset($fp[$i]);
 					}
 				}
-				file_put_contents($filename, implode("", $fp));
+				$file = fopen($filename,'w+');
+				fwrite($file, implode("", $fp));
+				fclose($file);
+				//file_put_contents($filename, implode("", $fp));
 				return true;
 			} else {
 				return false;
