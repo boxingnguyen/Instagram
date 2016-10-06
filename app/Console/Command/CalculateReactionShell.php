@@ -72,26 +72,10 @@ class CalculateReactionShell extends AppShell {
 		if(isset($result) && count($result) > 0) {
 			$dateCurrent = $collection->find(array('time' => $currentTime));
 			if($dateCurrent->count() > 0){
-				foreach ($result as $val) {
-					$collection->update(
-							array(
-									'id' => $val['id'],
-									'time' => $currentTime
-							),
-							array('$set' => array( 
-									'media_count' => $val['media_count'],
-									'media_get' => $val['media_get'],
-									'likesTop' => $val['likesTop'],
-									'commentsTop' => $val['commentsTop'],
-									'likesAnalytic' => $val['likesAnalytic'],
-									'commentsAnalytic' => $val['commentsAnalytic'],
-								)),
-							array(
-									'multiple' => true
-							)
-							);
-				}
-				
+				$collection->remove(array(
+						'time' => $currentTime
+				), true);
+				$collection->batchInsert($result);				
 			} else {
 				$collection->batchInsert($result);
 			}
