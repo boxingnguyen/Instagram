@@ -26,7 +26,7 @@ class CalculateReactionShell extends AppShell {
 		$data = $collection->aggregate($condition);
 		$count = 1;
 		$result = $data['result'];
-		//neu la ngay mong 1 thi lay ngay cuoi cung cua thang truoc (1/10 => 30/09) and luu db
+		// if the day is 1th of month we'll get data of the last day of previous month and save to db
 		if (date('d') == self::FIRSTDAY) {
 			$month = (new DateTime())->modify('-1 month')->format('m');
 			$day = cal_days_in_month(CAL_GREGORIAN,$month,date('Y'));
@@ -41,9 +41,9 @@ class CalculateReactionShell extends AppShell {
 		
 		foreach ($data['result'] as $key => $value) {
 			$result[$key]['time'] = $currentTime;
-			//Total: media, like, comment hien thi trang top
+			//Total: media, like, comment display top page
 			$reactionTop = $this->__calculateReaction($value['_id']);//display top
-			//Total: media, like, comment hien thi trang chi tiet: analytics
+			//Total: media, like, comment display analytic page
 			$reactionAnalytic = $this->__calculateReaction($value['_id'], $date);//display analytic
 			
 			$result[$key]['id'] = $value['_id'];
@@ -99,7 +99,7 @@ class CalculateReactionShell extends AppShell {
 	}
 	private function __calculateReaction($account_id, $date = null) {
 		if($date == null) {
-			//du lieu hien thi trang top
+			// data in top page
 			$condition = array(
 					array('$match' => array('user.id' => $account_id)),
 					array(
@@ -112,7 +112,7 @@ class CalculateReactionShell extends AppShell {
 					)
 			);
 		} else {
-			//du lieu hien thi trang analytics
+			// data in analysis pages
 			$condition = array(
 					array('$match' => array('user.id' => $account_id, 'created_time' => array('$lt' => $date))),
 					array(
