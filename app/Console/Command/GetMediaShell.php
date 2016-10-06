@@ -83,7 +83,7 @@ class GetMediaShell extends AppShell {
 					echo "Re-get media of " . $name . " successfully!" . PHP_EOL;
 				}
 				// write data into database
-				$this->__saveIntoDb($name);
+				$this->__saveIntoDb($name, $collection, $date);
 			}
 			// indexing
 			echo "Indexing media ..." . PHP_EOL;
