@@ -68,6 +68,7 @@ class GetMediaShell extends AppShell {
 			}
 			// re-get media if media is missing (maximum 5 times)
 			foreach ($missing_account as $name) {
+				echo "Account " . $name . " has missing mediaaaaaaaaaaa" . PHP_EOL;
 				$check_count = 0;
 				$checkMedia = false;
 				while (!$checkMedia && $check_count < 5) {
@@ -134,7 +135,7 @@ class GetMediaShell extends AppShell {
 
 			$miss_count = $total_media - $lines;
 			if ($miss_count >= 0 && $miss_count <= 10 ) {
-				$this->out ('0 <= miss <= 10 : ' . $miss_count);
+				$this->out ('0 <= miss <= 10 : ' . $miss_count . ' ~ ' . $name);
 				return true;
 			} elseif ($miss_count >= -10 && $miss_count < 0) {
 				$this->out ('-10 <= miss < 0 : ' . $miss_count . ' ~ ' . $name);
@@ -157,7 +158,7 @@ class GetMediaShell extends AppShell {
 	
 	private function __reGetMedia($name) {
 		$max_id = null;
-		$myfile = fopen(APP."Vendor/Data/".$date.".".$name.".media.json", "w+") or die("Unable to open file!");
+		$myfile = fopen(APP . "Vendor/Data/" . $date . "." . $name . ".media.json", "w+") or die("Unable to open file!");
 		do {
 			$data = $this->__getMedia($name, $max_id);
 			// write data into json file
