@@ -74,7 +74,7 @@ class CalculateReactionShell extends AppShell {
 			if($dateCurrent->count() > 0){
 				$collection->remove(array(
 						'time' => $currentTime
-				), true);
+				));
 				$collection->batchInsert($result);				
 			} else {
 				$collection->batchInsert($result);
@@ -115,4 +115,5 @@ class CalculateReactionShell extends AppShell {
 		$result['media_get'] = isset($data['result'][0]['media_get']) ? $data['result'][0]['media_get'] : 0;
 		return $result;
 	}
+
 }
