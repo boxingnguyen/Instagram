@@ -26,7 +26,7 @@ class CalculateReactionShell extends AppShell {
 		$data = $collection->aggregate($condition);
 		$count = 1;
 		$result = $data['result'];
-		
+		//neu la ngay mong 1 thi lay ngay cuoi cung cua thang truoc (1/10 => 30/09) and luu db
 		if (date('d') == self::FIRSTDAY) {
 			$month = (new DateTime())->modify('-1 month')->format('m');
 			$day = cal_days_in_month(CAL_GREGORIAN,$month,date('Y'));
@@ -40,12 +40,12 @@ class CalculateReactionShell extends AppShell {
 		
 		
 		foreach ($data['result'] as $key => $value) {
-			
+			$result[$key]['time'] = $currentTime;
+			//Total: media, like, comment hien thi trang top
 			$reactionTop = $this->__calculateReaction($value['_id']);//display top
+			//Total: media, like, comment hien thi trang chi tiet: analytics
 			$reactionAnalytic = $this->__calculateReaction($value['_id'], $date);//display analytic
 			
-			
-			$result[$key]['time'] = $currentTime;
 			$result[$key]['id'] = $value['_id'];
 			$result[$key]['likesTop'] = $reactionTop['likes'];
 			$result[$key]['commentsTop'] = $reactionTop['comments'];
@@ -72,10 +72,26 @@ class CalculateReactionShell extends AppShell {
 		if(isset($result) && count($result) > 0) {
 			$dateCurrent = $collection->find(array('time' => $currentTime));
 			if($dateCurrent->count() > 0){
-				$collection->update(
-						array(),
-						array()
-						);
+				foreach ($result as $val) {
+					$collection->update(
+							array(
+									'id' => $val['id'],
+									'time' => $currentTime
+							),
+							array('$set' => array( 
+									'media_count' => $val['media_count'],
+									'media_get' => $val['media_get'],
+									'likesTop' => $val['likesTop'],
+									'commentsTop' => $val['commentsTop'],
+									'likesAnalytic' => $val['likesAnalytic'],
+									'commentsAnalytic' => $val['commentsAnalytic'],
+								)),
+							array(
+									'multiple' => true
+							)
+							);
+				}
+				
 			} else {
 				$collection->batchInsert($result);
 			}
@@ -83,6 +99,7 @@ class CalculateReactionShell extends AppShell {
 	}
 	private function __calculateReaction($account_id, $date = null) {
 		if($date == null) {
+			//du lieu hien thi trang top
 			$condition = array(
 					array('$match' => array('user.id' => $account_id)),
 					array(
@@ -95,6 +112,7 @@ class CalculateReactionShell extends AppShell {
 					)
 			);
 		} else {
+			//du lieu hien thi trang analytics
 			$condition = array(
 					array('$match' => array('user.id' => $account_id, 'created_time' => array('$lt' => $date))),
 					array(
