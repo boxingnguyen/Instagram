@@ -13,8 +13,6 @@ class GetMediaShell extends AppShell {
 		if (!empty($all_account)) {
 			// drop old data
 			$collection->drop();
-			// collect all account which miss media into an array
-			$missing_account = array();
 			// we get data of 34 accounts at a time
 			$account_chunks = array_chunk($all_account, 34);
 			foreach ($account_chunks as $account) {
@@ -54,7 +52,7 @@ class GetMediaShell extends AppShell {
 							$this->__saveIntoDb($name, $collection, $date);
 							echo "Get media of " . $name . " completed!" . PHP_EOL;
 						} else {
-							$missing_account[] = $name;
+							file_put_contents(APP."Vendor/Data/tmp_missing_acc.json", $name . "\n");
 							echo "Media of " . $name . " is missing!!!!!!!" . PHP_EOL;
 						}
 						// Jump out of loop in this child. Parent will continue.
@@ -67,6 +65,7 @@ class GetMediaShell extends AppShell {
 				}
 			}
 			// re-get media if media is missing (maximum 5 times)
+			$missing_account = file(APP."Vendor/Data/tmp_missing_acc.json");
 			foreach ($missing_account as $name) {
 				echo "Account " . $name . " has missing mediaaaaaaaaaaa" . PHP_EOL;
 				$check_count = 0;
@@ -146,10 +145,7 @@ class GetMediaShell extends AppShell {
 						unset($fp[$i]);
 					}
 				}
-				$file = fopen($filename,'w+');
-				fwrite($file, implode("", $fp));
-				fclose($file);
-				//file_put_contents($filename, implode("", $fp));
+				file_put_contents($filename, implode("", $fp));
 				return true;
 			} else {
 				return false;
