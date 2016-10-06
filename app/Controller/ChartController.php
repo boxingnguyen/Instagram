@@ -6,7 +6,7 @@ class ChartController extends AppController {
 		$m = new MongoClient();
 		$db = $m->instagram_account_info;
 		
-		//neu la ngay mong 1 cua thang  moi thi $m = $mcurrent - 1;
+		// if the day is 1th of month: $m = $mcurrent - 1;
 		if (date('d') == self::FIRSTDAY) {
 			$month = (new DateTime())->modify('-1 month')->format('Y-m');
 			$collection = $db->selectCollection($month);
@@ -30,7 +30,7 @@ class ChartController extends AppController {
 		$m = new MongoClient();
 		$db = $m->instagram_account_info;
 		
-		//neu la ngay mong 1 cua thang  moi thi du lieu van la thang truoc
+		// if the day is 1th of month the data still be of previous month.
 		$newDate = (new DateTime())->modify('-1 month');
 		$month = $newDate->format('Y-m');
 		$like = 0; $comment = 0;
@@ -43,7 +43,7 @@ class ChartController extends AppController {
 		
 		$data = $collection->find(array('id' => $id))->sort(array('time'=>1));
 		
-		// Neus la ngay mong 2: lay  du lieu ngay 1, so voi ngay cuoi cung cua thang truoc
+		// if the day is the 2th: get the data of 1th of this month and compare to the last day of previous month 
 		if (date('d') == self::SECONDDAY) {
 			$d=cal_days_in_month(CAL_GREGORIAN,$newDate->format('m'),$newDate->format('Y'));
 			$time = $month.'-'.$d;//2016-09-30
@@ -63,7 +63,6 @@ class ChartController extends AppController {
 		foreach($data as $item) {
 			$dt[] = $item;
 		}
-		
 		if(isset($dt) && !empty($dt)) {
 			if($like > 0 || $comment > 0) {
 				$arr[$dt[0]['time']] = array('comment' => ($dt[0]['commentsAnalytic'] - $comment), 'like' => ($dt[0]['likesAnalytic'] - $like) );
@@ -78,7 +77,6 @@ class ChartController extends AppController {
 					break;
 				}
 			}
-// 			print_r($arr);die;
 			return $arr;
 		}
 		return false;
