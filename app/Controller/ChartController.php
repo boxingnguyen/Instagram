@@ -1,9 +1,18 @@
 <?php
 class ChartController extends AppController {
+	const FIRSTDAY = "01";
+	const SECONDDAY = "02";
 	public function follower() {
 		$m = new MongoClient();
 		$db = $m->instagram_account_info;
-		$collection = $db->selectCollection(date('Y-m'));
+		
+		//neu la ngay mong 1 cua thang  moi thi $m = $mcurrent - 1;
+		if (date('d') == self::FIRSTDAY) {
+			$month = (new DateTime())->modify('-1 month')->format('Y-m');
+			$collection = $db->selectCollection($month);
+		} else {
+			$collection = $db->selectCollection(date('Y-m'));
+		}
 		
 		$id = $this->request->query['id'];
 		$data = $collection->find( array('id' => $id))->sort(array('time' => 1));
@@ -20,30 +29,33 @@ class ChartController extends AppController {
 	public function readLikeAndComment($id) {
 		$m = new MongoClient();
 		$db = $m->instagram_account_info;
-		$collection = $db->selectCollection(date('Y-m'));
+		
+		//neu la ngay mong 1 cua thang  moi thi du lieu van la thang truoc
+		$newDate = (new DateTime())->modify('-1 month');
+		$month = $newDate->format('Y-m');
+		$like = 0; $comment = 0;
+// 		echo $month;die;//2016-09
+		if (date('d') == self::FIRSTDAY) {
+			$collection = $db->selectCollection($month);
+		} else {
+			$collection = $db->selectCollection(date('Y-m'));
+		}
 		
 		$data = $collection->find(array('id' => $id))->sort(array('time'=>1));
-
-		//last month
-		$date = new DateTime();
-		$date->modify('-1 month');
-		$lastMonth =  $date->format('Y-m');
-		//last day
-		$d=cal_days_in_month(CAL_GREGORIAN,$date->format('m'),$date->format('Y'));
-		$time = $date->format('Y').'-'.$date->format('m').'-'.$d;
 		
-		//last month collections
-		$lastCollection = $db->selectCollection($lastMonth);
-		$lastdata = $lastCollection->find(array('id' => $id,'time' => $time));
-
-		$like = 0; $comment = 0;
-		if(isset($lastdata) && $lastdata->count() > 0) {
-			foreach ($lastdata as $val) {
-				$like = $val['likesAnalytic'];
-				$comment = $val['commentsAnalytic'];
+		// Neus la ngay mong 2: lay  du lieu ngay 1, so voi ngay cuoi cung cua thang truoc
+		if (date('d') == self::SECONDDAY) {
+			$d=cal_days_in_month(CAL_GREGORIAN,$newDate->format('m'),$newDate->format('Y'));
+			$time = $month.'-'.$d;//2016-09-30
+			$lastCollection = $db->selectCollection($month);
+			$lastdata = $lastCollection->find(array('id' => $id,'time' => $time));
+			if(isset($lastdata) && $lastdata->count() > 0) {
+				foreach ($lastdata as $val) {
+					$like = $val['likesAnalytic'];
+					$comment = $val['commentsAnalytic'];
+				}
 			}
 		}
-// 		echo $like.PHP_EOL.$comment;die;
 		
 		$dt = array();
 		$arr = array();
