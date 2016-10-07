@@ -19,7 +19,7 @@
       ]);
 
     var options = {
-      title : 'Monthly Instagram Follows',
+      title : 'Daily total of Follows',
       vAxis: {title: 'Total'},
       hAxis: {title: 'Day'},
       seriesType: 'bars',

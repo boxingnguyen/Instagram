@@ -19,7 +19,7 @@
       ]);
 
     var options = {
-      title : 'Monthly Instagram Comment',
+      title : 'Daily amount of comment rising',
       vAxis: {title: 'Total'},
       hAxis: {title: 'Day'},
       seriesType: 'bars',

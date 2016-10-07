@@ -18,7 +18,7 @@
       ]);
 
     var options = {
-      title : 'Monthly Instagram Likes',
+      title : 'Daily amount of like rising',
       vAxis: {title: 'Total'},
       hAxis: {title: 'Day'},
       seriesType: 'bars',
