@@ -4,7 +4,7 @@ class CalculateReactionShell extends AppShell {
 	public $collection_acc;
 	public $collection_media;
 	public $collection_reaction;
-	
+
 	public function initialize() {
 		$m = new MongoClient();
 		$this->db = $m->instagram;
@@ -15,7 +15,7 @@ class CalculateReactionShell extends AppShell {
 	}
 	public function main() {
 		$start_time = microtime(true);
-		
+
 		$condition = array(
 				'$group' => array(
 					'_id' => '$id',
@@ -51,11 +51,11 @@ class CalculateReactionShell extends AppShell {
 		// write result (after calculating reaction) into database
 		$this->collection_reaction->drop();
 		$this->collection_reaction->batchInsert($result);
-		
+
 		$end_time = microtime(true);
 		echo "Time to calculate reaction: " . ($end_time - $start_time) . " seconds" . PHP_EOL;
 	}
-	
+
 /**
  * Calculate reaction of an account
  * @param unknown $account_id
@@ -80,7 +80,7 @@ class CalculateReactionShell extends AppShell {
 		$result['media_get'] = isset($data['result'][0]['media_get']) ? $data['result'][0]['media_get'] : 0;
 		return $result;
 	}
-	
+
 /**
  * Re-get media if media is missed
  * @param array $account
@@ -145,12 +145,12 @@ class CalculateReactionShell extends AppShell {
 			// media count (base on what we get)
 			$media_get = $this->collection_media->count(array('user.id' => $key));
 			if ($media_get != $media_origin) {
-				$result[$key] = $value; 
+				$result[$key] = $value;
 			}
 		}
 		return $result;
 	}
-	
+
 /**
  * Get data of instagram's account
  * @param string $username
@@ -174,11 +174,11 @@ class CalculateReactionShell extends AppShell {
 		}
 		return $data;
 	}
-	
+
 /**
  * Update reaction of account which is miss media
  * @param array $accounts
- * @return boolean 
+ * @return boolean
  */
 	private function __updateReaction($accounts, $reaction) {
 		$condition = array(
@@ -207,7 +207,7 @@ class CalculateReactionShell extends AppShell {
 		}
 		return $reaction;
 	}
-	
+
 	public function test() {
 		$acc = $this->__getAccountInfo('instagram');
 		print_r($acc); die;

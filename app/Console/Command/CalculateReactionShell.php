@@ -1,6 +1,6 @@
 <?php
 class CalculateReactionShell extends AppShell {
-	public $mongoCursor;
+	public $mongoCursor; 
 
 	public function initialize() {
 		$m = new MongoClient();
@@ -44,8 +44,9 @@ class CalculateReactionShell extends AppShell {
 	}
 
 	private function __calculateReaction($account_id) {
+		$date = strtotime(date('Y-m-d 00:00:00')); 
 		$condition = array(
-				array('$match' => array('user.id' => $account_id)),
+				array('$match' => array('user.id' => $account_id),'created_time' => array($lt => $date)),
 				array(
 						'$group' => array(
 								'_id' => '$user.id',

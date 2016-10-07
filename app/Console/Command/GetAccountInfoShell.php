@@ -2,8 +2,8 @@
 class GetAccountInfoShell extends AppShell {
 	public $m;
 	public $db;
-	const ACCOUNT_GET = "account_info";
-	const ACCOUNT_ORIGIN = "account_info";
+	const ACCOUNT_GET = "account_username";
+	const ACCOUNT_ORIGIN = "account_username";
 	
 	public function initialize() {
 		$this->m = new MongoClient;
