@@ -14,7 +14,9 @@
  * @since         CakePHP(tm) v 2.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 App::uses('Shell', 'Console');
+
 /**
  * Application Shell
  *
@@ -38,6 +40,7 @@ class AppShell extends Shell {
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($ch, CURLOPT_HEADER, true);
+
 		$i = 0;
 		do {
 			if ($i >= 1) {
@@ -50,6 +53,7 @@ class AppShell extends Shell {
 			$headers = $this->__processHeaders($headerContent);
 			$i ++;
 		} while (!$this->isJSON($jsonData));
+
 		curl_close($ch);
 		return json_decode($jsonData);	
 	}

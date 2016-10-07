@@ -36,7 +36,7 @@ $().ready(function(){
 			
 			var username = '';
 			if (input.match(/^http([s]?):\/\/.*/)) {
-				username = input.substr(26);	
+				username = getQueryVariable(input);
 			}else{
 				username = input;
 			}
@@ -106,5 +106,9 @@ $().ready(function(){
 		$('input[type=text]').val('');
 		$('p.message').text('Example: https://www.instagram.com/instagram/').css("color",'lightblue');
 		$('button.modalReg').prop('disabled', false);
+	}
+	function getQueryVariable(query){
+	       var vars = query.split("/");
+	       return vars[3];
 	}
 });

@@ -11,14 +11,14 @@
         var data = google.visualization.arrayToDataTable([
          ['Date', 'Likes'],
          
-        <?php foreach ($dataLikes as $key => $val) { ?> 	
+        <?php foreach ($dataLikes as $key => $val) { ?>
         		[<?php echo "'".$key."'";?> ,  <?php  echo $val; ?>],      
         <?php } ?> 
          
       ]);
 
     var options = {
-      title : 'Monthly Instagram Likes',
+      title : 'Daily amount of like rising',
       vAxis: {title: 'Total'},
       hAxis: {title: 'Day'},
       seriesType: 'bars',

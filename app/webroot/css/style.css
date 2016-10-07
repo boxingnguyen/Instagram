@@ -283,3 +283,12 @@ p.message{
 button.cancel{
 	padding: 5px 30px;
 }
+.responstable tr:nth-child(odd) {
+	background-color: white;
+}
+.light_missing {
+	background-color: antiquewhite !important;
+}
+.hard_missing {
+	background-color: mistyrose !important;
+}

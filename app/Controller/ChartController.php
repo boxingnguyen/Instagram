@@ -1,50 +1,61 @@
 <?php
 class ChartController extends AppController {
+	const FIRSTDAY = "01";
+	const SECONDDAY = "02";
 	public function follower() {
 		$m = new MongoClient();
-		$db = $m->chart;
-		$collection = $db->selectCollection(date('Y-m'));
-		$currentDate = date('Y-m-d');
+		$db = $m->instagram_account_info;
+		
+		// if the day is 1th of month: $m = $mcurrent - 1;
+		if (date('d') == self::FIRSTDAY) {
+			$month = (new DateTime())->modify('-1 month')->format('Y-m');
+			$collection = $db->selectCollection($month);
+		} else {
+			$collection = $db->selectCollection(date('Y-m'));
+		}
 		
 		$id = $this->request->query['id'];
-		$data = $collection->find( array('id' => $id));
-		$currentDate = date('Y/m/d');
+		$data = $collection->find( array('id' => $id))->sort(array('time' => 1));
 		$arr = array();
 		if(isset($data) && ($data->count() > 0)) {
 			foreach ($data as $val) {
-				$follow = $val['follows'];
+				$follow = $val['followers'];
 				$timedb = $val['time'];
 				$arr[$timedb] = $follow;
 			}
 			$this->set('data', $arr);
 		}
 	}
-	public function readLikeAndComment($id) {		
+	public function readLikeAndComment($id) {
 		$m = new MongoClient();
-		$dbChart = $m->chart;
-		$collection = $dbChart->selectCollection(date('Y-m'));
-		$data = $collection->find(array('id' => $id))->sort(array('time'=>1));
-
-		//last month
-		$date = new DateTime();
-		$date->modify('-1 month');
-		$lastMonth =  $date->format('Y-m');
-		//last day
-		$d=cal_days_in_month(CAL_GREGORIAN,$date->format('m'),$date->format('Y'));
-		$time = $date->format('Y').'-'.$date->format('m').'-'.$d;
-
-		//last month collections
-		$lastCollection = $dbChart->selectCollection($lastMonth);
-		$lastdata = $lastCollection->find(array('id' => $id,'time' => $time));
-		foreach ($lastdata as $val) {
-			$like = $val['likes'];
-			$comment = $val['comments'];
+		$db = $m->instagram_account_info;
+		
+		// if the day is 1th of month the data still be of previous month.
+		$newDate = (new DateTime())->modify('-1 month');
+		$month = $newDate->format('Y-m');
+		$like = 0; $comment = 0;
+// 		echo $month;die;//2016-09
+		if (date('d') == self::FIRSTDAY) {
+			$collection = $db->selectCollection($month);
+		} else {
+			$collection = $db->selectCollection(date('Y-m'));
 		}
 		
-// 		echo "<pre>";
-// 		echo $like."</br>";
-// 		echo $comment;
-// 		echo PHP_EOL;
+		$data = $collection->find(array('id' => $id))->sort(array('time'=>1));
+		
+		// if the day is the 2th: get the data of 1th of this month and compare to the last day of previous month 
+		if (date('d') == self::SECONDDAY) {
+			$d=cal_days_in_month(CAL_GREGORIAN,$newDate->format('m'),$newDate->format('Y'));
+			$time = $month.'-'.$d;//2016-09-30
+			$lastCollection = $db->selectCollection($month);
+			$lastdata = $lastCollection->find(array('id' => $id,'time' => $time));
+			if(isset($lastdata) && $lastdata->count() > 0) {
+				foreach ($lastdata as $val) {
+					$like = $val['likesAnalytic'];
+					$comment = $val['commentsAnalytic'];
+				}
+			}
+		}
 		
 		$dt = array();
 		$arr = array();
@@ -52,16 +63,16 @@ class ChartController extends AppController {
 		foreach($data as $item) {
 			$dt[] = $item;
 		}
-// 		echo "<pre>";
-// 		print_r($dt);
-// 		die;
-		
 		if(isset($dt) && !empty($dt)) {
-			$arr[$dt[0]['time']] = array('comment' => ($dt[0]['comments'] - $comment), 'like' => ($dt[0]['likes'] - $like) );
+			if($like > 0 || $comment > 0) {
+				$arr[$dt[0]['time']] = array('comment' => ($dt[0]['commentsAnalytic'] - $comment), 'like' => ($dt[0]['likesAnalytic'] - $like) );
+			} else {
+				$arr[$dt[0]['time']] = 0;
+			}
 			for ($i = 0; $i < count($dt) - 1; $i++) {
 				for ($j = $i + 1; $j < count($dt); $j++) {
 					if(strtotime($dt[$i]['time']) !=  strtotime($dt[$j]['time'])) {
-						$arr[$dt[$j]['time']] = array('comment' => ($dt[$j]['comments'] - $dt[$i]['comments']), 'like' => ($dt[$j]['likes'] - $dt[$i]['likes']));
+						$arr[$dt[$j]['time']] = array('comment' => ($dt[$j]['commentsAnalytic'] - $dt[$i]['commentsAnalytic']), 'like' => ($dt[$j]['likesAnalytic'] - $dt[$i]['likesAnalytic']));
 					}
 					break;
 				}

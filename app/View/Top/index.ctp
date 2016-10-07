@@ -46,16 +46,18 @@
 		</tr>
 		<?php
 		$count = 1;
-		foreach ($data as $value) : 
+		foreach ($data as $value) :
+			$percentage = round($value['media_get'] / $value['media_count'] * 100, 2);
+			$miss_count = abs($value['media_count'] - $value['media_get']);
 		?>
-		<tr class='center'>
+		<tr class='center <?php if ($miss_count > 10) echo "hard_missing"; elseif ($miss_count > 0) echo "light_missing"; ?>'>
 			<td><a class="badge inst_order" href="javascript:void(0)"><?php echo $count; ?></a></td>
 			<td><a href="https://www.instagram.com/<?php echo $value['username']; ?>" target="_blank"><?php echo ($value['fullname'] != '') ? $value['fullname'] : $value['username']; ?></a></td>
 			<td>
 				<?php 
 					echo $this->Html->link(
 							number_format($value['followers']),
-							array('controller' => 'Chart', 'action' => 'follower','?' => array('id' => $value['_id'])),
+							array('controller' => 'Chart', 'action' => 'follower','?' => array('id' => $value['id'])),
 							array('target' => '_blank')
 						)
 				?>
@@ -64,12 +66,12 @@
 				<?php 
 					echo $this->Html->link(
 							number_format($value['media_count']),
-							array('controller' => '', 'action' => 'media','?' => array('id' => $value['_id'])),
+							array('controller' => '', 'action' => 'media','?' => array('id' => $value['id'])),
 							array('target' => '_blank')
 						)
 				?>
 			</td>
-			<td><?php echo number_format($value['media_get']) . " (" . round($percentage = ($value['media_get'] / $value['media_count'] * 100), 2) . "%)"?></td>
+			<td><?php echo number_format($value['media_get']) . " (" . $percentage . "%)"?></td>
 			<td>
 				<?php 
 				if ($percentage == 100) {
@@ -85,8 +87,8 @@
 			<td>
 				<?php 
 					echo $this->Html->link(
-							number_format($value['likes']),
-							array('controller' => 'Chart', 'action' => 'like','?' => array('id' => $value['_id'])),
+							number_format($value['likesTop']),
+							array('controller' => 'Chart', 'action' => 'like','?' => array('id' => $value['id'])),
 							array('target' => '_blank')
 						);
 				?>
@@ -94,8 +96,8 @@
 			<td>
 				<?php 
 					echo $this->Html->link(
-							number_format($value['comments']), 
-							array('controller' => 'Chart', 'action' => 'comment','?' => array('id' => $value['_id'])), 
+							number_format($value['commentsTop']), 
+							array('controller' => 'Chart', 'action' => 'comment','?' => array('id' => $value['id'])), 
 							array('target' => '_blank')
 						)
 				?>
