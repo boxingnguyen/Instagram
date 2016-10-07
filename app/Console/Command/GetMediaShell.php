@@ -130,6 +130,7 @@ class GetMediaShell extends AppShell {
 			$query = array('username' => $name);
 			$result = $collection->find($query,array('media.count','media.nodes'));
 			$total_media = 0;
+			$timeMediaFirst = 0;
 			foreach ($result as $v) {
 				$total_media = $v['media']['count'];
 				$timeMediaFirst = $v['media']['nodes'][0]['date'];
