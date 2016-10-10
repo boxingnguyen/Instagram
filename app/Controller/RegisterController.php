@@ -36,8 +36,7 @@ class RegisterController extends AppController {
 					array(
 							'access_token' => $data->access_token,
 							'username' => $data->user->username
-					),
-					array('multiple' => true)
+					)
 			));
 		} else {
 			$collections->insert(array(
@@ -46,6 +45,8 @@ class RegisterController extends AppController {
 					'username' => $data->user->username
 			));
 		}
+		$this->redirect( array('controller' => 'top','action' => 'index' ));
+		
 	}
 }
 
