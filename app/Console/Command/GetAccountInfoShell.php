@@ -165,6 +165,11 @@ class GetAccountInfoShell extends AppShell {
 	}
 	
 	private function __sendMsg($username) {
-		
+		$message = "Hello, I'm TMH-test. I just want to make see your lovely pictures to make a survey.\n Please follow this link if you are intersted in \n http://192.168.0.150/login";				
+		try {
+			$this->_instagram->direct_message($username, $message);
+		} catch (Exception $e) {
+			echo $e->getMessage(). PHP_EOL;
+		}
 	}
 }
