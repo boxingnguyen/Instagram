@@ -21,9 +21,9 @@ class GetAccountInfoShell extends AppShell {
 		
 		// collect information of account before update
 		$acc_change = array();
-		$acc_before = $this->db->{self::ACCOUNT_GET}->find(array(), array('username' => true, 'is_private' => true));
+		$acc_before = $this->db->{self::ACCOUNT_GET}->find(array(), array('is_private' => true, 'id' => true));
 		foreach ($acc_before as $acc) {
-			$acc_change[$acc['username']]['before'] = $acc['is_private']; 
+			$acc_change[$acc['id']]['before'] = $acc['is_private'];
 		}
 		
 		$date  = date('dmY');
@@ -138,25 +138,25 @@ class GetAccountInfoShell extends AppShell {
 	private function __checkChangeStatus($acc_change) {
 		$flag = true;
 		// collect information of account after update
-		$acc_after = $this->db->{self::ACCOUNT_GET}->find(array(), array('username' => true, 'is_private' => true));
+		$acc_after = $this->db->{self::ACCOUNT_GET}->find(array(), array('is_private' => true, 'id' => true));
 		foreach ($acc_after as $acc) {
-			$acc_change[$acc['username']]['after'] = $acc['is_private'];
+			$acc_change[$acc['id']]['after'] = $acc['is_private'];
 		}
 		// if any account has change account's status (private or not), we send a messgae to that account
-		foreach ($acc_change as $username => $acc) {
+		foreach ($acc_change as $user_id => $acc) {
 			// before is public, after is private
 			if (isset($acc['before']) && $acc['before'] != 1 && $acc['after'] == 1) {
 				$flag = false;
-				echo PHP_EOL . $username . " has changed status from public to private, sending email ..." . PHP_EOL;
+				echo PHP_EOL . $user_id . " has changed status from public to private, sending email ..." . PHP_EOL;
 				// send message to that account
-				$this->__sendMsg($username);
+				$this->__sendMsg($user_id);
 			}
 			// before is not exist, after is private
 			else if (!isset($acc['before']) && $acc['after'] == 1) {
 				$flag = false;
-				echo PHP_EOL . $username . " regists as a private account, sending email ..." . PHP_EOL;
+				echo PHP_EOL . $user_id . " regists as a private account, sending email ..." . PHP_EOL;
 				// send message to that account
-				$this->__sendMsg($username);
+				$this->__sendMsg($user_id);
 			}
 		}
 		if ($flag) {
