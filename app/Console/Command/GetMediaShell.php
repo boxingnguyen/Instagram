@@ -15,84 +15,21 @@ class GetMediaShell extends AppShell {
 			$collection->drop();
 			// empty file contain missing account
 			file_put_contents(APP."Vendor/Data/tmp_missing_acc.json", "");
-			// we get data of 34 accounts at a time
-			$account_chunks = array_chunk($all_account, 34);
-			foreach ($account_chunks as $account) {
-				foreach ($account as $name) {
-					// create 2 processes here
-					$pid = pcntl_fork();
-					if ($pid == -1) {
-						die('could not fork');
-					} else if ($pid) {
-						// we are the parent
-						// collect process id to know when children complete
-						$pids[] = $pid;
-					} else {
-						// we are the child
-						$max_id = null;
-						$myfile = fopen(APP."Vendor/Data/".$date.".".$name.".media.json", "w+") or die("Unable to open file!");
-						do {
-							$data = $this->__getMedia($name, $max_id);
-							// write data into json file
-							if (isset($data->items) && !empty($data->items)) {
-								foreach ($data->items as $val) {
-									fwrite($myfile, json_encode($val)."\n");
-								}
-								$max_id = end($data->items)->id;
-							} else {
-								$this->out("Error: data is null");
-								break;
-							}
-						}
-						while (isset ($data->more_available) && ($data->more_available == true || $data->more_available == 1));
-						fclose($myfile);
-						
-						// check if account's media is missing or not
-						$checkMedia = $this->__checkMedia($name);
-						if ($checkMedia) {
-							// write data from json file to database
-							$this->__saveIntoDb($name, $collection, $date);
-							echo "Get media of " . $name . " completed!" . PHP_EOL;
-						} else {
-							file_put_contents(APP."Vendor/Data/tmp_missing_acc.json", $name . "\n", FILE_APPEND | LOCK_EX);
-							echo "Media of " . $name . " is missing!!!!!!!" . PHP_EOL;
-						}
-						// Jump out of loop in this child. Parent will continue.
-						exit;
-					}
-				}
-				foreach ($pids as $pid) {
-					pcntl_waitpid($pid, $status);
-					unset($pids[$pid]);
-				}
-			}
+			
+			// store data OF PUBLIC ACCOUNT into json file (if data is fully get, store data into db)
+			$this->__saveDataPublic($all_account['public'], $collection, $date);
+			
+			// store data OF PRIVATE ACCOUNT into json file (if data is fully get, store data into db)
+			$this->__saveDataPrivate($all_account['private'], $collection, $date);
+			
 			// re-get media if media is missing (maximum 5 times)
-			$missing_account = file(APP."Vendor/Data/tmp_missing_acc.json");
-			foreach ($missing_account as $name) {
-				$name = trim(preg_replace('/\s\s+/', ' ', $name));
-				echo "Account " . $name . " has missing mediaaaaaaaaaaa" . PHP_EOL;
-				$check_count = 0;
-				$checkMedia = false;
-				while (!$checkMedia && $check_count < 5) {
-					$checkMedia = $this->__reGetMedia($name, $date);
-					$check_count ++;
-				}
-				if (!$checkMedia) {
-					echo "Re-get media of " . $name . " failed!!!!!!!!!!" . PHP_EOL;
-				} else {
-					echo "Re-get media of " . $name . " successfully!" . PHP_EOL;
-				}
-				// write data into database
-				$this->__saveIntoDb($name, $collection, $date);
-			}
+			$this->__getMissingMedia($collection, $date);
+			
 			// indexing
-			echo "Indexing media ..." . PHP_EOL;
-			$collection->createIndex(array('user.id' => 1, 'created_time' => 1), array('timeout' => -1, 'background' => true));
-			echo "Indexing media completed!" . PHP_EOL;
-			echo "Total documents: " . $collection->count() . PHP_EOL;
-			$end_time = microtime(true);
-			echo "Time to get all media: " . ($end_time - $start_time) . " seconds" . PHP_EOL;
+			$this->__createIndex($collection);
 		}
+		$end_time = microtime(true);
+		echo "Time to get all media: " . ($end_time - $start_time) . " seconds" . PHP_EOL;
 	}
 	
 	private function __getMedia($username, $max_id = null) {
@@ -109,10 +46,14 @@ class GetMediaShell extends AppShell {
 		$db = $m->instagram_account_info;
 		$collection = $db->account_info;
 		
-		$data = $collection->find()->sort(array('media.count' => -1))->fields(array('username' => true, 'media.count' => true));
+		$data = $collection->find()->sort(array('media.count' => -1))->fields(array('username' => true, 'media.count' => true, 'is_private' => true));
 		$result = array();
 		foreach ($data as $value) {
-			$result[] = $value['username'];
+			if ($value['is_private'] == 1) {
+				$result['private'][] = $value['username'];
+			} else {
+				$result['public'][] = $value['username'];
+			}
 		}
 		return $result;
 	}
@@ -201,5 +142,92 @@ class GetMediaShell extends AppShell {
 		if (isset($data) && count($data) > 0) {
 			$collection->batchInsert($data, array('timeout' => -1));
 		}
+	}
+	
+	private function __getMissingMedia($collection, $date) {
+		$missing_account = file(APP."Vendor/Data/tmp_missing_acc.json");
+		foreach ($missing_account as $name) {
+			$name = trim(preg_replace('/\s\s+/', ' ', $name));
+			echo "Account " . $name . " has missing mediaaaaaaaaaaa" . PHP_EOL;
+			$check_count = 0;
+			$checkMedia = false;
+			while (!$checkMedia && $check_count < 5) {
+				$checkMedia = $this->__reGetMedia($name, $date);
+				$check_count ++;
+			}
+			if (!$checkMedia) {
+				echo "Re-get media of " . $name . " failed!!!!!!!!!!" . PHP_EOL;
+			} else {
+				echo "Re-get media of " . $name . " successfully!" . PHP_EOL;
+			}
+			// write data into database
+			$this->__saveIntoDb($name, $collection, $date);
+		}
+	}
+	
+	private function __createIndex($collection) {
+		echo "Indexing media ..." . PHP_EOL;
+		$collection->createIndex(array('user.id' => 1, 'created_time' => 1), array('timeout' => -1, 'background' => true));
+		echo "Indexing media completed!" . PHP_EOL;
+		echo "Total documents: " . $collection->count() . PHP_EOL;
+	}
+	
+	private function __saveDataPublic($public_account, $collection, $date) {
+		// we get data of 34 accounts at a time
+		$account_chunks = array_chunk($public_account, 34);
+		foreach ($account_chunks as $account) {
+			foreach ($account as $name) {
+				// create 2 processes here
+				$pid = pcntl_fork();
+				if ($pid == -1) {
+					die('could not fork');
+				} else if ($pid) {
+					// we are the parent
+					// collect process id to know when children complete
+					$pids[] = $pid;
+				} else {
+					// we are the child
+					$max_id = null;
+					$myfile = fopen(APP."Vendor/Data/".$date.".".$name.".media.json", "w+") or die("Unable to open file!");
+					do {
+						$data = $this->__getMedia($name, $max_id);
+						// write data into json file
+						if (isset($data->items) && !empty($data->items)) {
+							foreach ($data->items as $val) {
+								fwrite($myfile, json_encode($val)."\n");
+							}
+							$max_id = end($data->items)->id;
+						} else {
+							$this->out("Error: data is null");
+							break;
+						}
+					}
+					while (isset ($data->more_available) && ($data->more_available == true || $data->more_available == 1));
+					fclose($myfile);
+		
+					// check if account's media is missing or not
+					$checkMedia = $this->__checkMedia($name);
+					if ($checkMedia) {
+						// write data from json file to database
+						$this->__saveIntoDb($name, $collection, $date);
+						echo "Get media of " . $name . " completed!" . PHP_EOL;
+					} else {
+						file_put_contents(APP."Vendor/Data/tmp_missing_acc.json", $name . "\n", FILE_APPEND | LOCK_EX);
+						echo "Media of " . $name . " is missing!!!!!!!" . PHP_EOL;
+					}
+					// Jump out of loop in this child. Parent will continue.
+					exit;
+				}
+			}
+			foreach ($pids as $pid) {
+				pcntl_waitpid($pid, $status);
+				unset($pids[$pid]);
+			}
+		}	
+	}
+	
+	private function __saveDataPrivate($private_account, $collection, $date) {
+		echo "List of private account: " . PHP_EOL;
+		print_r($private_account) . PHP_EOL;
 	}
 }
