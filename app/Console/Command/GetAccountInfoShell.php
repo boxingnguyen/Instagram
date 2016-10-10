@@ -35,7 +35,7 @@ class GetAccountInfoShell extends AppShell {
 		}
 		fclose($myfile);
 		// check account if all account is got
-		$checkAcc = $this->__checkAccount();
+		$checkAcc = $this->__checkAccount($date);
 		$checkAccCount = 0;
 		// re-get missing account (maximum 5 times)
 		while (!$checkAcc && $checkAccCount < 5) {
@@ -58,9 +58,8 @@ class GetAccountInfoShell extends AppShell {
 		return $data;
 	}
 	
-	private function __checkAccount(){
-		$date = date("dmY");
-		$filename= APP."Vendor/Data/".$date.".acc.json";
+	private function __checkAccount($date) {
+		$filename = APP . "Vendor/Data/" . $date . ".acc.json";
 		$fp = file($filename);
 		$lines = count($fp);
 			
@@ -70,15 +69,14 @@ class GetAccountInfoShell extends AppShell {
 		$total_acc = $collection->count();
 
 		$miss_count = $total_acc - $lines;
-		if($miss_count == 0 ){
+		if ($miss_count == 0){
 			return true;
-		}else {
+		} else {
 			return false;
 		}
 	}
 	
 	private function __reGetAccount($acc_missing, $date) {
-		$date  = date('dmY');
 		$myfile = fopen(APP."Vendor/Data/".$date.".acc.json", "a") or die("Unable to open file!");
 		foreach ($acc_missing as $name) {
 			$data = $this->__getAccountInfo($name);
@@ -91,7 +89,7 @@ class GetAccountInfoShell extends AppShell {
 			}
 		}
 		fclose($myfile);
-		return $this->__checkAccount();
+		return $this->__checkAccount($date);
 	}
 	
 	private function __saveIntoDb($date) {

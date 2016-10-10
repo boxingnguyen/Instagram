@@ -27,6 +27,7 @@ App::uses('Shell', 'Console');
  */
 class AppShell extends Shell {
 	public function initialize() {
+		parent::initialize();
 		ini_set('memory_limit', '1G');
 	}
 	
