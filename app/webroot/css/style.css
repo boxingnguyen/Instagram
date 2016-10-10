@@ -281,7 +281,8 @@ p.message{
     font-weight: bold;
 }
 button.cancel{
-	padding: 5px 30px;
+	font-weight: bold;
+    padding: 7px 45px;
 }
 .responstable tr:nth-child(odd) {
 	background-color: white;
@@ -291,4 +292,7 @@ button.cancel{
 }
 .hard_missing {
 	background-color: mistyrose !important;
+}
+#regisForm{
+	height:275px;
 }

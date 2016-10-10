@@ -96,7 +96,8 @@ $().ready(function(){
 	$('button.cancel').click(function(){
 		$('#regisForm').modal('hide');
 		$('.modal-backdrop, .modal-backdrop.fade.in').css('opacity',"0");
-		$('p.messRegis').empty();
+//		$('p.messRegis').empty();
+		$('p.messRegis').text("This is mess");
 	});
 	
 	function initModal(){
