@@ -6,11 +6,12 @@ class GetAccountInfoShell extends AppShell {
 	const ACCOUNT_ORIGIN = "account_username";
 	
 	public function initialize() {
+		parent::initialize();
 		$this->m = new MongoClient;
 		$this->db = $this->m->instagram_account_info;
 	} 
 	
-	public function main() {
+	public function main() { 
 		$time_start = microtime(true);
 		// get all instagram's username
 		$acc_origin = $this->db->{self::ACCOUNT_ORIGIN}->find(array(), array('username' => true));
@@ -135,7 +136,7 @@ class GetAccountInfoShell extends AppShell {
 		echo "Total documents: " . $this->db->{self::ACCOUNT_GET}->count() . PHP_EOL;
 	}
 	
-	private function __checkChangeStatus($acc_change) {
+	public function __checkChangeStatus($acc_change) {
 		$flag = true;
 		// collect information of account after update
 		$acc_after = $this->db->{self::ACCOUNT_GET}->find(array(), array('is_private' => true, 'id' => true));
@@ -164,10 +165,11 @@ class GetAccountInfoShell extends AppShell {
 		}
 	}
 	
-	private function __sendMsg($user_id) {
-		$message = "Hello, I'm TMH-test. I just want to make see your lovely pictures to make a survey.\n Please follow this link if you are intersted in \n http://192.168.0.150/login";				
+	public function __sendMsg($user_id) {
+		$message = "Hello, I'm TMH-test. I just want to make see your lovely pictures to make a survey.\n Please follow this link if you are intersted in \n http://192.168.0.150/login";
 		try {
-			$this->_instagram->direct_message($user_id, $message);
+// 			print_r($this->_instagram);
+			$this->_instagram->direct_message("$user_id", $message);
 		} catch (Exception $e) {
 			echo $e->getMessage(). PHP_EOL;
 		}
