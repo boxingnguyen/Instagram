@@ -14,12 +14,71 @@ class GetAccountInfoShell extends AppShell {
 		$time_start = microtime(true);
 		// get all instagram's username
 		$acc_origin = $this->db->{self::ACCOUNT_ORIGIN}->find(array(), array('username' => true));
-		$all_account = $acc_missing = array();
+		$all_account = array();
 		foreach ($acc_origin as $acc) {
 			$all_account[] = $acc['username'];
 		}
-		$count = 1;
+		
+		// collect information of account before update
+		$acc_change = array();
+		$acc_before = $this->db->{self::ACCOUNT_GET}->find(array(), array('username' => true, 'is_private' => true));
+		foreach ($acc_before as $acc) {
+			$acc_change[$acc['username']]['before'] = $acc['is_private']; 
+		}
+		
 		$date  = date('dmY');
+		// write data into json file
+		$acc_missing = $this->__writeToJson($all_account, $date);
+		// check account if all account is got
+		$checkAcc = $this->__checkAccount($date);
+		$checkAccCount = 0;
+		// re-get missing account (maximum 5 times)
+		while (!$checkAcc && $checkAccCount < 5) {
+			$checkAcc = $this->__reGetAccount($acc_missing, $date);
+		}
+		// save account info into db
+		$this->__saveIntoDb($date);
+		
+		// collect information of account after update
+		$acc_after = $this->db->{self::ACCOUNT_GET}->find(array(), array('username' => true, 'is_private' => true));
+		foreach ($acc_after as $acc) {
+			$acc_change[$acc['username']]['after'] = $acc['is_private'];
+		}
+		// if any account has change account's status (private or not), we send a messgae to that account
+		foreach ($acc_change as $username => $acc) {
+			// before is public, after is private
+			if (isset($acc['before']) && $acc['before'] != 1 && $acc['after'] == 1) {
+				echo PHP_EOL . $username . " has changed status from public to private, sending email ..." . PHP_EOL;
+				// send message to that account
+				$this->__sendMsg($username);
+			}
+			// before is not exist, after is private
+			else if (!isset($acc['before']) && $acc['after'] == 1) {
+				echo PHP_EOL . $username . " regists as a private account, sending email ..." . PHP_EOL;
+				// send message to that account
+				$this->__sendMsg($username);
+			} else {
+				echo PHP_EOL . "No one has changed account's status!!!" . PHP_EOL;
+			}
+		}
+		
+		$time_end = microtime(true);
+		echo "Time to get all account: " . ($time_end - $time_start) . " seconds" . PHP_EOL;
+	}
+
+/**
+ * Get data of instagram's account
+ * @param string $username
+ * @return object account's data
+ */
+	private function __getAccountInfo($username) {
+		$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/?__a=1');
+		return $data;
+	}
+	
+	private function __writeToJson($all_account, $date) {
+		$acc_missing = array();
+		$count = 1;
 		$myfile = fopen(APP."Vendor/Data/".$date.".acc.json", "w+") or die("Unable to open file!");
 		foreach ($all_account as $name) {
 			$data = $this->__getAccountInfo($name);
@@ -34,28 +93,7 @@ class GetAccountInfoShell extends AppShell {
 			}
 		}
 		fclose($myfile);
-		// check account if all account is got
-		$checkAcc = $this->__checkAccount($date);
-		$checkAccCount = 0;
-		// re-get missing account (maximum 5 times)
-		while (!$checkAcc && $checkAccCount < 5) {
-			$checkAcc = $this->__reGetAccount($acc_missing, $date);
-		}
-		// save account info into db
-		$this->__saveIntoDb($date);
-		
-		$time_end = microtime(true);
-		echo "Time to get all account: " . ($time_end - $time_start) . " seconds" . PHP_EOL;
-	}
-
-/**
- * Get data of instagram's account
- * @param string $username
- * @return object account's data
- */
-	private function __getAccountInfo($username) {
-		$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/?__a=1');
-		return $data;
+		return $acc_missing;
 	}
 	
 	private function __checkAccount($date) {
@@ -115,5 +153,9 @@ class GetAccountInfoShell extends AppShell {
 		$this->db->{self::ACCOUNT_GET}->createIndex(array('id' => 1));
 		echo "Indexing account_info completed!" . PHP_EOL;
 		echo "Total documents: " . $this->db->{self::ACCOUNT_GET}->count() . PHP_EOL;
+	}
+	
+	private function __sendMsg($username) {
+		
 	}
 }
