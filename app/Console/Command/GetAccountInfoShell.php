@@ -39,28 +39,8 @@ class GetAccountInfoShell extends AppShell {
 		// save account info into db
 		$this->__saveIntoDb($date);
 		
-		// collect information of account after update
-		$acc_after = $this->db->{self::ACCOUNT_GET}->find(array(), array('username' => true, 'is_private' => true));
-		foreach ($acc_after as $acc) {
-			$acc_change[$acc['username']]['after'] = $acc['is_private'];
-		}
-		// if any account has change account's status (private or not), we send a messgae to that account
-		foreach ($acc_change as $username => $acc) {
-			// before is public, after is private
-			if (isset($acc['before']) && $acc['before'] != 1 && $acc['after'] == 1) {
-				echo PHP_EOL . $username . " has changed status from public to private, sending email ..." . PHP_EOL;
-				// send message to that account
-				$this->__sendMsg($username);
-			}
-			// before is not exist, after is private
-			else if (!isset($acc['before']) && $acc['after'] == 1) {
-				echo PHP_EOL . $username . " regists as a private account, sending email ..." . PHP_EOL;
-				// send message to that account
-				$this->__sendMsg($username);
-			} else {
-				echo PHP_EOL . "No one has changed account's status!!!" . PHP_EOL;
-			}
-		}
+		// check if any account has changed it's status
+		$this->__checkChangeStatus($acc_change);
 		
 		$time_end = microtime(true);
 		echo "Time to get all account: " . ($time_end - $time_start) . " seconds" . PHP_EOL;
@@ -153,6 +133,35 @@ class GetAccountInfoShell extends AppShell {
 		$this->db->{self::ACCOUNT_GET}->createIndex(array('id' => 1));
 		echo "Indexing account_info completed!" . PHP_EOL;
 		echo "Total documents: " . $this->db->{self::ACCOUNT_GET}->count() . PHP_EOL;
+	}
+	
+	private function __checkChangeStatus($acc_change) {
+		$flag = true;
+		// collect information of account after update
+		$acc_after = $this->db->{self::ACCOUNT_GET}->find(array(), array('username' => true, 'is_private' => true));
+		foreach ($acc_after as $acc) {
+			$acc_change[$acc['username']]['after'] = $acc['is_private'];
+		}
+		// if any account has change account's status (private or not), we send a messgae to that account
+		foreach ($acc_change as $username => $acc) {
+			// before is public, after is private
+			if (isset($acc['before']) && $acc['before'] != 1 && $acc['after'] == 1) {
+				$flag = false;
+				echo PHP_EOL . $username . " has changed status from public to private, sending email ..." . PHP_EOL;
+				// send message to that account
+				$this->__sendMsg($username);
+			}
+			// before is not exist, after is private
+			else if (!isset($acc['before']) && $acc['after'] == 1) {
+				$flag = false;
+				echo PHP_EOL . $username . " regists as a private account, sending email ..." . PHP_EOL;
+				// send message to that account
+				$this->__sendMsg($username);
+			}
+		}
+		if ($flag) {
+			echo PHP_EOL . "No one has changed account's status!!!" . PHP_EOL;
+		}
 	}
 	
 	private function __sendMsg($username) {
