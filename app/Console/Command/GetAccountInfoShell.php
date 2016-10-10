@@ -6,11 +6,12 @@ class GetAccountInfoShell extends AppShell {
 	const ACCOUNT_ORIGIN = "account_username";
 	
 	public function initialize() {
+		parent::initialize();
 		$this->m = new MongoClient;
 		$this->db = $this->m->instagram_account_info;
 	} 
 	
-	public function main() {
+	public function main() { 
 		$time_start = microtime(true);
 		// get all instagram's username
 		$acc_origin = $this->db->{self::ACCOUNT_ORIGIN}->find(array(), array('username' => true));
@@ -164,7 +165,13 @@ class GetAccountInfoShell extends AppShell {
 		}
 	}
 	
-	private function __sendMsg($username) {
-		
+	private function __sendMsg($user_id) {
+		$message = "Hello, I'm TMH-test. I just want to make see your lovely pictures to make a survey.\n Please follow this link if you are intersted in \n http://192.168.0.150/login";
+		try {
+// 			print_r($this->_instagram);
+			$this->_instagram->direct_message("$user_id", $message);
+		} catch (Exception $e) {
+			echo $e->getMessage(). PHP_EOL;
+		}
 	}
 }

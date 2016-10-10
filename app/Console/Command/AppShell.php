@@ -16,7 +16,7 @@
  */
 
 App::uses('Shell', 'Console');
-
+App::import('Vendor','Package',array('file'=>'vendor/autoload.php'));
 /**
  * Application Shell
  *
@@ -26,9 +26,23 @@ App::uses('Shell', 'Console');
  * @package       app.Console.Command
  */
 class AppShell extends Shell {
+	private $__username = 'tmhtest';
+	private $__password = '!!tmh!!';
+	protected $_instagram;
+	const DEBUG = false;
+	
 	public function initialize() {
 		parent::initialize();
 		ini_set('memory_limit', '1G');
+		$this->_instagram = new \InstagramAPI\Instagram($this->__username,$this->__password,self::DEBUG);
+		if ($this->_instagram == null) {
+			try {
+			    $this->_instagram->login();
+			} catch (Exception $e) {
+			    $e->getMessage();
+			    exit();
+			}
+		}
 	}
 	
 	public function cURLInstagram($url) {
