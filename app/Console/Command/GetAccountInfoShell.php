@@ -136,7 +136,7 @@ class GetAccountInfoShell extends AppShell {
 		echo "Total documents: " . $this->db->{self::ACCOUNT_GET}->count() . PHP_EOL;
 	}
 	
-	public function __checkChangeStatus($acc_change) {
+	private function __checkChangeStatus($acc_change) {
 		$flag = true;
 		// collect information of account after update
 		$acc_after = $this->db->{self::ACCOUNT_GET}->find(array(), array('is_private' => true, 'id' => true));
@@ -165,7 +165,7 @@ class GetAccountInfoShell extends AppShell {
 		}
 	}
 	
-	public function __sendMsg($user_id) {
+	private function __sendMsg($user_id) {
 		$message = "Hello, I'm TMH-test. I just want to make see your lovely pictures to make a survey.\n Please follow this link if you are intersted in \n http://192.168.0.150/login";
 		try {
 // 			print_r($this->_instagram);
