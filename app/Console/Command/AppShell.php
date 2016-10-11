@@ -35,13 +35,12 @@ class AppShell extends Shell {
 		parent::initialize();
 		ini_set('memory_limit', '1G');
 		$this->_instagram = new \InstagramAPI\Instagram($this->__username,$this->__password,self::DEBUG);
-		if ($this->_instagram == null) {
-			try {
-			    $this->_instagram->login();
-			} catch (Exception $e) {
-			    $e->getMessage();
-			    exit();
-			}
+// 		$this->_instagram->logout();
+		try {
+		    $this->_instagram->login();
+		} catch (Exception $e) {
+		    $e->getMessage();
+		    exit();
 		}
 	}
 	

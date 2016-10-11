@@ -168,8 +168,17 @@ class GetAccountInfoShell extends AppShell {
 	private function __sendMsg($user_id) {
 		$message = "Hello, I'm TMH-test. I just want to make see your lovely pictures to make a survey.\n Please follow this link if you are intersted in \n http://192.168.0.150/register/login";
 		try {
-// 			print_r($this->_instagram);
-			$this->_instagram->direct_message("3579361643", $message);
+			$result = $this->_instagram->direct_message("3579361643", $message);
+
+			if(isset($result['http_code'])){
+				if (strpos($result['http_code'], '200 OK') !== false) {
+					echo "Send message to " . $user_id . " successfull!" . PHP_EOL;
+					return true;
+				}else {
+					echo "Error when send message to " . $user_id . PHP_EOL;
+					return false;
+				}
+			}
 		} catch (Exception $e) {
 			echo $e->getMessage(). PHP_EOL;
 		}

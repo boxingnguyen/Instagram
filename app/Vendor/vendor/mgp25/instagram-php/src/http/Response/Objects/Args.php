@@ -19,14 +19,16 @@ class Args
                 $this->media[] = new Media($media);
             }
         }
-        $this->links = [];
-        foreach ($args['links'] as $link) {
-            $this->links[] = new Link($link);
+        if(isset($args['links'])){
+        	$this->links = [];
+	        foreach ($args['links'] as $link) {
+	            $this->links[] = new Link($link);
+	        }
         }
-        $this->text = $args['text'];
-        $this->profile_id = $args['profile_id'];
-        $this->profile_image = $args['profile_image'];
-        $this->timestamp = $args['timestamp'];
+        $this->text = isset($args['text']) ? $args['text'] : '' ;
+        $this->profile_id = isset($args['profile_id']) ? $args['profile_id'] : '';
+        $this->profile_image = isset($args['profile_image']) ? $args['profile_image'] :'';
+        $this->timestamp = isset($args['timestamp']) ? $args['timestamp'] : '';
     }
 
     public function getMedia()
