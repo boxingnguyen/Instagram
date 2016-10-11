@@ -20,7 +20,8 @@
  */
 
 App::uses('Controller', 'Controller');
-
+App::import('Vendor', 'instagram', array('file' => 'Instagram' . DS . 'src' . DS . 'Instagram.php'));
+use MetzWeb\Instagram\Instagram;
 /**
  * Application Controller
  *
@@ -31,9 +32,21 @@ App::uses('Controller', 'Controller');
  * @link		http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
+	protected $_instagram;
+	private $__apiKey = '68bed720dbd14812bfb01763b433d870';
+	private $__apiSecret = 'b38ff515a4d040f3abb0abedb4b8849c';
+	private $__apiCallback = 'http://192.168.0.154/Register/detail';
+	
 	public function beforeFilter() {
 		exec('sudo chmod -R 777 /www/app/tmp');
 		exec('sudo chmod -R 777 /www/app/Vendor/Data');
+		
+		$this->_instagram = new Instagram(array(
+				'apiKey'      => $this->__apiKey,
+				'apiSecret'   => $this->__apiSecret,
+				'apiCallback' => $this->__apiCallback,
+				'scope'       => array( 'likes', 'comments', 'relationships','basic','public_content','follower_list' )
+		));
 	}
 	public function cURLInstagram($url) {
 		$headerData = array('Accept: application/json');

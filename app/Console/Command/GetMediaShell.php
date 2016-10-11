@@ -231,5 +231,21 @@ class GetMediaShell extends AppShell {
 	private function __saveDataPrivate($private_account, $collection, $date) {
 		echo "List of private account: " . PHP_EOL;
 		print_r($private_account) . PHP_EOL;
+		foreach ($private_account as $acc){
+			
+			$m = new MongoClient;
+			$db = $m->instagram_account_info;
+			$collections = $db->account_username;
+			$result = $collections->find(array('username' => $acc));
+			foreach ($result as $v) {
+				if(isset($v['access_token'])){
+					$id = $v['id'];
+					$this->_insta->setAccessToken($v['access_token']);
+					$media = $this->_insta->getUserMedia($id)->data;
+				}
+			}
+			
+			
+		}
 	}
 }
