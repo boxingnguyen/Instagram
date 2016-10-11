@@ -13,16 +13,22 @@ class GetMediaShell extends AppShell {
 		if (!empty($all_account)) {
 			// drop old data
 			$collection->drop();
-			// empty file contain missing account
+			// empty file contain accounts that missed media
 			file_put_contents(APP."Vendor/Data/tmp_missing_acc.json", "");
 			
 			// store data OF PUBLIC ACCOUNT into json file (if data is fully get, store data into db)
 			$this->__saveDataPublic($all_account['public'], $collection, $date);
 			
+			// re-get media if media is missing (maximum 5 times, of public account)
+			$this->__getMissingMedia($collection, $date);
+			
+			// empty file contain public accounts that missed media
+			file_put_contents(APP."Vendor/Data/tmp_missing_acc.json", "");
+			
 			// store data OF PRIVATE ACCOUNT into json file (if data is fully get, store data into db)
 			$this->__saveDataPrivate($all_account['private'], $collection, $date);
 			
-			// re-get media if media is missing (maximum 5 times)
+			// re-get media if media is missing (maximum 5 times, of private account)
 			$this->__getMissingMedia($collection, $date);
 			
 			// indexing
@@ -215,7 +221,7 @@ class GetMediaShell extends AppShell {
 						echo "Get media of " . $name . " completed!" . PHP_EOL;
 					} else {
 						file_put_contents(APP."Vendor/Data/tmp_missing_acc.json", $name . "\n", FILE_APPEND | LOCK_EX);
-						echo "Media of " . $name . " is missing!!!!!!!" . PHP_EOL;
+						echo "Media of " . $name . " is missing (Public account) !!!!!!!" . PHP_EOL;
 					}
 					// Jump out of loop in this child. Parent will continue.
 					exit;
@@ -231,21 +237,46 @@ class GetMediaShell extends AppShell {
 	private function __saveDataPrivate($private_account, $collection, $date) {
 		echo "List of private account: " . PHP_EOL;
 		print_r($private_account) . PHP_EOL;
-		foreach ($private_account as $acc){
-			
-			$m = new MongoClient;
-			$db = $m->instagram_account_info;
-			$collections = $db->account_username;
-			$result = $collections->find(array('username' => $acc));
-			foreach ($result as $v) {
-				if(isset($v['access_token'])){
-					$id = $v['id'];
-					$this->_insta->setAccessToken($v['access_token']);
-					$media = $this->_insta->getUserMedia($id)->data;
-				}
+		
+		$m = new MongoClient;
+		$db = $m->instagram_account_info;
+		$collections = $db->account_username;
+		
+		foreach ($private_account as $name) {
+			$result = $collections->find(array('username' => $name));
+			$acc_info = reset(iterator_to_array($a));
+			if (isset($acc_info['access_token'])) {
+				$this->_instagram->setAccessToken($acc_info['access_token']);
+				$max_id = null;
+				// write data into json file
+				$myfile = fopen(APP."Vendor/Data/".$date.".".$name.".media.json", "w+") or die("Unable to open file!");
+				do {
+					$media = $this->_instagram->getUserMedia($id, 2, $max_id);
+					foreach ($media->data as $val) {
+						fwrite($myfile, json_encode($val)."\n");
+					}
+					if (isset($media->pagination) && !empty($media->pagination->next_max_id)) {
+						$max_id = $media->pagination->next_max_id;
+					} else {
+						$max_id = null;
+						break;
+					}
+				} while ($max_id != null);
+			} else {
+				$this->out("Error: data is null");
+				break;
 			}
-			
-			
+			fclose($myfile);
+			// check if account's media is missing or not
+			$checkMedia = $this->__checkMedia($name);
+			if ($checkMedia) {
+				// write data from json file to database
+				$this->__saveIntoDb($name, $collection, $date);
+				echo "Get media of " . $name . " completed!" . PHP_EOL;
+			} else {
+				file_put_contents(APP."Vendor/Data/tmp_missing_acc.json", $name . "\n", FILE_APPEND | LOCK_EX);
+				echo "Media of " . $name . " is missing (Private account) !!!!!!!" . PHP_EOL;
+			}
 		}
 	}
 }

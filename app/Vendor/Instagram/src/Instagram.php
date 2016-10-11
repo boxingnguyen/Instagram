@@ -602,7 +602,6 @@ class Instagram
         if ($this->_signedheader) {
             $apiCall .= (strstr($apiCall, '?') ? '&' : '?') . 'sig=' . $this->_signHeader($function, $authMethod, $params);
         }
-		print_r($apiCall.PHP_EOL);//die;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $apiCall);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headerData);
