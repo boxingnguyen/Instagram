@@ -213,16 +213,16 @@ class Instagram
             $this->token = $match[1];
             $this->settings->set('token', $this->token);
 
-            $this->syncFeatures();
-            $this->autoCompleteUserList();
-            $this->timelineFeed();
-            $this->getRankedRecipients();
-            $this->getRecentRecipients();
-            $this->megaphoneLog();
-            $this->getv2Inbox();
-            $this->getRecentActivity();
-            $this->getReelsTrayFeed();
-            $this->explore();
+//             $this->syncFeatures();
+//             $this->autoCompleteUserList();
+//             $this->timelineFeed();
+//             $this->getRankedRecipients();
+//             $this->getRecentRecipients();
+//             $this->megaphoneLog();
+//             $this->getv2Inbox();
+//             $this->getRecentActivity();
+//             $this->getReelsTrayFeed();
+//             $this->explore();
 
             return $response;
         }
@@ -231,16 +231,16 @@ class Instagram
         if ($check->getMessage() == 'login_required') {
             $this->login(true);
         }
-        $this->autoCompleteUserList();
-        $this->getReelsTrayFeed();
-        $this->getRankedRecipients();
-        //push register
-        $this->getRecentRecipients();
-        //push register
-        $this->megaphoneLog();
-        $this->getv2Inbox();
-        $this->getRecentActivity();
-        $this->explore();
+//         $this->autoCompleteUserList();
+//         $this->getReelsTrayFeed();
+//         $this->getRankedRecipients();
+//         //push register
+//         $this->getRecentRecipients();
+//         //push register
+//         $this->megaphoneLog();
+//         $this->getv2Inbox();
+//         $this->getRecentActivity();
+//         $this->explore();
     }
 
     /**
@@ -526,7 +526,8 @@ class Instagram
      */
     public function direct_message($recipients, $text)
     {
-        $this->http->direct_message($recipients, $text);
+        return $this->http->direct_message($recipients, $text);
+        
     }
 
     /**
@@ -544,7 +545,6 @@ class Instagram
 
         if ($directThread['status'] != 'ok') {
             throw new InstagramException($directThread['message']."\n");
-
             return;
         }
 

@@ -737,11 +737,31 @@ class HttpInterface
         $resp = curl_exec($ch);
         $header_len = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $header = substr($resp, 0, $header_len);
+
+        $arrayHeader = $this->__processHeaders($header);
+
         $upload = json_decode(substr($resp, $header_len), true);
 
         curl_close($ch);
+        return $arrayHeader;
     }
-
+    
+    private function __processHeaders($headerContent) {
+    	$headers = array();
+    
+    	foreach (explode("\r\n", $headerContent) as $i => $line) {
+    		if ($i === 0) {
+    			$headers['http_code'] = $line;
+    			continue;
+    		}
+    
+    		list($key, $value) = array_pad(explode(':', $line, 2), 2, null);
+    		$headers[$key] = $value;
+    	}
+    
+    	return $headers;
+    }
+    
     protected function buildBody($bodies, $boundary)
     {
         $body = '';
