@@ -191,7 +191,7 @@ class Instagram
      *
      * @return mixed
      */
-    public function getUserMedia($id = 'self', $limit = 15)
+    public function getUserMedia($id = 'self', $limit = 0)
     {
         $params = array();
 
@@ -233,7 +233,6 @@ class Instagram
         if ($limit > 0) {
             $params['count'] = $limit;
         }
-		print_r($params);
         return $this->_makeCall('users/' . $id . '/follows', true, $params);
     }
 
@@ -592,7 +591,7 @@ class Instagram
         if (isset($params) && is_array($params)) {
             $paramString = '&' . http_build_query($params);
         }
-        echo $paramString; echo "<pre>";
+
         $apiCall = self::API_URL . $function . $authMethod . (('GET' === $method) ? $paramString : null);
        
         // we want JSON
@@ -601,8 +600,7 @@ class Instagram
         if ($this->_signedheader) {
             $apiCall .= (strstr($apiCall, '?') ? '&' : '?') . 'sig=' . $this->_signHeader($function, $authMethod, $params);
         }
-//         sig = '163dc914d77e2c59706cab4179a46cf53d0951c9b66982ba7290e547a4aab577';
-        print_r($apiCall);
+
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $apiCall);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headerData);
@@ -696,8 +694,7 @@ class Instagram
             $baseString .= '|' . $key . '=' . $value;
         }
         $signature = hash_hmac('sha256', $baseString, $this->_apisecret, false);
-//         echo "nhi .... ";
-		echo $signature;
+
         return $signature;
     }
 

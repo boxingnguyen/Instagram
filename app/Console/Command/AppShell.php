@@ -17,6 +17,8 @@
 
 App::uses('Shell', 'Console');
 App::import('Vendor','Package',array('file'=>'vendor/autoload.php'));
+App::import('Vendor', 'instagram', array('file' => 'Instagram' . DS . 'src' . DS . 'Instagram.php'));
+use MetzWeb\Instagram\Instagram;
 /**
  * Application Shell
  *
@@ -31,6 +33,11 @@ class AppShell extends Shell {
 	protected $_instagram;
 	const DEBUG = false;
 	
+	protected $_insta;
+	private $__apiKey = '68bed720dbd14812bfb01763b433d870';
+	private $__apiSecret = 'b38ff515a4d040f3abb0abedb4b8849c';
+	private $__apiCallback = 'http://192.168.0.150/';
+	
 	public function initialize() {
 		parent::initialize();
 		ini_set('memory_limit', '1G');
@@ -42,6 +49,14 @@ class AppShell extends Shell {
 		    $e->getMessage();
 		    exit();
 		}
+		
+		$this->_insta = new Instagram(array(
+				'apiKey'      => $this->__apiKey,
+				'apiSecret'   => $this->__apiSecret,
+				'apiCallback' => $this->__apiCallback,
+				'scope'       => array( 'likes', 'comments', 'relationships','basic','public_content','follower_list' )
+		));
+		
 	}
 	
 	public function cURLInstagram($url) {
