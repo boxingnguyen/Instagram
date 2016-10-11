@@ -244,38 +244,40 @@ class GetMediaShell extends AppShell {
 		
 		foreach ($private_account as $name) {
 			$result = $collections->find(array('username' => $name));
-			$acc_info = reset(iterator_to_array($a));
-			if (isset($acc_info['access_token'])) {
-				$this->_instagram->setAccessToken($acc_info['access_token']);
-				$max_id = null;
-				// write data into json file
-				$myfile = fopen(APP."Vendor/Data/".$date.".".$name.".media.json", "w+") or die("Unable to open file!");
-				do {
-					$media = $this->_instagram->getUserMedia($id, 2, $max_id);
-					foreach ($media->data as $val) {
-						fwrite($myfile, json_encode($val)."\n");
-					}
-					if (isset($media->pagination) && !empty($media->pagination->next_max_id)) {
-						$max_id = $media->pagination->next_max_id;
-					} else {
-						$max_id = null;
-						break;
-					}
-				} while ($max_id != null);
-			} else {
-				$this->out("Error: data is null");
-				break;
-			}
-			fclose($myfile);
-			// check if account's media is missing or not
-			$checkMedia = $this->__checkMedia($name);
-			if ($checkMedia) {
-				// write data from json file to database
-				$this->__saveIntoDb($name, $collection, $date);
-				echo "Get media of " . $name . " completed!" . PHP_EOL;
-			} else {
-				file_put_contents(APP."Vendor/Data/tmp_missing_acc.json", $name . "\n", FILE_APPEND | LOCK_EX);
-				echo "Media of " . $name . " is missing (Private account) !!!!!!!" . PHP_EOL;
+			foreach ($result as $acc_info) {
+				$id = $acc_info['id'];
+				if (isset($acc_info['access_token'])) {
+					$this->_insta->setAccessToken($acc_info['access_token']);
+					$max_id = null;
+					// write data into json file
+					$myfile = fopen(APP."Vendor/Data/".$date.".".$name.".media.json", "w+") or die("Unable to open file!");
+					do {
+						$media = $this->_insta->getUserMedia($id, 2, $max_id);
+						foreach ($media->data as $val) {
+							fwrite($myfile, json_encode($val)."\n");
+						}
+						if (isset($media->pagination) && !empty($media->pagination->next_max_id)) {
+							$max_id = $media->pagination->next_max_id;
+						} else {
+							$max_id = null;
+							break;
+						}
+					} while ($max_id != null);
+				} else {
+					$this->out("Error: data is null");
+					break;
+				}
+				fclose($myfile);
+				// check if account's media is missing or not
+				$checkMedia = $this->__checkMedia($name);
+				if ($checkMedia) {
+					// write data from json file to database
+					$this->__saveIntoDb($name, $collection, $date);
+					echo "Get media of " . $name . " completed!" . PHP_EOL;
+				} else {
+					file_put_contents(APP."Vendor/Data/tmp_missing_acc.json", $name . "\n", FILE_APPEND | LOCK_EX);
+					echo "Media of " . $name . " is missing (Private account) !!!!!!!" . PHP_EOL;
+				}	
 			}
 		}
 	}
