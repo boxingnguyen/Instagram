@@ -74,7 +74,9 @@ class GetMediaShell extends AppShell {
 			$timeMediaFirst = 0;
 			foreach ($result as $v) {
 				$total_media = $v['media']['count'];
-				$timeMediaFirst = $v['media']['nodes'][0]['date'];
+				if(!empty($v['media']['nodes'])){
+					$timeMediaFirst = $v['media']['nodes'][0]['date'];
+				}
 			}
 
 			$miss_count = $total_media - $lines;
