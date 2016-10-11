@@ -191,13 +191,15 @@ class Instagram
      *
      * @return mixed
      */
-    public function getUserMedia($id = 'self', $limit = 0)
+    public function getUserMedia($id = 'self', $limit = 1, $max_id = null)
     {
         $params = array();
 
         if ($limit > 0) {
             $params['count'] = $limit;
+            $params['max_id'] = $max_id;
         }
+//         print_r($params);die;
         return $this->_makeCall('users/' . $id . '/media/recent', strlen($this->getAccessToken()), $params);
     }
 
@@ -600,7 +602,7 @@ class Instagram
         if ($this->_signedheader) {
             $apiCall .= (strstr($apiCall, '?') ? '&' : '?') . 'sig=' . $this->_signHeader($function, $authMethod, $params);
         }
-
+		print_r($apiCall.PHP_EOL);//die;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $apiCall);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headerData);
