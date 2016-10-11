@@ -6,11 +6,12 @@ class GetAccountInfoShell extends AppShell {
 	const ACCOUNT_ORIGIN = "account_username";
 	
 	public function initialize() {
+		parent::initialize();
 		$this->m = new MongoClient;
 		$this->db = $this->m->instagram_account_info;
 	} 
 	
-	public function main() {
+	public function main() { 
 		$time_start = microtime(true);
 		// get all instagram's username
 		$acc_origin = $this->db->{self::ACCOUNT_ORIGIN}->find(array(), array('username' => true));
@@ -21,9 +22,9 @@ class GetAccountInfoShell extends AppShell {
 		
 		// collect information of account before update
 		$acc_change = array();
-		$acc_before = $this->db->{self::ACCOUNT_GET}->find(array(), array('username' => true, 'is_private' => true));
+		$acc_before = $this->db->{self::ACCOUNT_GET}->find(array(), array('is_private' => true, 'id' => true));
 		foreach ($acc_before as $acc) {
-			$acc_change[$acc['username']]['before'] = $acc['is_private']; 
+			$acc_change[$acc['id']]['before'] = $acc['is_private'];
 		}
 		
 		$date  = date('dmY');
@@ -39,28 +40,8 @@ class GetAccountInfoShell extends AppShell {
 		// save account info into db
 		$this->__saveIntoDb($date);
 		
-		// collect information of account after update
-		$acc_after = $this->db->{self::ACCOUNT_GET}->find(array(), array('username' => true, 'is_private' => true));
-		foreach ($acc_after as $acc) {
-			$acc_change[$acc['username']]['after'] = $acc['is_private'];
-		}
-		// if any account has change account's status (private or not), we send a messgae to that account
-		foreach ($acc_change as $username => $acc) {
-			// before is public, after is private
-			if (isset($acc['before']) && $acc['before'] != 1 && $acc['after'] == 1) {
-				echo PHP_EOL . $username . " has changed status from public to private, sending email ..." . PHP_EOL;
-				// send message to that account
-				$this->__sendMsg($username);
-			}
-			// before is not exist, after is private
-			else if (!isset($acc['before']) && $acc['after'] == 1) {
-				echo PHP_EOL . $username . " regists as a private account, sending email ..." . PHP_EOL;
-				// send message to that account
-				$this->__sendMsg($username);
-			} else {
-				echo PHP_EOL . "No one has changed account's status!!!" . PHP_EOL;
-			}
-		}
+		// check if any account has changed it's status
+		$this->__checkChangeStatus($acc_change);
 		
 		$time_end = microtime(true);
 		echo "Time to get all account: " . ($time_end - $time_start) . " seconds" . PHP_EOL;
@@ -155,7 +136,42 @@ class GetAccountInfoShell extends AppShell {
 		echo "Total documents: " . $this->db->{self::ACCOUNT_GET}->count() . PHP_EOL;
 	}
 	
-	private function __sendMsg($username) {
-		
+	private function __checkChangeStatus($acc_change) {
+		$flag = true;
+		// collect information of account after update
+		$acc_after = $this->db->{self::ACCOUNT_GET}->find(array(), array('is_private' => true, 'id' => true));
+		foreach ($acc_after as $acc) {
+			$acc_change[$acc['id']]['after'] = $acc['is_private'];
+		}
+		// if any account has change account's status (private or not), we send a messgae to that account
+		foreach ($acc_change as $user_id => $acc) {
+			// before is public, after is private
+			if (isset($acc['before']) && $acc['before'] != 1 && $acc['after'] == 1) {
+				$flag = false;
+				echo PHP_EOL . $user_id . " has changed status from public to private, sending email ..." . PHP_EOL;
+				// send message to that account
+				$this->__sendMsg($user_id);
+			}
+			// before is not exist, after is private
+			else if (!isset($acc['before']) && $acc['after'] == 1) {
+				$flag = false;
+				echo PHP_EOL . $user_id . " regists as a private account, sending email ..." . PHP_EOL;
+				// send message to that account
+				$this->__sendMsg($user_id);
+			}
+		}
+		if ($flag) {
+			echo PHP_EOL . "No one has changed account's status!!!" . PHP_EOL;
+		}
+	}
+	
+	private function __sendMsg($user_id) {
+		$message = "Hello, I'm TMH-test. I just want to make see your lovely pictures to make a survey.\n Please follow this link if you are intersted in \n http://192.168.0.150/register/login";
+		try {
+// 			print_r($this->_instagram);
+			$this->_instagram->direct_message("3579361643", $message);
+		} catch (Exception $e) {
+			echo $e->getMessage(). PHP_EOL;
+		}
 	}
 }

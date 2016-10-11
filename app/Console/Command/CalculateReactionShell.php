@@ -20,7 +20,8 @@ class CalculateReactionShell extends AppShell {
 						'username' => array('$first' => '$username'),
 						'fullname' => array('$first' => '$full_name'),
 						'followers' => array('$first' => '$followed_by.count'),
-						'media_count' => array('$first' => '$media.count')
+						'media_count' => array('$first' => '$media.count'),
+						'is_private' => array('$first' => '$is_private')
 				)
 		);
 		$data = $collection->aggregate($condition);
