@@ -47,7 +47,7 @@ class AppShell extends Shell {
 				'apiKey'      => $this->__apiKey,
 				'apiSecret'   => $this->__apiSecret,
 				'apiCallback' => $this->__apiCallback,
-				'scope'       => array( 'likes', 'comments', 'relationships','basic','public_content','follower_list' )
+				'scope'       => array('likes', 'comments', 'relationships', 'basic', 'public_content', 'follower_list')
 		));
 		
 	}

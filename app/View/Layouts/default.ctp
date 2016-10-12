@@ -53,6 +53,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 			<?php echo $this->fetch('content'); ?>
 		</div>
 		<footer class="footer col-xs-12">
+			<?php if (strtolower($this->params['controller']) == 'top'): ?>
 			<div class="col-xs-6">
 				<p class="team icon"><span class="glyphicon glyphicon-user"></span> <u>CONTACT US</u></p>
 				<p class="team text"> Tribal Media House Technology Lab</p>
@@ -63,6 +64,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 				<p><span class="glyphicon glyphicon-globe"></span> <a href='https://www.facebook.com/tmhtechlab' target="_blank">www.tmh-techlab.vn</a></p>
 				<p><span class="glyphicon glyphicon-thumbs-up"></span> <a href='https://www.facebook.com/tmhtechlab' target="_blank">www.facebook.com/tmhtechlab</a></p>
 			</div>
+			<?php endif;?>
         </footer>
 	</div>
 	<?php echo $this->element('sql_dump'); ?>
