@@ -63,11 +63,7 @@
 			</td>
 			<td>
 				<?php 
-					echo $this->Html->link(
-							number_format($value['media_count']),
-							array('controller' => '', 'action' => 'media','?' => array('id' => $value['id'])),
-							array('target' => '_blank')
-						)
+					echo number_format($value['media_count']);
 				?>
 			</td>
 			<td><?php echo number_format($value['media_get']) . " (" . $percentage . "%)"?></td>
