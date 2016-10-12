@@ -22,7 +22,7 @@
 	    <div class="modal-content">
 	      <div class="modal-body">
 	       		 <p class="messRegis">This is mess</p>
-	       		 <div style="text-align: center;margin-top: 20%;">
+	       		 <div style="text-align: center;margin-top: 12%;">
 				      <button type="button" class="btn btn-primary cancel" >Ok</button>
 			      </div>
 	      </div>
