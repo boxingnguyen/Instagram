@@ -22,24 +22,24 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 <head>
 	<?php echo $this->Html->charset(); ?>
 	<title>
-		<?php echo $cakeDescription ?>:
+		<?php $this->assign('title', 'Instagram Analysis | TMH Techlab');?>
 		<?php echo $this->fetch('title'); ?>
 	</title>
 	<?php
 		echo $this->Html->meta('icon');
-		echo $this->Html->css('bootstrap.min');
+		echo $this->Html->css('css/bootstrap.min');
+		echo $this->Html->css('css/bootstrap-theme.min');
 		echo $this->Html->css('style');
 		
 		echo $this->Html->script('jquery.min');
 		echo $this->Html->script('loader');
 		echo $this->Html->script('src/register');
+		echo $this->Html->script('js/bootstrap.min');
 
 		echo $this->fetch('meta');
 		echo $this->fetch('css');
 		echo $this->fetch('script');
 	?>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 </head>
 <body>
 	<div class="container">
@@ -52,8 +52,17 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 
 			<?php echo $this->fetch('content'); ?>
 		</div>
-		<footer>
-            <p> Made by Tribal Media House Team</p>
+		<footer class="footer col-xs-12">
+			<div class="col-xs-6">
+				<p class="team icon"><span class="glyphicon glyphicon-user"></span> <u>CONTACT US</u></p>
+				<p class="team text"> Tribal Media House Technology Lab</p>
+			</div>
+			<div class="col-xs-6 contact">
+				<p><span class="glyphicon glyphicon-home"></span> 7F IPH, 241 Xuan Thuy Str., Cau Giay Dist., Hanoi, Vietnam.</p>
+				<p><span class="glyphicon glyphicon-earphone"></span> ＋84-(0)4-3256-5182</p>
+				<p><span class="glyphicon glyphicon-globe"></span> <a href='https://www.facebook.com/tmhtechlab' target="_blank">www.tmh-techlab.vn</a></p>
+				<p><span class="glyphicon glyphicon-thumbs-up"></span> <a href='https://www.facebook.com/tmhtechlab' target="_blank">www.facebook.com/tmhtechlab</a></p>
+			</div>
         </footer>
 	</div>
 	<?php echo $this->element('sql_dump'); ?>

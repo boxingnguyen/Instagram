@@ -81,7 +81,24 @@ footer {
 
 footer p {
   display: block;
-  padding: 10px;
+  padding: 5px;
+  margin: 0 0 0 0;
+}
+
+.contact {
+	text-align: left;
+}
+
+.team {
+	padding-top: 15px;
+}
+
+.team.icon {
+	font-size: 25px;
+}
+
+.team.text {
+	font-size: 18px;
 }
 
 .grid {
