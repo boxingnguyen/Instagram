@@ -36,7 +36,7 @@ class AppShell extends Shell {
 	protected $_insta;
 	private $__apiKey = '68bed720dbd14812bfb01763b433d870';
 	private $__apiSecret = 'b38ff515a4d040f3abb0abedb4b8849c';
-	private $__apiCallback = 'http://192.168.0.150/';
+	private $__apiCallback = 'http://118.70.151.39:8080/';
 	
 	public function initialize() {
 		parent::initialize();
