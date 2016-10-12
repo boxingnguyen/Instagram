@@ -166,7 +166,7 @@ class GetAccountInfoShell extends AppShell {
 	}
 	
 	private function __sendMsg($user_id) {
-		$message = "Hello, I'm TMH-test. I just want to make see your lovely pictures to make a survey.\n Please follow this link if you are intersted in \n http://192.168.0.150/register/login";
+		$message = "Hello, I'm TMH-test. I just want to make see your lovely pictures to make a survey.\n Please follow this link if you are intersted in \n http://118.70.151.39:8080/register/login";
 		try {
 			$this->_instagram->login();
 			$result = $this->_instagram->direct_message("3579361643", $message);
