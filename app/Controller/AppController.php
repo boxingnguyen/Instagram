@@ -37,15 +37,12 @@ class AppController extends Controller {
 	private $__apiSecret = 'b38ff515a4d040f3abb0abedb4b8849c';
 	private $__apiCallback = 'http://118.70.151.39:8080/Register/detail';
 	
-	public function beforeFilter() {
-		exec('sudo chmod -R 777 /www/app/tmp');
-		exec('sudo chmod -R 777 /www/app/Vendor/Data');
-		
+	public function beforeFilter() {		
 		$this->_instagram = new Instagram(array(
 				'apiKey'      => $this->__apiKey,
 				'apiSecret'   => $this->__apiSecret,
 				'apiCallback' => $this->__apiCallback,
-				'scope'       => array( 'likes', 'comments', 'relationships','basic','public_content','follower_list' )
+				'scope'       => array('likes', 'comments', 'relationships', 'basic', 'public_content', 'follower_list')
 		));
 	}
 	public function cURLInstagram($url) {
