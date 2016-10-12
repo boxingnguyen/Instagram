@@ -2,7 +2,8 @@
 App::uses('Controller', 'Controller');
 class RegisterController extends AppController {
 	public function login() {
-		$url = $this->_instagram->getLoginUrl();
+		$scope = array('public_content','basic');
+		$url = $this->_instagram->getLoginUrl($scope);
 		$this->set('instagrams', $url);
 	}
 	public function detail() {
@@ -39,6 +40,42 @@ class RegisterController extends AppController {
 		
 		// after get data successful, redirect to Top page
 		$this->redirect(array('controller' => 'top', 'action' => 'index'));
+		if(isset($_GET['code'])){
+			$m = new MongoClient;
+			$db = $m->instagram_account_info;
+			$collections = $db->account_username;
+			$date = date("dmY");
+			
+			$code = $_GET['code'];
+			$data = $this->_instagram->getOAuthToken($code);
+			$id = $data->user->id;
+			$username = $data->user->username;
+			
+			$setId = $collections->find(array('id' => $id))->count();
+			if ($setId > 0) {
+				$collections->remove(array('id' => $id));
+				$collections->insert(array(
+						'access_token' => $data->access_token,
+						'id' => $id,
+						'username' => $username
+				));
+			}
+			// get account info
+			$acc_info = $this->__getAccountInfo($username);
+			// save account info into db
+			$this->__saveAccountIntoDb($acc_info->user);
+			// get media
+			$media = $this->__getMedia($username, $data->access_token, $date);
+			// save account info into db
+			$this->__saveMediaIntoDb($media);
+			// calculate reaction for this account
+			$this->__calculateReaction($username);
+
+			// after get data successful, redirect to Top page
+			$this->redirect(array('controller' => 'top', 'action' => 'index'));
+		}else {
+			$this->redirect( array('controller' => 'register','action' => 'login' ));
+		}	
 	}
 	
 	private function __getAccountInfo($username) {
