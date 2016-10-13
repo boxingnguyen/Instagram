@@ -175,7 +175,7 @@ class GetMediaShell extends AppShell {
 	
 	private function __createIndex($collection) {
 		echo "Indexing media ..." . PHP_EOL;
-		$collection->createIndex(array('user.id' => 1, 'created_time' => 1), array('timeout' => -1, 'background' => true, 'unique' => true, 'dropDups' => true));
+		$collection->createIndex(array('user.id' => 1, 'created_time' => 1), array('dropDups' => true, 'timeout' => -1, 'background' => true));
 		echo "Indexing media completed!" . PHP_EOL;
 		echo "Total documents: " . $collection->count() . PHP_EOL;
 	}
