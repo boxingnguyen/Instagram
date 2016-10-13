@@ -68,6 +68,10 @@ class AppShell extends Shell {
 			if ($i >= 1) {
 				$this->out($i . ': ' . $url);
 			}
+			if ($i > 10) {
+				$this->out('Stop get data of ' . $url);
+				break;
+			}
 			$jsonData = curl_exec($ch);
 			list($headerContent, $jsonData) = array_pad(explode("\r\n\r\n", $jsonData, 2), 2, null);
 				

@@ -146,14 +146,14 @@ class GetAccountInfoShell extends AppShell {
 		// if any account has change account's status (private or not), we send a messgae to that account
 		foreach ($acc_change as $user_id => $acc) {
 			// before is public, after is private
-			if (isset($acc['before']) && $acc['before'] != 1 && $acc['after'] == 1) {
+			if (isset($acc['before']) && $acc['before'] != 1 && isset($acc['after']) && $acc['after'] == 1) {
 				$flag = false;
 				echo PHP_EOL . $user_id . " has changed status from public to private, sending email ..." . PHP_EOL;
 				// send message to that account
 				$this->__sendMsg($user_id);
 			}
 			// before is not exist, after is private
-			else if (!isset($acc['before']) && $acc['after'] == 1) {
+			else if (!isset($acc['before']) && isset($acc['after']) && $acc['after'] == 1) {
 				$flag = false;
 				echo PHP_EOL . $user_id . " regists as a private account, sending email ..." . PHP_EOL;
 				// send message to that account
