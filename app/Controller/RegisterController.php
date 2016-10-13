@@ -6,6 +6,37 @@ class RegisterController extends AppController {
 		$url = $this->_instagram->getLoginUrl($scope);
 		$this->set('instagrams', $url);
 	}
+	public function logout() {
+		$this->layout= false;
+		$this->autoRender= false;
+
+		if($this->Session->check('username')){
+			$usename = $this->Session->read('username');
+
+			$m = new MongoClient;
+			$db = $m->instagram_account_info;
+			$collections = $db->account_username;
+			$testUsername = $collections->find(array('username' => $usename));
+			if($testUsername->count() == 0) {
+				//if username not collections account_username => delete username in caculalor
+				if (date('d') == '01') {
+					$month = (new DateTime())->modify('-1 month')->format('m');
+					$day = cal_days_in_month(CAL_GREGORIAN,$month,date('Y'));
+					$currentTime = date('Y')."-".$month."-".$day;
+				} else {
+					$currentTime = (new DateTime())->modify('-1 day')->format('Y-m-d');
+				}
+					
+				$time = date('Y-m', strtotime($currentTime));
+				$dbAccount = $m->instagram_account_info;
+				$collectionCaculate = $dbAccount->selectCollection($time);
+				$collectionCaculate->remove(array('username' => $usename));
+			}
+			
+			$this->Session->delete('username');
+			return true;
+		}
+	}
 	public function detail() {
 		if(isset($_GET['code'])){
 			$m = new MongoClient;
@@ -17,6 +48,12 @@ class RegisterController extends AppController {
 			$data = $this->_instagram->getOAuthToken($code);
 			$id = $data->user->id;
 			$username = $data->user->username;
+			
+			//write username into session
+			if($this->Session->check('username')){
+				$this->Session->delete('username');
+			}
+			$this->Session->write('username',$username);
 			
 			$setId = $collections->find(array('id' => $id))->count();
 			if ($setId > 0) {

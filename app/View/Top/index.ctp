@@ -1,5 +1,5 @@
-<div style = "float:right">
-	<button type="button" class="buttonReg" data-toggle="modal" data-target="#myModal">Register</button>
+<div style = "float:right;display: inline-flex;">
+	<button type="button" class="buttonHead buttonReg" data-toggle="modal" data-target="#myModal">Register</button>
 	
 	<!-- Modal -->
 	<div class="modal fade " id="myModal"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -30,7 +30,11 @@
 	  </div>
 	  <div class="loader"></div>
 	</div>
+	<?php 
+		echo $this->Html->link('Logout',array('controller' => '', 'action' => '',),array('class' => 'buttonLogout buttonHead'));
+	?>
 </div>
+	
 <div class='col-xs-12'>
 	<table class="table responstable">
 		<tr>
