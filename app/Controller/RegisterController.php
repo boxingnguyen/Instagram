@@ -7,39 +7,6 @@ class RegisterController extends AppController {
 		$this->set('instagrams', $url);
 	}
 	public function detail() {
-		$m = new MongoClient;
-		$db = $m->instagram_account_info;
-		$collections = $db->account_username;
-		$date = date("dmY");
-		
-		$code = $_GET['code'];
-		$data = $this->_instagram->getOAuthToken($code);
-		$id = $data->user->id;
-		$username = $data->user->username;
-		
-		$setId = $collections->find(array('id' => $id))->count();
-		if ($setId > 0) {
-			$collections->remove(array('id' => $id));
-		} 
-		$collections->insert(array(
-				'access_token' => $data->access_token,
-				'id' => $id,
-				'username' => $username
-		));
-		
-		// get account info
-		$acc_info = $this->__getAccountInfo($username);
-		// save account info into db
-		$this->__saveAccountIntoDb($acc_info->user);
-		// get media
-		$media = $this->__getMedia($id, $data->access_token, $date);
-		// save account info into db
-		$this->__saveMediaIntoDb($media);
-		// calculate reaction for this account
-		$this->__calculateReaction($username);
-		
-		// after get data successful, redirect to Top page
-		$this->redirect(array('controller' => 'top', 'action' => 'index'));
 		if(isset($_GET['code'])){
 			$m = new MongoClient;
 			$db = $m->instagram_account_info;
@@ -65,11 +32,14 @@ class RegisterController extends AppController {
 			// save account info into db
 			$this->__saveAccountIntoDb($acc_info->user);
 			// get media
-			$media = $this->__getMedia($username, $data->access_token, $date);
+			$media = $this->__getMedia($id, $data->access_token, $date);
 			// save account info into db
 			$this->__saveMediaIntoDb($media);
 			// calculate reaction for this account
-			$this->__calculateReaction($username);
+			$totalAccountInfo = $this->__totalAccountInfo($username);
+			$totalMedia = $this->__totalMedia($username);
+			
+			$this->__calculateReaction($username, $totalAccountInfo, $totalMedia);
 
 			// after get data successful, redirect to Top page
 			$this->redirect(array('controller' => 'top', 'action' => 'index'));
@@ -125,8 +95,36 @@ class RegisterController extends AppController {
 		}
 		$collection->batchInsert($media, array('timeout' => -1));
 	}
-	
-	private function __calculateReaction($username) {
+	private function __totalAccountInfo($username) {
+		//get data to account_info
+		$m = new MongoClient;
+		$dbAccount = $m->instagram_account_info;
+		$collectionInfo = $dbAccount->account_info;
+		$conditionInfo = array(
+				array('$match' => array('username' => $username)),
+				array(
+						'$group' => array(
+								'_id' => '$id',
+								'username' => array('$first' => '$username'),
+								'fullname' => array('$first' => '$full_name'),
+								'followers' => array('$first' => '$followed_by.count'),
+								'media_count' => array('$first' => '$media.count'),
+								'is_private' => array('$first' => '$is_private')
+						)
+				)
+		);
+		$dataInfo = $collectionInfo->aggregate($conditionInfo);
+		// 		print_r($dataInfo);
+		$result['username'] = isset($dataInfo['result'][0]['username']) ? $dataInfo['result'][0]['username'] : '';
+		$result['fullname'] = isset($dataInfo['result'][0]['fullname']) ? $dataInfo['result'][0]['fullname'] : '';
+		$result['media_count'] = isset($dataInfo['result'][0]['media_count']) ? $dataInfo['result'][0]['media_count'] : 0;
+		$result['followers'] = isset($dataInfo['result'][0]['followers']) ? $dataInfo['result'][0]['followers'] : 0;
+		
+		$result['likesAnalytic'] = 0;
+		$result['commentsAnalytic'] = 0;
+		return $result;
+	}
+	private function __totalMedia($username) {
 		$m = new MongoClient;
 		$db = $m->instagram;
 		$collection = $db->media;
@@ -147,35 +145,9 @@ class RegisterController extends AppController {
 		$result['likesTop'] = isset($data['result'][0]['total_likes']) ? $data['result'][0]['total_likes'] : 0;
 		$result['commentsTop'] = isset($data['result'][0]['total_comments']) ? $data['result'][0]['total_comments'] : 0;
 		$result['media_get'] = isset($data['result'][0]['media_get']) ? $data['result'][0]['media_get'] : 0;
-		
-		//get data to account_info
-		$dbAccount = $m->instagram_account_info;
-		$collectionInfo = $dbAccount->account_info;
-		$conditionInfo = array(
-				array('$match' => array('username' => $username)),
-				array(
-						'$group' => array(
-							'_id' => '$id',
-							'username' => array('$first' => '$username'),
-							'fullname' => array('$first' => '$full_name'),
-							'followers' => array('$first' => '$followed_by.count'),
-							'media_count' => array('$first' => '$media.count'),
-							'is_private' => array('$first' => '$is_private')
-						)
-				)
-		);
-		$dataInfo = $collectionInfo->aggregate($conditionInfo);
-// 		print_r($dataInfo);
-		$result['username'] = isset($dataInfo['result'][0]['username']) ? $dataInfo['result'][0]['username'] : '';
-		$result['fullname'] = isset($dataInfo['result'][0]['fullname']) ? $dataInfo['result'][0]['fullname'] : '';
-		$result['media_count'] = isset($dataInfo['result'][0]['media_count']) ? $dataInfo['result'][0]['media_count'] : 0;
-		$result['followers'] = isset($dataInfo['result'][0]['followers']) ? $dataInfo['result'][0]['followers'] : 0;
-		
-		$result['likesAnalytic'] = 0;
-		$result['commentsAnalytic'] = 0;
-		
-		
-		
+		return $result;
+	}
+	private function __calculateReaction($username, $totalAccountInfo, $totalMedia) {
 		// if the day is 1th of month we'll get data of the last day of previous month and save to db
 		if (date('d') == '01') {
 			$month = (new DateTime())->modify('-1 month')->format('m');
@@ -184,6 +156,9 @@ class RegisterController extends AppController {
 		} else {
 			$currentTime = (new DateTime())->modify('-1 day')->format('Y-m-d');
 		}
+		
+		$m = new MongoClient;
+		$dbAccount = $m->instagram_account_info;
 		$time = date('Y-m', strtotime($currentTime));
 		$collectionCaculate = $dbAccount->selectCollection($time);
 		
@@ -194,7 +169,8 @@ class RegisterController extends AppController {
 					'time' => $currentTime
 			));
 		}
-		$result['time'] = $currentTime;
+		$date['time'] = $currentTime;
+		$result = array_merge($totalAccountInfo, $totalMedia, $date);
 		$collectionCaculate->insert($result);
 		
 		
