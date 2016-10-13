@@ -1,6 +1,10 @@
 <?php
 class TopController extends AppController {
 	public function index () {
+		if(!$this->Session->check('username')){
+			$this->redirect( array('controller' => 'register','action' => 'login' ));
+		}
+		
 		$m = new MongoClient();
 		$db = $m->instagram_account_info;
 		$collection = $db->selectCollection(date('Y-m'));
