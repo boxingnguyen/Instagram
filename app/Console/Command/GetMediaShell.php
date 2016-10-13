@@ -139,20 +139,21 @@ class GetMediaShell extends AppShell {
 		$data = array();
 		if ($file) {
 			while (($line = fgets($file)) !== false) {
+				$collection->insert(json_decode($line), array('timeout' => -1));
 				// store media into an array
-				$data[] = json_decode($line);
-				// write data to mongo if media count = 1000 (to avoid batchInsert is too large, maximum 48000000 bytes ~ 2000 medias (after json_decode))
-				if (count($data) == 1000) {
-					$collection->batchInsert($data, array('timeout' => -1));
-					unset($data);
-				}
+// 				$data[] = json_decode($line);
+// 				// write data to mongo if media count = 1000 (to avoid batchInsert is too large, maximum 48000000 bytes ~ 2000 medias (after json_decode))
+// 				if (count($data) == 1000) {
+// 					$collection->batchInsert($data, array('timeout' => -1));
+// 					unset($data);
+// 				}
 			}
 			fclose($file);
 		}
 		// insert remaining media into mongo
-		if (isset($data) && count($data) > 0) {
-			$collection->batchInsert($data, array('timeout' => -1));
-		}
+// 		if (isset($data) && count($data) > 0) {
+// 			$collection->batchInsert($data, array('timeout' => -1));
+// 		}
 	}
 	
 	private function __getMissingMedia($collection, $date) {
