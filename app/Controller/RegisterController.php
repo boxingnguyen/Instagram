@@ -32,13 +32,12 @@ class RegisterController extends AppController {
 				$collectionCaculate = $dbAccount->selectCollection($time);
 				$collectionCaculate->remove(array('username' => $usename));
 			}
-			
 			$this->Session->delete('username');
 			return true;
 		}
 	}
 	public function detail() {
-		if(isset($_GET['code'])){
+		if (isset($_GET['code'])) {
 			$m = new MongoClient;
 			$db = $m->instagram_account_info;
 			$collections = $db->account_username;
@@ -53,7 +52,7 @@ class RegisterController extends AppController {
 			if($this->Session->check('username')){
 				$this->Session->delete('username');
 			}
-			$this->Session->write('username',$username);
+			$this->Session->write('username', $username);
 			
 			$setId = $collections->find(array('id' => $id))->count();
 			if ($setId > 0) {
@@ -71,7 +70,7 @@ class RegisterController extends AppController {
 			// get media
 			$media = $this->__getMedia($id, $data->access_token, $date);
 			// save account info into db
-			$this->__saveMediaIntoDb($media);
+			$this->__saveMediaIntoDb($media, $username);
 			// calculate reaction for this account
 			$totalAccountInfo = $this->__totalAccountInfo($username);
 			$totalMedia = $this->__totalMedia($username);
@@ -80,7 +79,7 @@ class RegisterController extends AppController {
 
 			// after get data successful, redirect to Top page
 			$this->redirect(array('controller' => 'top', 'action' => 'index'));
-		}else {
+		} else {
 			$this->redirect( array('controller' => 'register','action' => 'login' ));
 		}	
 	}
@@ -123,12 +122,12 @@ class RegisterController extends AppController {
 		$collection->insert($acc_info, array('timeout' => -1));
 	}
 	
-	private function __saveMediaIntoDb($media) {
+	private function __saveMediaIntoDb($media, $username) {
 		$m = new MongoClient;
 		$db = $m->instagram;
 		$collection = $db->media;
 		if(isset($media) && count($media) > 0) {
-			$collection->remove(array());
+			$collection->remove(array("user.username" => $username));
 		}
 		$collection->batchInsert($media, array('timeout' => -1));
 	}

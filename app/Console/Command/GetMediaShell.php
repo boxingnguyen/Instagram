@@ -39,10 +39,13 @@ class GetMediaShell extends AppShell {
 	}
 	
 	private function __getMedia($username, $max_id = null) {
-		if ($max_id != null) {
-			$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/media/?max_id=' . $max_id);
-		} else {
-			$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/media/');
+		$data = array();
+		if(isset($username) && !empty($username) && is_string($username)){
+			if ($max_id != null) {
+				$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/media/?max_id=' . $max_id);
+			} else {
+				$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/media/');
+			}
 		}
 		return $data;
 	}
