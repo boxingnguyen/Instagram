@@ -138,7 +138,12 @@ class GetMediaShell extends AppShell {
 		$all_lines = file($filename);
 		$part = (int)(count($all_lines)/1000)+1;
 		$start =0;
-		$count_get = 1000;
+		if($part==1){
+			$count_get = count($all_lines)%1000;
+		}
+		else{
+			$count_get = 1000;
+		}
 		$data = array();
 		for ($i=0; $i <$part  ; $i++) {
 			$my[$i] = array_slice($all_lines, $start, $count_get );
