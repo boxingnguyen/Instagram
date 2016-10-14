@@ -135,25 +135,28 @@ class GetMediaShell extends AppShell {
 	
 	private function __saveIntoDb($name, $collection, $date) {
 		$filename = APP . "Vendor/Data/" . $date . "." . $name . ".media.json";
-		$file = fopen($filename, "r");
+		$all_lines = file($filename);
+		$part = (int)(count($all_lines)/1000)+1;
+		$start =0;
+		$count_get = 1000;
 		$data = array();
-		if ($file) {
-			while (($line = fgets($file)) !== false) {
-				// store media into an array
-				if (is_string($line) && json_decode($line) != null) {
-					$data[] = json_decode($line);
-					// write data to mongo if media count = 1000 (to avoid batchInsert is too large, maximum 48000000 bytes ~ 2000 medias (after json_decode))
-					if (count($data) == 1000) {
-						$collection->batchInsert($data, array('timeout' => -1));
-						unset($data);
-					}	
-				}
+		for ($i=0; $i <$part  ; $i++) {
+			$my[$i] = array_slice($all_lines, $start, $count_get );
+			if($i<$part-1){
+				$start = $start +1000;
 			}
-			fclose($file);
+			else{
+				$start = $start +1000;
+				$count_get = count($all_lines)%1000;
+			}
 		}
-		// insert remaining media into mongo
-		if (isset($data) && count($data) > 0) {
+		
+		for ($i=0; $i <$part ; $i++) {
+			foreach ($my[$i] as $value) {
+				$data[] = json_decode($value);
+			}
 			$collection->batchInsert($data, array('timeout' => -1));
+			unset($data);
 		}
 	}
 	
