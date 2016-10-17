@@ -123,7 +123,8 @@ class GetMediaShell extends AppShell {
 				}
 				$max_id = end($data->items)->id;
 			} else {
-				$this->out("Error: data is null");
+				echo "Re-get data of: " . $name . PHP_EOL;
+				print_r($data);
 				break;
 			}
 		}
@@ -136,6 +137,10 @@ class GetMediaShell extends AppShell {
 	private function __saveIntoDb($name, $collection, $date) {
 		$filename = APP . "Vendor/Data/" . $date . "." . $name . ".media.json";
 		$all_lines = file($filename);
+		if ($all_lines == 0) {
+			echo $name . "has no media!" . PHP_EOL;
+			return;
+		}
 		$part = (int)(count($all_lines)/1000)+1;
 		$start =0;
 		if($part==1){
@@ -266,18 +271,25 @@ class GetMediaShell extends AppShell {
 					$myfile = fopen(APP."Vendor/Data/".$date.".".$name.".media.json", "w+") or die("Unable to open file!");
 					do {
 						$media = $this->_insta->getUserMedia($id, 2, $max_id);
-						foreach ($media->data as $val) {
-							fwrite($myfile, json_encode($val)."\n");
-						}
-						if (isset($media->pagination) && !empty($media->pagination->next_max_id)) {
-							$max_id = $media->pagination->next_max_id;
+						// if get media successfully and user has number of media > 0
+						if (isset($media->data)) {
+							foreach ($media->data as $val) {
+								fwrite($myfile, json_encode($val)."\n");
+							}
+							if (isset($media->pagination) && !empty($media->pagination->next_max_id)) {
+								$max_id = $media->pagination->next_max_id;
+							} else {
+								$max_id = null;
+								break;
+							}	
 						} else {
-							$max_id = null;
+							// get media unsuccessfully or user has no media
+							print_r($media);
 							break;
 						}
 					} while ($max_id != null);
 				} else {
-					$this->out("Error: data is null");
+					$this->out($acc_info['username'] . " does not have access token");
 					break;
 				}
 				fclose($myfile);
@@ -290,7 +302,7 @@ class GetMediaShell extends AppShell {
 				} else {
 					file_put_contents(APP."Vendor/Data/tmp_missing_acc.json", $name . "\n", FILE_APPEND | LOCK_EX);
 					echo "Media of " . $name . " is missing (Private account) !!!!!!!" . PHP_EOL;
-				}	
+				}
 			}
 		}
 	}
