@@ -1,4 +1,4 @@
- <?php
+<?php
 class GetMediaShell extends AppShell {
 	
 	public function main() {
@@ -162,7 +162,13 @@ class GetMediaShell extends AppShell {
 						}
 					} else {
 						// get media unsuccessfully or user has no media
-						print_r($media);
+						echo $name . ": ";
+						// get media unsuccessfully or user has no media
+						if (isset($media->meta->error_type)) {
+							echo $media->meta->error_message . PHP_EOL;
+						} else {
+							print_r($media);
+						}
 						break;
 					}
 				} while ($max_id != null);
@@ -179,8 +185,8 @@ class GetMediaShell extends AppShell {
 	private function __saveIntoDb($name, $collection, $date) {
 		$filename = APP . "Vendor/Data/" . $date . "." . $name . ".media.json";
 		$all_lines = file($filename);
-		if ($all_lines == 0) {
-			echo $name . "has no media!" . PHP_EOL;
+		if (empty($all_lines)) {
+			echo $name . "has no media or something wrong!" . PHP_EOL;
 			return;
 		}
 		$part = (int)(count($all_lines)/1000)+1;
@@ -206,9 +212,6 @@ class GetMediaShell extends AppShell {
 		for ($i=0; $i <$part ; $i++) {
 			foreach ($my[$i] as $value) {
 				$data[] = json_decode($value);
-			}
-			if (empty($data)) {
-				print_r($all_lines);
 			}
 			$collection->batchInsert($data, array('timeout' => -1));
 			unset($data);
@@ -335,7 +338,7 @@ class GetMediaShell extends AppShell {
 							echo $name . ": ";
 							// get media unsuccessfully or user has no media
 							if (isset($media->meta->error_type)) {
-								print_r($media->meta->error_message);
+								echo $media->meta->error_message . PHP_EOL;
 							} else {
 								print_r($media);
 							}
