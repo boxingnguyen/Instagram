@@ -179,7 +179,6 @@ class GetMediaShell extends AppShell {
 	private function __saveIntoDb($name, $collection, $date) {
 		$filename = APP . "Vendor/Data/" . $date . "." . $name . ".media.json";
 		$all_lines = file($filename);
-		print_r($all_lines);
 		if ($all_lines == 0) {
 			echo $name . "has no media!" . PHP_EOL;
 			return;
@@ -207,6 +206,9 @@ class GetMediaShell extends AppShell {
 		for ($i=0; $i <$part ; $i++) {
 			foreach ($my[$i] as $value) {
 				$data[] = json_decode($value);
+			}
+			if (empty($data)) {
+				print_r($all_lines);
 			}
 			$collection->batchInsert($data, array('timeout' => -1));
 			unset($data);
