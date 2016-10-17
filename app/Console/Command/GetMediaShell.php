@@ -20,7 +20,7 @@ class GetMediaShell extends AppShell {
 			$this->__saveDataPublic($all_account['public'], $collection, $date);
 			
 			// re-get media if media is missing (maximum 5 times, of public account)
-			$this->__getMissingMedia($collection, $date);
+			$this->__getMissingMedia($collection, $date, false);
 			
 			// empty file contain public accounts that missed media
 			file_put_contents(APP."Vendor/Data/tmp_missing_acc.json", "");
@@ -29,7 +29,7 @@ class GetMediaShell extends AppShell {
 			$this->__saveDataPrivate($all_account['private'], $collection, $date);
 			
 			// re-get media if media is missing (maximum 5 times, of private account)
-			$this->__getMissingMedia($collection, $date);
+			$this->__getMissingMedia($collection, $date, true);
 			
 			// indexing
 			$this->__createIndex($collection);
@@ -134,6 +134,48 @@ class GetMediaShell extends AppShell {
 		return $this->__checkMedia($name);
 	}
 	
+	private function __reGetMediaPrivate($name, $date) {
+		$m = new MongoClient;
+		$db = $m->instagram_account_info;
+		$collections = $db->account_username;
+		
+		$result = $collections->find(array('username' => $name));
+		foreach ($result as $acc_info) {
+			$id = $acc_info['id'];
+			if (isset($acc_info['access_token'])) {
+				$this->_insta->setAccessToken($acc_info['access_token']);
+				$max_id = null;
+				// write data into json file
+				$myfile = fopen(APP."Vendor/Data/".$date.".".$name.".media.json", "w+") or die("Unable to open file!");
+				do {
+					$media = $this->_insta->getUserMedia($id, 2, $max_id);
+					// if get media successfully and user has number of media > 0
+					if (isset($media->data)) {
+						foreach ($media->data as $val) {
+							fwrite($myfile, json_encode($val)."\n");
+						}
+						if (isset($media->pagination) && !empty($media->pagination->next_max_id)) {
+							$max_id = $media->pagination->next_max_id;
+						} else {
+							$max_id = null;
+							break;
+						}
+					} else {
+						// get media unsuccessfully or user has no media
+						print_r($media);
+						break;
+					}
+				} while ($max_id != null);
+			} else {
+				$this->out($acc_info['username'] . " does not have access token.");
+				break;
+			}
+			fclose($myfile);
+			// re-check if media of this account is not missing anymore
+			return $this->__checkMedia($name);
+		}
+	}
+	
 	private function __saveIntoDb($name, $collection, $date) {
 		$filename = APP . "Vendor/Data/" . $date . "." . $name . ".media.json";
 		$all_lines = file($filename);
@@ -170,7 +212,7 @@ class GetMediaShell extends AppShell {
 		}
 	}
 	
-	private function __getMissingMedia($collection, $date) {
+	private function __getMissingMedia($collection, $date, $private) {
 		$missing_account = file(APP."Vendor/Data/tmp_missing_acc.json");
 		foreach ($missing_account as $name) {
 			$name = trim(preg_replace('/\s\s+/', ' ', $name));
@@ -178,7 +220,11 @@ class GetMediaShell extends AppShell {
 			$check_count = 0;
 			$checkMedia = false;
 			while (!$checkMedia && $check_count < 5) {
-				$checkMedia = $this->__reGetMedia($name, $date);
+				if ($private) {
+					$checkMedia = $this->__reGetMediaPrivate($name, $date);
+				} else {
+					$checkMedia = $this->__reGetMedia($name, $date);
+				}
 				$check_count ++;
 			}
 			if (!$checkMedia) {
