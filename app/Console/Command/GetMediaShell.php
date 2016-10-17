@@ -179,6 +179,7 @@ class GetMediaShell extends AppShell {
 	private function __saveIntoDb($name, $collection, $date) {
 		$filename = APP . "Vendor/Data/" . $date . "." . $name . ".media.json";
 		$all_lines = file($filename);
+		print_r($all_lines);
 		if ($all_lines == 0) {
 			echo $name . "has no media!" . PHP_EOL;
 			return;
@@ -329,8 +330,13 @@ class GetMediaShell extends AppShell {
 								break;
 							}	
 						} else {
+							echo $name . ": ";
 							// get media unsuccessfully or user has no media
-							print_r($media);
+							if (isset($media->meta->error_type)) {
+								print_r($media->meta->error_message);
+							} else {
+								print_r($media);
+							}
 							break;
 						}
 					} while ($max_id != null);
