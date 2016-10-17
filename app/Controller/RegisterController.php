@@ -69,13 +69,15 @@ class RegisterController extends AppController {
 			$this->__saveAccountIntoDb($acc_info->user);
 			// get media
 			$media = $this->__getMedia($id, $data->access_token, $date);
-			// save account info into db
 			$this->__saveMediaIntoDb($media, $username);
-			// calculate reaction for this account
 			$totalAccountInfo = $this->__totalAccountInfo($username);
-			$totalMedia = $this->__totalMedia($username);
-			
-			$this->__calculateReaction($username, $totalAccountInfo, $totalMedia);
+			$totalMediaTop = $this->__totalMedia($username);
+			$mediaTop = array('id' => $totalMediaTop['id'], 'likesTop' => $totalMediaTop['likes'], 'commentsTop' => $totalMediaTop['comments'], 'media_get' => $totalMediaTop['media_get']);
+			$date = (new DateTime())->format('Y-m-d 00:00:00');
+			$date = (string)strtotime($date);
+			$totalMediaAnalytic = $this->__totalMedia($username, $date);
+			$mediaAnalytic = array('likesAnalytic' => $totalMediaAnalytic['likes'], 'commentsAnalytic' => $totalMediaAnalytic['comments']);
+			$this->__calculateReaction($username,$totalAccountInfo, $mediaTop, $mediaAnalytic);
 
 			// after get data successful, redirect to Top page
 			$this->redirect(array('controller' => 'top', 'action' => 'index'));
@@ -150,40 +152,52 @@ class RegisterController extends AppController {
 				)
 		);
 		$dataInfo = $collectionInfo->aggregate($conditionInfo);
-		// 		print_r($dataInfo);
 		$result['username'] = isset($dataInfo['result'][0]['username']) ? $dataInfo['result'][0]['username'] : '';
 		$result['fullname'] = isset($dataInfo['result'][0]['fullname']) ? $dataInfo['result'][0]['fullname'] : '';
 		$result['media_count'] = isset($dataInfo['result'][0]['media_count']) ? $dataInfo['result'][0]['media_count'] : 0;
 		$result['followers'] = isset($dataInfo['result'][0]['followers']) ? $dataInfo['result'][0]['followers'] : 0;
-		
-		$result['likesAnalytic'] = 0;
-		$result['commentsAnalytic'] = 0;
 		return $result;
 	}
-	private function __totalMedia($username) {
+	
+	private function __totalMedia($username, $date = null) {
 		$m = new MongoClient;
 		$db = $m->instagram;
 		$collection = $db->media;
 		//get data to media
-		$condition = array(
-				array('$match' => array('user.username' => $username)),
-				array(
-						'$group' => array(
-								'_id' => '$user.id',
-								'total_likes' => array('$sum' => '$likes.count'),
-								'total_comments' => array('$sum' => '$comments.count'),
-								'media_get' => array('$sum' => 1)
-						)
-				)
-		);
+		if($date == null) {
+			// data in top page
+			$condition = array(
+					array('$match' => array('user.username' => $username)),
+					array(
+							'$group' => array(
+									'_id' => '$user.id',
+									'total_likes' => array('$sum' => '$likes.count'),
+									'total_comments' => array('$sum' => '$comments.count'),
+									'media_get' => array('$sum' => 1)
+							)
+					)
+			);
+		} else {
+			// data in analysis pages
+			$condition = array(
+					array('$match' => array('user.username' => $username, 'created_time' => array('$lt' => $date))),
+					array(
+							'$group' => array(
+									'_id' => '$user.id',
+									'total_likes' => array('$sum' => '$likes.count'),
+									'total_comments' => array('$sum' => '$comments.count'),
+							)
+					)
+			);
+		}
 		$data = $collection->aggregate($condition, array('maxTimeMS' => 3*60*1000));
 		$result['id'] = isset($data['result'][0]['_id']) ? $data['result'][0]['_id'] : 0;
-		$result['likesTop'] = isset($data['result'][0]['total_likes']) ? $data['result'][0]['total_likes'] : 0;
-		$result['commentsTop'] = isset($data['result'][0]['total_comments']) ? $data['result'][0]['total_comments'] : 0;
+		$result['likes'] = isset($data['result'][0]['total_likes']) ? $data['result'][0]['total_likes'] : 0;
+		$result['comments'] = isset($data['result'][0]['total_comments']) ? $data['result'][0]['total_comments'] : 0;
 		$result['media_get'] = isset($data['result'][0]['media_get']) ? $data['result'][0]['media_get'] : 0;
 		return $result;
 	}
-	private function __calculateReaction($username, $totalAccountInfo, $totalMedia) {
+	private function __calculateReaction($username, $totalAccountInfo, $mediaTop, $mediaAnalytic) {
 		// if the day is 1th of month we'll get data of the last day of previous month and save to db
 		if (date('d') == '01') {
 			$month = (new DateTime())->modify('-1 month')->format('m');
@@ -206,7 +220,7 @@ class RegisterController extends AppController {
 			));
 		}
 		$date['time'] = $currentTime;
-		$result = array_merge($totalAccountInfo, $totalMedia, $date);
+		$result = array_merge($totalAccountInfo, $mediaTop, $mediaAnalytic, $date);
 		$collectionCaculate->insert($result);
 		
 		
