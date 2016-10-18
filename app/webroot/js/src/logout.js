@@ -8,7 +8,7 @@ $().ready(function(){
 				success: function(data){
 					console.clear();
 					if (data == 1) {
-						window.location = "/register/login";
+						window.location = "/";
 					}
 				},
 				error: function(){
