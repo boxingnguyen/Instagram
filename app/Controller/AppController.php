@@ -33,9 +33,9 @@ use MetzWeb\Instagram\Instagram;
  */
 class AppController extends Controller {
 	protected $_instagram;
-	private $__apiKey = '68bed720dbd14812bfb01763b433d870';
-	private $__apiSecret = 'b38ff515a4d040f3abb0abedb4b8849c';
-	private $__apiCallback = 'http://118.70.151.39:8080/Register/detail';
+	private $__apiKey = '9a0eb7b3e06949b98980256fccf93599'; //'68bed720dbd14812bfb01763b433d870';
+	private $__apiSecret = 'eeaeda3bc5774eb196e53d064e41c7b5'; //'b38ff515a4d040f3abb0abedb4b8849c';
+	private $__apiCallback = 'http://192.168.33.30/Register/detail/';
 	
 	public function beforeFilter() {		
 		$this->_instagram = new Instagram(array(
