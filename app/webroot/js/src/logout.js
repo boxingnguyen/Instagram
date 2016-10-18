@@ -1,5 +1,7 @@
 $().ready(function(){
 	$('.buttonLogout').click(function(){
+		$('body').append('<div style="display:none"><iframe src="https://instagram.com/accounts/logout/" width="0" height="0"></iframe></div>');
+		sleep(10000);
 		$.ajax({
 			url: '/register/logout/',
 			dataType: 'json',
@@ -11,4 +13,8 @@ $().ready(function(){
 			}
 		})
 	});
+	function sleep(delay) {
+        var start = new Date().getTime();
+        while (new Date().getTime() < start + delay);
+      }
 });
