@@ -30,9 +30,7 @@
 	  </div>
 	  <div class="loader"></div>
 	</div>
-	<?php 
-		echo $this->Html->link('Logout',array('controller' => '', 'action' => '',),array('class' => 'buttonLogout buttonHead'));
-	?>
+	<a class="buttonLogout buttonHead" href="javascript:void(0)">Logout</a>
 </div>
 	
 <div class='col-xs-12'>
