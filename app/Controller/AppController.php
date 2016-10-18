@@ -41,8 +41,7 @@ class AppController extends Controller {
 		$this->_instagram = new Instagram(array(
 				'apiKey'      => $this->__apiKey,
 				'apiSecret'   => $this->__apiSecret,
-				'apiCallback' => $this->__apiCallback,
-				'scope'       => array('likes', 'comments', 'relationships', 'basic', 'public_content', 'follower_list')
+				'apiCallback' => $this->__apiCallback
 		));
 	}
 	public function cURLInstagram($url) {

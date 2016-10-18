@@ -2,12 +2,42 @@
 App::uses('Controller', 'Controller');
 class RegisterController extends AppController {
 	public function login() {
-		$scope = array('public_content','basic');
+		$scope = array('basic');
 		$url = $this->_instagram->getLoginUrl($scope);
 		$this->set('instagrams', $url);
 	}
+	public function logout() {
+		$this->layout= false;
+		$this->autoRender= false;
+
+		if($this->Session->check('username')){
+			$usename = $this->Session->read('username');
+
+			$m = new MongoClient;
+			$db = $m->instagram_account_info;
+			$collections = $db->account_username;
+			$testUsername = $collections->find(array('username' => $usename));
+			if($testUsername->count() == 0) {
+				//if username not collections account_username => delete username in caculalor
+				if (date('d') == '01') {
+					$month = (new DateTime())->modify('-1 month')->format('m');
+					$day = cal_days_in_month(CAL_GREGORIAN,$month,date('Y'));
+					$currentTime = date('Y')."-".$month."-".$day;
+				} else {
+					$currentTime = (new DateTime())->modify('-1 day')->format('Y-m-d');
+				}
+					
+				$time = date('Y-m', strtotime($currentTime));
+				$dbAccount = $m->instagram_account_info;
+				$collectionCaculate = $dbAccount->selectCollection($time);
+				$collectionCaculate->remove(array('username' => $usename));
+			}
+			$this->Session->delete('username');
+			return true;
+		}
+	}
 	public function detail() {
-		if(isset($_GET['code'])){
+		if (isset($_GET['code'])) {
 			$m = new MongoClient;
 			$db = $m->instagram_account_info;
 			$collections = $db->account_username;
@@ -17,6 +47,12 @@ class RegisterController extends AppController {
 			$data = $this->_instagram->getOAuthToken($code);
 			$id = $data->user->id;
 			$username = $data->user->username;
+			
+			//write username into session
+			if($this->Session->check('username')){
+				$this->Session->delete('username');
+			}
+			$this->Session->write('username', $username);
 			
 			$setId = $collections->find(array('id' => $id))->count();
 			if ($setId > 0) {
@@ -33,17 +69,19 @@ class RegisterController extends AppController {
 			$this->__saveAccountIntoDb($acc_info->user);
 			// get media
 			$media = $this->__getMedia($id, $data->access_token, $date);
-			// save account info into db
-			$this->__saveMediaIntoDb($media);
-			// calculate reaction for this account
+			$this->__saveMediaIntoDb($media, $username);
 			$totalAccountInfo = $this->__totalAccountInfo($username);
-			$totalMedia = $this->__totalMedia($username);
-			
-			$this->__calculateReaction($username, $totalAccountInfo, $totalMedia);
+			$totalMediaTop = $this->__totalMedia($username);
+			$mediaTop = array('id' => $totalMediaTop['id'], 'likesTop' => $totalMediaTop['likes'], 'commentsTop' => $totalMediaTop['comments'], 'media_get' => $totalMediaTop['media_get']);
+			$date = (new DateTime())->format('Y-m-d 00:00:00');
+			$date = (string)strtotime($date);
+			$totalMediaAnalytic = $this->__totalMedia($username, $date);
+			$mediaAnalytic = array('likesAnalytic' => $totalMediaAnalytic['likes'], 'commentsAnalytic' => $totalMediaAnalytic['comments']);
+			$this->__calculateReaction($username,$totalAccountInfo, $mediaTop, $mediaAnalytic);
 
 			// after get data successful, redirect to Top page
 			$this->redirect(array('controller' => 'top', 'action' => 'index'));
-		}else {
+		} else {
 			$this->redirect( array('controller' => 'register','action' => 'login' ));
 		}	
 	}
@@ -86,12 +124,12 @@ class RegisterController extends AppController {
 		$collection->insert($acc_info, array('timeout' => -1));
 	}
 	
-	private function __saveMediaIntoDb($media) {
+	private function __saveMediaIntoDb($media, $username) {
 		$m = new MongoClient;
 		$db = $m->instagram;
 		$collection = $db->media;
 		if(isset($media) && count($media) > 0) {
-			$collection->remove(array());
+			$collection->remove(array("user.username" => $username));
 		}
 		$collection->batchInsert($media, array('timeout' => -1));
 	}
@@ -114,40 +152,52 @@ class RegisterController extends AppController {
 				)
 		);
 		$dataInfo = $collectionInfo->aggregate($conditionInfo);
-		// 		print_r($dataInfo);
 		$result['username'] = isset($dataInfo['result'][0]['username']) ? $dataInfo['result'][0]['username'] : '';
 		$result['fullname'] = isset($dataInfo['result'][0]['fullname']) ? $dataInfo['result'][0]['fullname'] : '';
 		$result['media_count'] = isset($dataInfo['result'][0]['media_count']) ? $dataInfo['result'][0]['media_count'] : 0;
 		$result['followers'] = isset($dataInfo['result'][0]['followers']) ? $dataInfo['result'][0]['followers'] : 0;
-		
-		$result['likesAnalytic'] = 0;
-		$result['commentsAnalytic'] = 0;
 		return $result;
 	}
-	private function __totalMedia($username) {
+	
+	private function __totalMedia($username, $date = null) {
 		$m = new MongoClient;
 		$db = $m->instagram;
 		$collection = $db->media;
 		//get data to media
-		$condition = array(
-				array('$match' => array('user.username' => $username)),
-				array(
-						'$group' => array(
-								'_id' => '$user.id',
-								'total_likes' => array('$sum' => '$likes.count'),
-								'total_comments' => array('$sum' => '$comments.count'),
-								'media_get' => array('$sum' => 1)
-						)
-				)
-		);
+		if($date == null) {
+			// data in top page
+			$condition = array(
+					array('$match' => array('user.username' => $username)),
+					array(
+							'$group' => array(
+									'_id' => '$user.id',
+									'total_likes' => array('$sum' => '$likes.count'),
+									'total_comments' => array('$sum' => '$comments.count'),
+									'media_get' => array('$sum' => 1)
+							)
+					)
+			);
+		} else {
+			// data in analysis pages
+			$condition = array(
+					array('$match' => array('user.username' => $username, 'created_time' => array('$lt' => $date))),
+					array(
+							'$group' => array(
+									'_id' => '$user.id',
+									'total_likes' => array('$sum' => '$likes.count'),
+									'total_comments' => array('$sum' => '$comments.count'),
+							)
+					)
+			);
+		}
 		$data = $collection->aggregate($condition, array('maxTimeMS' => 3*60*1000));
 		$result['id'] = isset($data['result'][0]['_id']) ? $data['result'][0]['_id'] : 0;
-		$result['likesTop'] = isset($data['result'][0]['total_likes']) ? $data['result'][0]['total_likes'] : 0;
-		$result['commentsTop'] = isset($data['result'][0]['total_comments']) ? $data['result'][0]['total_comments'] : 0;
+		$result['likes'] = isset($data['result'][0]['total_likes']) ? $data['result'][0]['total_likes'] : 0;
+		$result['comments'] = isset($data['result'][0]['total_comments']) ? $data['result'][0]['total_comments'] : 0;
 		$result['media_get'] = isset($data['result'][0]['media_get']) ? $data['result'][0]['media_get'] : 0;
 		return $result;
 	}
-	private function __calculateReaction($username, $totalAccountInfo, $totalMedia) {
+	private function __calculateReaction($username, $totalAccountInfo, $mediaTop, $mediaAnalytic) {
 		// if the day is 1th of month we'll get data of the last day of previous month and save to db
 		if (date('d') == '01') {
 			$month = (new DateTime())->modify('-1 month')->format('m');
@@ -170,7 +220,7 @@ class RegisterController extends AppController {
 			));
 		}
 		$date['time'] = $currentTime;
-		$result = array_merge($totalAccountInfo, $totalMedia, $date);
+		$result = array_merge($totalAccountInfo, $mediaTop, $mediaAnalytic, $date);
 		$collectionCaculate->insert($result);
 		
 		

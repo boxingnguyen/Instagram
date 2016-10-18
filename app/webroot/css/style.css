@@ -94,7 +94,7 @@ footer p {
 }
 
 .team.icon {
-	font-size: 25px;
+	font-size: 16px;
 }
 
 .team.text {
@@ -225,24 +225,27 @@ footer p {
 	background: #E9F0F5;
   }
 }
-button.buttonReg {
+.buttonHead {
 	outline-color: white;
 	border-radius: 5px;
-	background: #F4EEE3;
     border: solid 1px #443728;
-    margin-right: 50px;
+    margin-right: 20px;
     MARGIN-BOTTOM: 5PX;
     color: #443728;
     font-weight: bold;
     font-size: 9pt;
-    padding: 5px 20px 5px 35px;
+    padding: 5px 20px 5px 20px;
     text-align: center;
-    background: url('../img/insta.png') no-repeat;
-    background-size: 22%;
-    background-position: 5px 5px;
     vertical-align: middle;
+    text-decoration: none !important;
 }
-button.buttonReg:hover, button.modalReg:hover{
+button.buttonReg{
+	background: url('../img/register.png') no-repeat;
+	background-size: 22%;
+    background-position: 5px 5px;
+	padding: 5px 20px 5px 35px;
+}
+.buttonHead:hover, button.modalReg:hover{
 	opacity: 0.5;
 }
 input[type=text]{
@@ -317,3 +320,6 @@ button.cancel{
 .instagram { width : 500px; margin-left:auto; margin-right: auto; text-align: center }
 .instagram img { margin: 0 10px ;}
 .instagram a{ font-size : 24px}
+.logoInsta {
+	height : 100px;
+}
