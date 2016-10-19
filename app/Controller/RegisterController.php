@@ -184,6 +184,7 @@ class RegisterController extends AppController {
 				)
 		);
 		$dataInfo = $collectionInfo->aggregate($conditionInfo);
+		$result['is_private'] = isset($dataInfo['result'][0]['is_private']) ? $dataInfo['result'][0]['is_private'] : '';
 		$result['username'] = isset($dataInfo['result'][0]['username']) ? $dataInfo['result'][0]['username'] : '';
 		$result['fullname'] = isset($dataInfo['result'][0]['fullname']) ? $dataInfo['result'][0]['fullname'] : '';
 		$result['media_count'] = isset($dataInfo['result'][0]['media_count']) ? $dataInfo['result'][0]['media_count'] : 0;
