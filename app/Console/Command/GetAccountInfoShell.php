@@ -4,6 +4,7 @@ class GetAccountInfoShell extends AppShell {
 	public $db;
 	const ACCOUNT_GET = "account_info";
 	const ACCOUNT_ORIGIN = "account_username";
+	public $countReSend = 0;
 	
 	public function initialize() {
 		parent::initialize();
@@ -178,6 +179,11 @@ class GetAccountInfoShell extends AppShell {
 					return true;
 				}else {
 					echo "Error when send message to " . $user_id . PHP_EOL;
+					if ($this->countReSend < 5) {
+						echo "Re-send to ". $user_id . PHP_EOL;
+						$this->__sendMsg($user_id);
+						$this->countReSend++;
+					}
 					return false;
 				}
 			}
