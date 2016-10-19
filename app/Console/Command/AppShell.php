@@ -34,9 +34,9 @@ class AppShell extends Shell {
 	const DEBUG = false;
 	
 	protected $_insta;
-	private $__apiKey = '9a0eb7b3e06949b98980256fccf93599'; //'68bed720dbd14812bfb01763b433d870';
-	private $__apiSecret = 'eeaeda3bc5774eb196e53d064e41c7b5'; //'b38ff515a4d040f3abb0abedb4b8849c';
-	private $__apiCallback = 'http://192.168.33.30/Register/detail/';
+	private $__apiKey = '68bed720dbd14812bfb01763b433d870';
+	private $__apiSecret = 'b38ff515a4d040f3abb0abedb4b8849c';
+	private $__apiCallback = '';
 	
 	public function initialize() {
 		parent::initialize();
@@ -47,9 +47,7 @@ class AppShell extends Shell {
 				'apiKey'      => $this->__apiKey,
 				'apiSecret'   => $this->__apiSecret,
 				'apiCallback' => $this->__apiCallback,
-				'scope'       => array('likes', 'comments', 'relationships', 'basic', 'public_content', 'follower_list')
 		));
-		
 	}
 	
 	public function cURLInstagram($url) {
