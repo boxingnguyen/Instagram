@@ -48,7 +48,7 @@ $().ready(function(){
 			
 			$.ajax({
 				method: "POST",
-				url: '/check',
+				url: '/register/register',
 				data: {username:username},
 				dataType: 'json',
 				success: function(data){
