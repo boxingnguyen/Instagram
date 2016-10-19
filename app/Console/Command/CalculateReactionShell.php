@@ -41,7 +41,6 @@ class CalculateReactionShell extends AppShell {
 		
 		
 		foreach ($data['result'] as $key => $value) {
-			print_r($value);
 			$result[$key]['time'] = $currentTime;
 			//Total: media, like, comment display top page
 			$reactionTop = $this->__calculateReaction($value['_id']);//display top
