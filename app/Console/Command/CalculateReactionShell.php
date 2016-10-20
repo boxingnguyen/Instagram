@@ -48,6 +48,7 @@ class CalculateReactionShell extends AppShell {
 			$reactionAnalytic = $this->__calculateReaction($value['_id'], $date);//display analytic
 			
 			$result[$key]['id'] = $value['_id'];
+			$result[$key]['is_private'] = $value['is_private'];
 			$result[$key]['likesTop'] = $reactionTop['likes'];
 			$result[$key]['commentsTop'] = $reactionTop['comments'];
 			$result[$key]['media_get'] = $reactionTop['media_get'];
