@@ -34,6 +34,7 @@ class RegisterController extends AppController {
 				$collectionCaculate->remove(array('username' => $usename));
 			}
 			$this->Session->delete('username');
+			$this->Session->delete('access_token');
 			return true;
 		}
 	}
@@ -85,6 +86,7 @@ class RegisterController extends AppController {
 				$this->Session->delete('username');
 			}
 			$this->Session->write('username', $username);
+			$this->Session->write('access_token',$data->access_token);
 			
 			$setId = $collections->find(array('id' => $id))->count();
 			if ($setId > 0) {
@@ -256,6 +258,15 @@ class RegisterController extends AppController {
 		$collectionCaculate->insert($result);
 		
 		
+	}
+	
+	public function register_hashtag($tags) {
+		$tags = 'cat';
+		$max_id = null;
+		do {
+			$data = $this->cURLInstagram('https://www.instagram.com/explore/tags/' . $tags . '/?__a=1&');
+			print_r($data); break;
+		} while (true);
 	}
 
 }

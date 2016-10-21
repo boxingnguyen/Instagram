@@ -736,7 +736,12 @@ class Instagram
 
         $this->_accesstoken = $token;
     }
-
+    public function setToken($token)
+    {
+//     	$token = is_object($data) ? $data->access_token : $data;
+    
+    	$this->_accesstoken = $token;
+    }
     /**
      * Access Token Getter.
      *
