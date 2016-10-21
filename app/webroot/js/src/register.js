@@ -105,7 +105,7 @@ $().ready(function(){
 			
 			$.ajax({
 				method: "POST",
-				url: '/hashtag/register',
+				url: './register',
 				data: {hashtag:hashtag},
 				dataType: 'json',
 				success: function(data) {

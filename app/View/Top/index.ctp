@@ -63,18 +63,9 @@
 							array('target' => '_blank')
 						)
 				?>
-				
-				<?php 
-					echo $this->Html->link(
-							$this->Html->tag('span',null, array('class' => 'glyphicon glyphicon-list', 'style' => 'float: right', 'aria-hidden' => 'true')),
-// 							'<span style="float: right;" class="glyphicon glyphicon-list" aria-hidden="true"></span>',
-							array('controller' => 'Ranking', 'action' => 'index','?' => array('id' => $value['id'])),
-							array('target' => '_blank')
-						)
-				?>
-				
-				<!-- <a href="/ranking/" target="_blank"><span style="float: right;" class="glyphicon glyphicon-list" aria-hidden="true"></span></a> -->
+				<a href="<?php echo Router::url(array('controller'=>'Ranking', 'action'=>'index', '?' => array('id' => $value['id'])))?>" target="_blank"><span style="float: right;" class="glyphicon glyphicon-list" aria-hidden="true"></span></a>
 			</td>
+			
 			<td>
 				<?php 
 					echo $this->Html->link(
