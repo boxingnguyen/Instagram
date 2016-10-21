@@ -49,7 +49,6 @@ class HashtagShell extends AppShell {
 			$listTag[] = str_replace("#","",$value['tag']);
 		}
 		$collection->drop();
-		$db->ranking->drop();
 		foreach ($listTag as $tag){
 			$mediaArray=$this->getPosttop($tag);
 			$collection->batchInsert($mediaArray);
@@ -64,13 +63,8 @@ class HashtagShell extends AppShell {
 				$total_media = $value['total_media'] ;
 			}
 			$statistic['total_media']=$total_media;
-			$statisticArray[]=$statistic;
+			$statisticArray[$tag]=$statistic;
 		}
-		
-		foreach ($statisticArray as $value){
-			$db->statistic->insert($value);
-		}
-		
-
+		$db->statistic->batchInsert($statisticArray);
 	}
 }
