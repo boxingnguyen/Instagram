@@ -1,6 +1,4 @@
-<form method ='' action='' class="switchForm">
-	<input type="checkbox" checked data-toggle="toggle" data-on="TOP" data-off="HASHTAG" data-onstyle="warning" data-offstyle="info">
-</form>
+<?php echo $this->element('switch_top_hashtag'); ?>
 <div style = "float:right;display: inline-flex;">
 	<button type="button" class="buttonHead buttonReg" data-toggle="modal" data-target="#myModal">Register</button>
 	
@@ -46,7 +44,7 @@
 			</tr>
 			<tr class='center'>
 				<td>1</td>
-				<td><a href="/ranking/hashtag" target="_blank">#cat</a></td>
+				<td><a href="/hashtag/ranking" target="_blank">#cat</a></td>
 				<td>12,000</td>
 			</tr>
 		</table>

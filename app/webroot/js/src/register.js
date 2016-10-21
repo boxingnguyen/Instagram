@@ -28,7 +28,7 @@ $().ready(function(){
 		input = input.replace(/\s/g, '');
 		//check input
 		if (!input.match(/^#.*/)) {
-			$('p.message').text('Sorry! This link has the wrong format. Please re-type!').css("color",'red');
+			$('p.message').text('Sorry! This hashtag has wrong format. Please re-type!').css("color",'red');
 			$('button.modalRegTag').prop('disabled', true);
 		}
 	});
@@ -90,12 +90,13 @@ $().ready(function(){
 	$('button.modalRegTag').click(function(){
 		var input = $('input[type=text]').val();
 		
-		if(input == ''){
+		if (input == '') {
 			$('p.message').text('Please input hastag!').css("color",'red');
 			$('button.modalRegTag').prop('disabled', true);
-		}else{
+		} else {
 			//remove spaces in string input
 			hashtag = input.replace(/\s/g, '');
+			console.log(hashtag);
 			
 			$('#myModal').modal('hide');
 			$('.loader').show();
@@ -107,11 +108,11 @@ $().ready(function(){
 				url: '/hashtag/register',
 				data: {hashtag:hashtag},
 				dataType: 'json',
-				success: function(data){
+				success: function(data) {
 					console.log(data);
-					if(data == 1){
+					if (data == 1) {
 						$('p.messRegis').text('You have successfully registered');
-					}else{
+					} else {
 						if($.type(data) === "string"){
 							$('p.messRegis').text(data);
 						}

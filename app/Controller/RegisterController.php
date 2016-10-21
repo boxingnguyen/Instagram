@@ -260,5 +260,14 @@ class RegisterController extends AppController {
 		
 		
 	}
+	
+	public function register_hashtag($tags) {
+		$tags = 'cat';
+		$max_id = null;
+		do {
+			$data = $this->cURLInstagram('https://www.instagram.com/explore/tags/' . $tags . '/?__a=1&');
+			print_r($data); break;
+		} while (true);
+	}
 
 }
