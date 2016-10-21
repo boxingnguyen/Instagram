@@ -17,7 +17,7 @@ class TestController extends AppController
  
     }
     public function getFollower(){
-        
+        //// Hang dt test
     }
     public function typeFor(){
 	$this->layout=false;
