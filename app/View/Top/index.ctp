@@ -1,6 +1,4 @@
-<form method ='' action='' class="switchForm">
-	<input type="checkbox" checked data-toggle="toggle" data-on="TOP" data-off="RANK" data-onstyle="warning" data-offstyle="info">
-</form>
+<?php echo $this->element('switch_top_hashtag'); ?>
 <div style = "float:right;display: inline-flex;">
 	<button type="button" class="buttonHead buttonReg" data-toggle="modal" data-target="#myModal">Register</button>
 	
