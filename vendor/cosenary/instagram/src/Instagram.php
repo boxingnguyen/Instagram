@@ -106,7 +106,7 @@ class Instagram {
    * @param array [optional] $scope       Requesting additional permissions
    * @return string                       Instagram OAuth login URL
    */
-  public function getLoginUrl($scope = array('basic', 'follower_list', 'public_content')) {
+  public function getLoginUrl($scope = array('basic')) {
     if (is_array($scope) && count(array_intersect($scope, $this->_scopes)) === count($scope)) {
       return self::API_OAUTH_URL . '?client_id=' . $this->getApiKey() . '&redirect_uri=' . urlencode($this->getApiCallback()) . '&scope=' . implode('+', $scope) . '&response_type=code';
     } else {
