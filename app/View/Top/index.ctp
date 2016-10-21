@@ -1,3 +1,4 @@
+<?php echo $this->element('switch_top_hashtag'); ?>
 <div style = "float:right;display: inline-flex;">
 	<button type="button" class="buttonHead buttonReg" data-toggle="modal" data-target="#myModal">Register</button>
 	
@@ -62,10 +63,16 @@
 							array('target' => '_blank')
 						)
 				?>
+				<a href="<?php echo Router::url(array('controller'=>'Ranking', 'action'=>'index', '?' => array('id' => $value['id'])))?>" target="_blank"><span style="float: right;" class="glyphicon glyphicon-list" aria-hidden="true"></span></a>
 			</td>
+			
 			<td>
 				<?php 
-					echo number_format($value['media_count']);
+					echo $this->Html->link(
+							number_format($value['media_count']),
+							array('controller' => '', 'action' => 'media','?' => array('id' => $value['id'])),
+							array('target' => '_blank', 'escape' => false)
+						)
 				?>
 			</td>
 			<td><?php echo number_format($value['media_get']) . " (" . $percentage . "%)"?></td>

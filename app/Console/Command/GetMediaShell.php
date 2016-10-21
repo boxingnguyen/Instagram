@@ -57,6 +57,8 @@ class GetMediaShell extends AppShell {
 		
 		$data = $collection->find()->sort(array('media.count' => -1))->fields(array('username' => true, 'media.count' => true, 'is_private' => true));
 		$result = array();
+		$result['private'] = array();
+		$result['public'] = array();
 		foreach ($data as $value) {
 			if ($value['is_private'] == 1) {
 				$result['private'][] = $value['username'];

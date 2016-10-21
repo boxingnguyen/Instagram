@@ -6,6 +6,7 @@ class RegisterController extends AppController {
 		$url = $this->_instagram->getLoginUrl($scope);
 		$this->set('instagrams', $url);
 	}
+	
 	public function logout() {
 		$this->layout= false;
 		$this->autoRender= false;
@@ -36,11 +37,42 @@ class RegisterController extends AppController {
 			return true;
 		}
 	}
+	
+	public function register(){
+		$this->layout= false;
+		$this->autoRender= false;
+		if(isset($_POST['username'])){
+			$username = $_POST['username'];
+			$m = new MongoClient();
+			$db = $m->instagram_account_info;
+			$collection = $db->account_username;
+			$exist = $collection->find(array('username'=>$username))->count();
+			if(!$exist == 0){
+				return json_encode("The account had added before!");
+			}
+			else{
+				$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/?__a=1');
+				if(isset($data)){
+					$id = $data->user->id;
+					// save to mongo db
+					$collection->insert(array('username'=>$username,'id'=>$id));
+					return json_encode("The account is added successfully!");
+				}
+				else{
+					// alert username doesn't exist
+					return json_encode("The account doesn't exist, please fill again!");
+				}
+			}
+		}else{
+			return false;
+		}
+	}
+	
 	public function detail() {
 		if (isset($_GET['code'])) {
 			$m = new MongoClient;
 			$db = $m->instagram_account_info;
-			$collections = $db->account_username;
+			$collections = $db->account_login;
 			$date = date("dmY");
 			
 			$code = $_GET['code'];
@@ -57,12 +89,13 @@ class RegisterController extends AppController {
 			$setId = $collections->find(array('id' => $id))->count();
 			if ($setId > 0) {
 				$collections->remove(array('id' => $id));
-				$collections->insert(array(
-						'access_token' => $data->access_token,
-						'id' => $id,
-						'username' => $username
-				));
 			}
+			$collections->insert(array(
+					'access_token' => $data->access_token,
+					'id' => $id,
+					'username' => $username
+			));
+			
 			// get account info
 			$acc_info = $this->__getAccountInfo($username);
 			// save account info into db
@@ -152,6 +185,7 @@ class RegisterController extends AppController {
 				)
 		);
 		$dataInfo = $collectionInfo->aggregate($conditionInfo);
+		$result['is_private'] = isset($dataInfo['result'][0]['is_private']) ? $dataInfo['result'][0]['is_private'] : '';
 		$result['username'] = isset($dataInfo['result'][0]['username']) ? $dataInfo['result'][0]['username'] : '';
 		$result['fullname'] = isset($dataInfo['result'][0]['fullname']) ? $dataInfo['result'][0]['fullname'] : '';
 		$result['media_count'] = isset($dataInfo['result'][0]['media_count']) ? $dataInfo['result'][0]['media_count'] : 0;
@@ -224,6 +258,15 @@ class RegisterController extends AppController {
 		$collectionCaculate->insert($result);
 		
 		
+	}
+	
+	public function register_hashtag($tags) {
+		$tags = 'cat';
+		$max_id = null;
+		do {
+			$data = $this->cURLInstagram('https://www.instagram.com/explore/tags/' . $tags . '/?__a=1&');
+			print_r($data); break;
+		} while (true);
 	}
 
 }
