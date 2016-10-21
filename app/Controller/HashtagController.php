@@ -1,6 +1,10 @@
 <?php
 class HashtagController extends AppController {
 	public function index () {
+		$db = $this->m->hashtag;
+		$c = $db->ranking;
+		$data = $c->find();
+		$this->set('data', $data);
 	}
 	public function register(){
 		$this->layout= false;
@@ -20,7 +24,7 @@ class HashtagController extends AppController {
 			}
 		}
 	}
-	public function ranking() {
+	public function detail() {
 		
 	}
 }

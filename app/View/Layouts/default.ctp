@@ -48,7 +48,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 	<div class="container">
 		<header class="clearfix">
 			<?php if (strtolower($this->params['controller']) == 'hashtag'){ ?>
-        		<h1>Hashtag Analysis</h1>
+        		<h1>Hashtag Ranking</h1>
         	<?php }elseif (strtolower($this->params['controller']) == 'ranking') {?>
         		<h1>Ranking</h1>
         	<?php } else {?>
