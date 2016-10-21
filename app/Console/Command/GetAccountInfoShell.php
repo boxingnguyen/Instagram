@@ -4,6 +4,7 @@ class GetAccountInfoShell extends AppShell {
 	public $db;
 	const ACCOUNT_GET = "account_info";
 	const ACCOUNT_ORIGIN = "account_username";
+	public $countReSend = 0;
 	
 	public function initialize() {
 		parent::initialize();
@@ -166,17 +167,23 @@ class GetAccountInfoShell extends AppShell {
 	}
 	
 	private function __sendMsg($user_id) {
-		$message = "Hello, I'm TMH-test. I just want to make see your lovely pictures to make a survey.\n Please follow this link if you are intersted in \n http://118.70.151.39:8080/register/login";
+		$url = "http://118.70.151.39:8080/";
+		$message = "Hello, I'm TMH-test. I just want to make see your lovely pictures to make a survey.\n Please follow this link if you are intersted in \n ".$url;
 		try {
 			$this->_instagram->login();
-			$result = $this->_instagram->direct_message("3579361643", $message);
-
+			$result = $this->_instagram->direct_message(array($user_id), $message);
+			
 			if(isset($result['http_code'])){
 				if (strpos($result['http_code'], '200 OK') !== false) {
 					echo "Send message to " . $user_id . " successfull!" . PHP_EOL;
 					return true;
 				}else {
 					echo "Error when send message to " . $user_id . PHP_EOL;
+					if ($this->countReSend < 5) {
+						echo "Re-send to ". $user_id . PHP_EOL;
+						$this->__sendMsg($user_id);
+						$this->countReSend++;
+					}
 					return false;
 				}
 			}

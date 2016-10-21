@@ -245,7 +245,7 @@ button.buttonReg{
     background-position: 5px 5px;
 	padding: 5px 20px 5px 35px;
 }
-.buttonHead:hover, button.modalReg:hover{
+.buttonHead:hover, button.modalReg:hover, button.modalRegTag:hover{
 	opacity: 0.5;
 }
 input[type=text]{
@@ -258,7 +258,7 @@ input[type=text]{
     border: 1px solid #ccc;
     box-sizing: border-box;
 }
-button.modalReg {
+button.modalReg, button.modalRegTag {
     background-color: #024457;
     color: white;
     padding: 14px 20px;
@@ -267,7 +267,7 @@ button.modalReg {
     cursor: pointer;
     width: 100%;
 }
-button.modalReg:disabled{
+button.modalReg:disabled, button.modalRegTag:disabled{
 	 opacity: 0.5;
 }
 p.message{
@@ -322,4 +322,10 @@ button.cancel{
 .instagram a{ font-size : 24px}
 .logoInsta {
 	height : 100px;
+}
+
+.switchForm{
+	position: absolute;
+    top: 3%;
+    right: 3%;
 }

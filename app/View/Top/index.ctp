@@ -1,3 +1,6 @@
+<form method ='' action='' class="switchForm">
+	<input type="checkbox" checked data-toggle="toggle" data-on="TOP" data-off="RANK" data-onstyle="warning" data-offstyle="info">
+</form>
 <div style = "float:right;display: inline-flex;">
 	<button type="button" class="buttonHead buttonReg" data-toggle="modal" data-target="#myModal">Register</button>
 	
@@ -30,9 +33,7 @@
 	  </div>
 	  <div class="loader"></div>
 	</div>
-	<?php 
-		echo $this->Html->link('Logout',array('controller' => '', 'action' => '',),array('class' => 'buttonLogout buttonHead'));
-	?>
+	<a class="buttonLogout buttonHead" href="javascript:void(0)">Logout</a>
 </div>
 	
 <div class='col-xs-12'>
@@ -64,10 +65,15 @@
 							array('target' => '_blank')
 						)
 				?>
+				<a href="/ranking/" target="_blank"><span style="float: right;" class="glyphicon glyphicon-list" aria-hidden="true"></span></a>
 			</td>
 			<td>
 				<?php 
-					echo number_format($value['media_count']);
+					echo $this->Html->link(
+							number_format($value['media_count']),
+							array('controller' => '', 'action' => 'media','?' => array('id' => $value['id'])),
+							array('target' => '_blank')
+						)
 				?>
 			</td>
 			<td><?php echo number_format($value['media_get']) . " (" . $percentage . "%)"?></td>
