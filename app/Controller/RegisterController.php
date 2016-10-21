@@ -34,6 +34,7 @@ class RegisterController extends AppController {
 				$collectionCaculate->remove(array('username' => $usename));
 			}
 			$this->Session->delete('username');
+			$this->Session->delete('access_token');
 			return true;
 		}
 	}
@@ -85,6 +86,7 @@ class RegisterController extends AppController {
 				$this->Session->delete('username');
 			}
 			$this->Session->write('username', $username);
+			$this->Session->write('access_token',$data->access_token);
 			
 			$setId = $collections->find(array('id' => $id))->count();
 			if ($setId > 0) {
