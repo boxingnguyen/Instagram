@@ -1,3 +1,4 @@
 /.project
 /app/tmp/*
 !/app/tmp/empty
+/app/Vendor/Data/*

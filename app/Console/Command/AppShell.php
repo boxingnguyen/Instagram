@@ -16,7 +16,9 @@
  */
 
 App::uses('Shell', 'Console');
-
+App::import('Vendor','Package',array('file'=>'vendor/autoload.php'));
+App::import('Vendor', 'instagram', array('file' => 'Instagram' . DS . 'src' . DS . 'Instagram.php'));
+use MetzWeb\Instagram\Instagram;
 /**
  * Application Shell
  *
@@ -26,37 +28,58 @@ App::uses('Shell', 'Console');
  * @package       app.Console.Command
  */
 class AppShell extends Shell {
+	private $__username = 'tmhtest';
+	private $__password = '!!tmh!!';
+	protected $_instagram;
+	const DEBUG = false;
+	
+	protected $_insta;
+	private $__apiKey = '68bed720dbd14812bfb01763b433d870';
+	private $__apiSecret = 'b38ff515a4d040f3abb0abedb4b8849c';
+	private $__apiCallback = '';
+	
+	public function initialize() {
+		parent::initialize();
+		ini_set('memory_limit', '1G');
+		$this->_instagram = new \InstagramAPI\Instagram($this->__username,$this->__password,self::DEBUG);
+		
+		$this->_insta = new Instagram(array(
+				'apiKey'      => $this->__apiKey,
+				'apiSecret'   => $this->__apiSecret,
+				'apiCallback' => $this->__apiCallback,
+		));
+	}
+	
 	public function cURLInstagram($url) {
 		$headerData = array('Accept: application/json');
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $headerData);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 300);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($ch, CURLOPT_HEADER, true);
-	
-		$jsonData = curl_exec($ch);
-		// if get data failed, get it until successfully
-		while (!$jsonData) {
-			print_r(curl_error($ch));
+
+		$i = 0;
+		do {
+			if ($i >= 1) {
+				$this->out($i . ': ' . $url);
+			}
+			if ($i > 10) {
+				$this->out('Stop get data of ' . $url);
+				break;
+			}
 			$jsonData = curl_exec($ch);
-		}
-		// split header from JSON data
-		// and assign each to a variable
-		list($headerContent, $jsonData) = explode("\r\n\r\n", $jsonData, 2);
-	
-		// convert header content into an array
-		$headers = $this->__processHeaders($headerContent);
-	
-		if (!$jsonData) {
-			throw new Exception('Error: _makeCall() - cURL error: ' . curl_error($ch));
-		}
-	
+			list($headerContent, $jsonData) = array_pad(explode("\r\n\r\n", $jsonData, 2), 2, null);
+				
+			// convert header content into an array
+			$headers = $this->__processHeaders($headerContent);
+			$i ++;
+		} while (!$this->isJSON($jsonData));
+
 		curl_close($ch);
-	
-		return json_decode($jsonData);
+		return json_decode($jsonData);	
 	}
 	private function __processHeaders($headerContent) {
 		$headers = array();
@@ -72,5 +95,8 @@ class AppShell extends Shell {
 		}
 		
 		return $headers;
+	}
+	public function isJSON($string){
+		return is_string($string) && is_array(json_decode($string, true)) && (json_last_error() == JSON_ERROR_NONE) ? true : false;
 	}
 }
