@@ -2,7 +2,7 @@
 App::uses('Controller', 'Controller');
 class RegisterController extends AppController {
 	public function login() {
-		$scope = array('basic');
+		$scope = array('basic','followers_list');
 		$url = $this->_instagram->getLoginUrl($scope);
 		$this->set('instagrams', $url);
 	}
