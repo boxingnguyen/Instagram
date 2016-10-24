@@ -37,6 +37,8 @@ class RankingController extends AppController {
 			}
 			$this->__collection->insert(array($id => $arr));
 			$this->redirect (array('controller' => 'Ranking', 'action' => 'follow','?' => array('id' => $id)));
+		} else {
+			$this->redirect(array('controller' => 'top', 'action' => 'index'));
 		}
 		
 	}
