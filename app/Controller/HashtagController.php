@@ -10,7 +10,7 @@ class HashtagController extends AppController {
 			} else if (strtolower($option) == 'comment') {
 				$data = $c->find()->sort(array('total_comments' => -1));
 			} else {
-				$data = $c->find();
+				$data = $c->find()->sort(array('total_media' => -1));
 			}
 		} else {
 			$data = $c->find();
