@@ -73,6 +73,8 @@ class RegisterController extends AppController {
 			$m = new MongoClient;
 			$db = $m->instagram_account_info;
 			$collections = $db->account_login;
+			$collectionsUsername = $db->account_username;
+			
 			$date = date("dmY");
 			
 			$code = $_GET['code'];
@@ -89,6 +91,11 @@ class RegisterController extends AppController {
 			$setId = $collections->find(array('id' => $id))->count();
 			if ($setId > 0) {
 				$collections->remove(array('id' => $id));
+				$collectionsUsername->remove(array('id' => $id));
+				$collectionsUsername->insert(array(
+						'id' => $id,
+						'username' => $username
+				));
 			}
 			$collections->insert(array(
 					'access_token' => $data->access_token,
