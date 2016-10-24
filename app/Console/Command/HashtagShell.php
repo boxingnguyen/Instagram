@@ -18,7 +18,7 @@ class HashtagShell extends AppShell {
 		}
 		
 	}
-	public function caculator($tag){
+	public function calculator($tag){
 		$m = new MongoClient();
 		$db = $m->hashtag;
 		$collection = $db->media;
@@ -32,13 +32,13 @@ class HashtagShell extends AppShell {
 						)
 				)
 		);
-		$a = $this->getPosttop ($tag);
+		$a = $this->getPosttop($tag);
 		$data = $collection->aggregate($condition);
 		$result = array();
-		$result['total_likes']=$data['result'][0]['total_likes'];
-		$result['total_comments']=$data['result'][0]['total_comments'];
-		$result['total_media']=$a['total_media'];
-		$result['hashtag']=$tag;
+		$result['total_likes'] = $data['result'][0]['total_likes'];
+		$result['total_comments'] = $data['result'][0]['total_comments'];
+		$result['total_media'] = $a['total_media'];
+		$result['hashtag'] = $tag;
 		$db->ranking->insert($result);
 	}
 	public function main() {
@@ -47,24 +47,24 @@ class HashtagShell extends AppShell {
 		$db = $m->hashtag;
 		$collection = $db->media;
 		$tagArray=$db->tags->find();
-		if(isset($tagArray)&&!empty($tagArray)){
+		if (isset($tagArray) && !empty($tagArray)) {
 			$listTag = array();
-			foreach ($tagArray as $value){
+			foreach ($tagArray as $value) {
 				$listTag[] = str_replace("#","",$value['tag']);
 			}
 			$collection->drop();
 			$db->ranking->drop();
-			foreach ($listTag as $tag){
+			foreach ($listTag as $tag) {
 				$mediaArray=$this->getPosttop($tag);
 				$collection->batchInsert($mediaArray);
-				$this->caculator($tag);
+				$this->calculator($tag);
 			}
 			$statisticArray= array();
 			$statistic = array();
-			foreach ($listTag as $tag){
+			foreach ($listTag as $tag) {
 				$statistic['hashtag'] = $tag;
 				$statistic['date']=date("d-m-Y");
-				foreach ($db->ranking->find(array('hashtag' =>$tag)) as $value){
+				foreach ($db->ranking->find(array('hashtag' =>$tag)) as $value) {
 					$total_media = $value['total_media'] ;
 				}
 				$statistic['total_media']=$total_media;
