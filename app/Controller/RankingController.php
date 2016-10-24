@@ -45,11 +45,13 @@ class RankingController extends AppController {
 	public function follow() {
 		$id = $this->request->query['id'];
 		$data = $this->__collection->find(array($id => array('$exists' => 1)));
-		foreach($data as $val) {
-			usort($val[$id], function($a, $b) { return $a['totalFollow'] < $b['totalFollow'] ? 1 : -1 ; } );
-			$arr = $val[$id];
+		if($data->count() > 0) {
+			foreach($data as $val) {
+				usort($val[$id], function($a, $b) { return $a['totalFollow'] < $b['totalFollow'] ? 1 : -1 ; } );
+				$arr = $val[$id];
+			}
+			$this->set('data', $arr);
 		}
-		$this->set('data', $arr);
 	}
 	
 	public function hashtag () {
