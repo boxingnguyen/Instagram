@@ -36,6 +36,26 @@ class HashtagController extends AppController {
 		}
 	}
 	public function detail() {
-		
+		$tag = $_GET['hashtag'];
+		$date = date("d-m-Y");
+		$db = $this->m->hashtag;
+		$c = $db->statistic;
+ 		$statistic = $c->find(array('hashtag' =>$tag));
+ 		$data = array();
+ 		$i=0;
+ 		foreach ($statistic as $val){
+ 			if($i==0){
+ 				$data[]= array("date"=>$val['date'],"total_media"=>0);
+ 			}
+ 			else{
+ 				$total = $val['total_media'] - $tam;
+ 				$data[]= array("date"=>$val['date'],"total_media"=>$total);
+ 			}
+ 			$tam = $val['total_media']; 
+ 			$i++;
+ 			
+ 		}
+ 		
+		$this->set('data', $data);
 	}
 }
