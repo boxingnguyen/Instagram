@@ -70,7 +70,10 @@ class HashtagShell extends AppShell {
 				$statistic['total_media']=$total_media;
 				$statisticArray[$tag]=$statistic;
 			}
-			$db->statistic->batchInsert($statisticArray);
+			if(!empty($statisticArray)){
+				$db->statistic->batchInsert($statisticArray);
+			}
+			
 		}
 	}
 }
