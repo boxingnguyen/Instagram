@@ -14,19 +14,20 @@ class GetMediaShell extends AppShell {
 			// drop old data
 			$collection->drop();
 			// empty file contain accounts that missed media
-			file_put_contents(APP."Vendor/Data/tmp_missing_acc.json", "");
+// 			file_put_contents(APP."Vendor/Data/tmp_missing_acc.json", "");
 			
-			// store data OF PUBLIC ACCOUNT into json file (if data is fully get, store data into db)
-			$this->__saveDataPublic($all_account['public'], $collection, $date);
+// 			// store data OF PUBLIC ACCOUNT into json file (if data is fully get, store data into db)
+// 			$this->__saveDataPublic($all_account['public'], $collection, $date);
 			
-			// re-get media if media is missing (maximum 5 times, of public account)
-			$this->__getMissingMedia($collection, $date, false);
+// 			// re-get media if media is missing (maximum 5 times, of public account)
+// 			$this->__getMissingMedia($collection, $date, false);
 			
 			// empty file contain public accounts that missed media
 			file_put_contents(APP."Vendor/Data/tmp_missing_acc.json", "");
 			
 			// store data OF PRIVATE ACCOUNT into json file (if data is fully get, store data into db)
-			$this->__saveDataPrivate($all_account['private'], $collection, $date);
+// 			$this->__saveDataPrivate($all_account['private'], $collection, $date);
+			$this->__saveDataPrivate($all_account, $collection, $date);
 			
 			// re-get media if media is missing (maximum 5 times, of private account)
 			$this->__getMissingMedia($collection, $date, true);
@@ -57,14 +58,15 @@ class GetMediaShell extends AppShell {
 		
 		$data = $collection->find()->sort(array('media.count' => -1))->fields(array('username' => true, 'media.count' => true, 'is_private' => true));
 		$result = array();
-		$result['private'] = array();
-		$result['public'] = array();
+// 		$result['private'] = array();
+// 		$result['public'] = array();
 		foreach ($data as $value) {
-			if ($value['is_private'] == 1) {
-				$result['private'][] = $value['username'];
-			} else {
-				$result['public'][] = $value['username'];
-			}
+			$result[] = $value['username'];
+// 			if ($value['is_private'] == 1) {
+// 				$result['private'][] = $value['username'];
+// 			} else {
+// 				$result['public'][] = $value['username'];
+// 			}
 		}
 		return $result;
 	}
