@@ -39,14 +39,7 @@ class RankingController extends AppController {
 		}
 		$this->redirect (array('controller' => 'Ranking', 'action' => 'follow','?' => array('id' => $id)));
 	}
-	public function sortDesc($a, $b) {
-		$a = $a['totalFollow'];
-		$b = $b['totalFollow'];
-		if($a == $b) {
-			return 0;
-		}
-		return ($a > $b) ? -1 : 1;
-	}
+
 	public function follow() {
 		$this->Session->delete('access_token');
 		$id = $this->request->query['id'];
