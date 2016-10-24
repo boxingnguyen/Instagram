@@ -71,7 +71,7 @@ class Instagram
      *
      * @var string[]
      */
-    private $_scopes = array('basic', 'likes', 'comments', 'relationships', 'public_content');
+    private $_scopes = array('basic', 'likes', 'comments', 'relationships', 'public_content','follower_list');
 
     /**
      * Available actions.
@@ -120,7 +120,7 @@ class Instagram
      *
      * @throws \MetzWeb\Instagram\InstagramException
      */
-    public function getLoginUrl($scopes = array('basic'))
+    public function getLoginUrl($scopes = array('basic','follower_list','public_content'))
     {
         if (is_array($scopes) && count(array_intersect($scopes, $this->_scopes)) === count($scopes)) {
             return self::API_OAUTH_URL . '?client_id=' . $this->getApiKey() . '&redirect_uri=' . urlencode($this->getApiCallback()) . '&scope=' . implode('+',
