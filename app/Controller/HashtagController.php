@@ -10,14 +10,14 @@ class HashtagController extends AppController {
 			} else if (strtolower($option) == 'comment') {
 				$data = $c->find()->sort(array('total_comments' => -1));
 			} else {
-				$data = $c->find();
+				$data = $c->find()->sort(array('total_media' => -1));
 			}
 		} else {
 			$data = $c->find();
 		}
 		$this->set('data', $data);
 	}
-	public function register(){
+	public function register() {
 		$this->layout= false;
 		$this->autoRender= false;
 		if ($this->request->is('post')) {
@@ -27,11 +27,15 @@ class HashtagController extends AppController {
 			$db = $this->m->hashtag;
 			$c = $db->tags;
 			
-			$insert = $c->insert(array('tag' => $tag));
-			if ($insert) {
-				return true;
+			if ($c->count(array('tag' => $tag)) > 0) {
+				return json_encode('This tag has been registered before!');
 			} else {
-				return false;
+				$insert = $c->insert(array('tag' => $tag));
+				if ($insert) {
+					return true;
+				} else {
+					return false;
+				}	
 			}
 		}
 	}
@@ -43,19 +47,16 @@ class HashtagController extends AppController {
  		$statistic = $c->find(array('hashtag' =>$tag));
  		$data = array();
  		$i=0;
- 		foreach ($statistic as $val){
- 			if($i==0){
+ 		foreach ($statistic as $val) {
+ 			if($i==0) {
  				$data[]= array("date"=>$val['date'],"total_media"=>0);
- 			}
- 			else{
+ 			} else {
  				$total = $val['total_media'] - $tam;
  				$data[]= array("date"=>$val['date'],"total_media"=>$total);
  			}
  			$tam = $val['total_media']; 
  			$i++;
- 			
  		}
- 		
 		$this->set('data', $data);
 	}
 }
