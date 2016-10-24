@@ -76,4 +76,8 @@ class HashtagShell extends AppShell {
 			
 		}
 	}
+	
+	public function test() {
+		
+	}
 }
