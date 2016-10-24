@@ -103,17 +103,18 @@ $().ready(function(){
 			$('.modal-body').css('opacity','0.4');
 			$('button.cancel').prop('disabled', true);
 			
+			var controller = window.location.pathname.split("/")[1];
+			
 			$.ajax({
 				method: "POST",
-				url: './register',
+				url: controller + '/register',
 				data: {hashtag:hashtag},
 				dataType: 'json',
 				success: function(data) {
-					console.log(data);
 					if (data == 1) {
 						$('p.messRegis').text('You have successfully registered');
 					} else {
-						if($.type(data) === "string"){
+						if ($.type(data) === "string") {
 							$('p.messRegis').text(data);
 						}
 					}
