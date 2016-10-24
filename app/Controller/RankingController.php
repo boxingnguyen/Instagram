@@ -36,26 +36,22 @@ class RankingController extends AppController {
 				$this->__collection->remove(array($id => array('$exists' => 1)));
 			}
 			$this->__collection->insert(array($id => $arr));
+			$this->redirect (array('controller' => 'Ranking', 'action' => 'follow','?' => array('id' => $id)));
+		} else {
+			$this->redirect(array('controller' => 'top', 'action' => 'index'));
 		}
-		$this->redirect (array('controller' => 'Ranking', 'action' => 'follow','?' => array('id' => $id)));
-	}
-	public function sortDesc($a, $b) {
-		$a = $a['totalFollow'];
-		$b = $b['totalFollow'];
-		if($a == $b) {
-			return 0;
-		}
-		return ($a > $b) ? -1 : 1;
+		
 	}
 	public function follow() {
-		$this->Session->delete('access_token');
 		$id = $this->request->query['id'];
 		$data = $this->__collection->find(array($id => array('$exists' => 1)));
-		foreach($data as $val) {
-			usort($val[$id], function($a, $b) { return $a['totalFollow'] < $b['totalFollow'] ? 1 : -1 ; } );
-			$arr = $val[$id];
+		if($data->count() > 0) {
+			foreach($data as $val) {
+				usort($val[$id], function($a, $b) { return $a['totalFollow'] < $b['totalFollow'] ? 1 : -1 ; } );
+				$arr = $val[$id];
+			}
+			$this->set('data', $arr);
 		}
-		$this->set('data', $arr);
 	}
 	
 	public function hashtag () {

@@ -33,8 +33,20 @@
 	</div>
 	<a class="buttonLogout buttonHead" href="javascript:void(0)">Logout</a>
 </div>
+<div class="col-xs-12">
+	<div class='col-xs-2'></div>
+	<div class='col-xs-8'>
+		<div class="col-xs-3 btn-group">
+			<button type="button" class="btn btn-default rank-by-like">Ranking by likes</button>
+		</div>
+		<div class="col-xs-3 btn-group">
+			<button type="button" class="btn btn-default rank-by-comment">Ranking by comments</button>
+		</div>
+	</div>
+	<div class='col-xs-2'></div>
+</div>
 <div class='col-xs-12'>
-	<div class='col-xs-2' ></div>	
+	<div class='col-xs-2'></div>	
 	<div class='col-xs-8'>
 		<table class="table responstable">
 			<tr>

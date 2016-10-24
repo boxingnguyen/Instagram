@@ -3,7 +3,18 @@ class HashtagController extends AppController {
 	public function index () {
 		$db = $this->m->hashtag;
 		$c = $db->ranking;
-		$data = $c->find();
+		if (isset($this->params['url']['sort'])) {
+			$option = $this->params['url']['sort'];
+			if (strtolower($option) == 'like') {
+				$data = $c->find()->sort(array('total_likes' => -1));
+			} else if (strtolower($option) == 'comment') {
+				$data = $c->find()->sort(array('total_comments' => -1));
+			} else {
+				$data = $c->find();
+			}
+		} else {
+			$data = $c->find();
+		}
 		$this->set('data', $data);
 	}
 	public function register(){
