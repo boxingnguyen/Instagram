@@ -2,8 +2,13 @@
 App::uses('Controller', 'Controller');
 class RegisterController extends AppController {
 	public function login() {
+<<<<<<< HEAD
 		$scope = array('basic','followers_list');
 		$url = $this->_instagram->getLoginUrl($scope);
+=======
+		$scope = array('basic');
+		$url = $this->_instagram->getLoginUrl();
+>>>>>>> 9dfbc95fd1bf909182ba72f302ac90261235359a
 		$this->set('instagrams', $url);
 	}
 	
@@ -73,6 +78,8 @@ class RegisterController extends AppController {
 			$m = new MongoClient;
 			$db = $m->instagram_account_info;
 			$collections = $db->account_login;
+			$collectionsUsername = $db->account_username;
+			
 			$date = date("dmY");
 			
 			$code = $_GET['code'];
@@ -89,6 +96,11 @@ class RegisterController extends AppController {
 			$setId = $collections->find(array('id' => $id))->count();
 			if ($setId > 0) {
 				$collections->remove(array('id' => $id));
+				$collectionsUsername->remove(array('id' => $id));
+				$collectionsUsername->insert(array(
+						'id' => $id,
+						'username' => $username
+				));
 			}
 			$collections->insert(array(
 					'access_token' => $data->access_token,
@@ -185,7 +197,6 @@ class RegisterController extends AppController {
 				)
 		);
 		$dataInfo = $collectionInfo->aggregate($conditionInfo);
-		$result['is_private'] = isset($dataInfo['result'][0]['is_private']) ? $dataInfo['result'][0]['is_private'] : '';
 		$result['username'] = isset($dataInfo['result'][0]['username']) ? $dataInfo['result'][0]['username'] : '';
 		$result['fullname'] = isset($dataInfo['result'][0]['fullname']) ? $dataInfo['result'][0]['fullname'] : '';
 		$result['media_count'] = isset($dataInfo['result'][0]['media_count']) ? $dataInfo['result'][0]['media_count'] : 0;

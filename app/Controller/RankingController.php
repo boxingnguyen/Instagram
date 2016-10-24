@@ -36,12 +36,13 @@ class RankingController extends AppController {
 				$this->__collection->remove(array($id => array('$exists' => 1)));
 			}
 			$this->__collection->insert(array($id => $arr));
+			$this->redirect (array('controller' => 'Ranking', 'action' => 'follow','?' => array('id' => $id)));
 		}
-		$this->redirect (array('controller' => 'Ranking', 'action' => 'follow','?' => array('id' => $id)));
+
+		
 	}
 
 	public function follow() {
-		$this->Session->delete('access_token');
 		$id = $this->request->query['id'];
 		$data = $this->__collection->find(array($id => array('$exists' => 1)));
 		foreach($data as $val) {
