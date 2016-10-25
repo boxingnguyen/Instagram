@@ -16,6 +16,9 @@ class TestController extends AppController
         print_r($token);
  
     }
+    public function popup(){
+       
+    }
     public function getFollower(){
         //// Hang dt test
     }
