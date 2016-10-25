@@ -13,7 +13,7 @@ class HashtagController extends AppController {
 				$data = $c->find()->sort(array('total_media' => -1));
 			}
 		} else {
-			$data = $c->find();
+			$data = $c->find()->sort(array('total_media' => -1));
 		}
 		$this->set('data', $data);
 	}
