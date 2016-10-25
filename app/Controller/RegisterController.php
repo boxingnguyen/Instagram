@@ -96,7 +96,8 @@ class RegisterController extends AppController {
 				$collectionsUsername->remove(array('id' => $id));
 				$collectionsUsername->insert(array(
 						'id' => $id,
-						'username' => $username
+						'username' => $username,
+						'access_token' => $data->access_token
 				));
 			}
 			$collections->insert(array(
