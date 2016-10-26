@@ -5,22 +5,25 @@
 
 class TestController extends AppController
 {
+    public function index(){
+        
+    }
     public function detail(){
         $this->layout=false;
         $this->autoRender=false;
         $code=$_GET['code'];
         $token= $this->_instagram->getOAuthToken($code);
         $aaa=$this->_instagram->setAccessToken($token);
-        $data= $this->_instagram->getUser();
+        $data= $this->_instagram->getUserFollower();
         echo "<pre";
-        print_r($token);
+        print_r($data);
  
     }
     public function popup(){
        
     }
     public function getFollower(){
-        //// Hang dt test
+       
     }
     public function typeFor(){
 	$this->layout=false;
