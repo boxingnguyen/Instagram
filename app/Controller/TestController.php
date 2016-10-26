@@ -5,8 +5,48 @@
 
 class TestController extends AppController
 {
+
+     
     public function index(){
+        // for ($i = 0; $i<100; $i++){
+        //     $arr[]=$i;
+        // }
+        // $this->set('arr',$arr);
+    }
+    public function more(){
+        $this->layout=false;
+        $this->autoRender=false;
+        // if($this->Session->check('User.id')){
+        //     $id = $this->Session->read('User.id');
+        // }else{
+        //     $id = '';
+        // }
+
+        $m= new MongoClient();
+        $d= $m->follow;
+        $col=$d->selectCollection(date('Y-m'));
+
+        $data= $col->find(array("3980281197" => array('$exists' => 1)));
+        print_r($data);
+
+        // $page = isset($_POST['page']) ? $_POST['page'] : 1;
+        // $limit = 20;
+        // $start= ($page*$limit)-$limit;
         
+        // $query = array('user.id' => $id);
+        // $cursor = $collections->find($query,array())->sort(array('created_time'=>-1))->skip($start)->limit($limit);
+        
+        // $data= array();
+        // foreach ($cursor as $value){
+        //     $value['likes']['count'] = number_format($value['likes']['count']);
+        //     $value['comments']['count'] = number_format($value['comments']['count']);
+        //     $data[]=$value;
+        // }
+        // return json_encode($data);
+    }
+    public function total(){
+        $this->layout=false;
+        $this->autoRender=false;
     }
     public function detail(){
         $this->layout=false;

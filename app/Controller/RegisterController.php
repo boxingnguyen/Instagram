@@ -2,13 +2,10 @@
 App::uses('Controller', 'Controller');
 class RegisterController extends AppController {
 	public function login() {
-
-		$scope = array('basic','followers_list');
+		$scope = array('basic');
 		$url = $this->_instagram->getLoginUrl($scope);
-
 		$this->set('instagrams', $url);
 	}
-	
 	public function logout() {
 		$this->layout= false;
 		$this->autoRender= false;
