@@ -165,7 +165,16 @@ class Instagram
         }
         return $this->_makeCall('users/' . $id, $auth);
     }
-
+    public function getUserFollow($id = 0)
+    {
+    	$auth = false;
+    	if ($id === 0 && isset($this->_accesstoken)) {
+    		$id = 'self';
+    		$auth = true;
+    	}
+//     	echo PHP_EOL.$this->_accesstoken.PHP_EOL;
+    	return $this->_makeCall('users/' . $id, $this->_accesstoken);
+    }
     /**
      * Get user activity feed.
      *
@@ -191,7 +200,7 @@ class Instagram
      *
      * @return mixed
      */
-    public function getUserMedia($id = 'self', $limit = 1, $max_id = null)
+    public function getUserMedia($max_id = null, $id = 'self', $limit = 0)
     {
         $params = array();
 
@@ -199,10 +208,9 @@ class Instagram
             $params['count'] = $limit;
             $params['max_id'] = $max_id;
         }
-//         print_r($params);die;
         return $this->_makeCall('users/' . $id . '/media/recent', strlen($this->getAccessToken()), $params);
     }
-
+	
     /**
      * Get the liked photos of a user.
      *
@@ -246,14 +254,14 @@ class Instagram
      *
      * @return mixed
      */
-    public function getUserFollower($id = 'self', $limit = 0)
+    public function getUserFollower($cussor = null, $id = 'self', $limit = 50)
     {
         $params = array();
 
         if ($limit > 0) {
             $params['count'] = $limit;
+            $params['cursor'] = $cussor;
         }
-
         return $this->_makeCall('users/' . $id . '/followed-by', true, $params);
     }
 

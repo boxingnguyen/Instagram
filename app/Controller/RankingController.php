@@ -1,14 +1,12 @@
-<?php
+ <?php
 App::uses('Controller', 'Controller');
 class RankingController extends AppController {
-	private $__collection;
-	
-	public function beforeFilter() {
-		parent::beforeFilter();
+	public function index() {
 		$m = new MongoClient;
 		$db = $m->follow;
-		$this->__collection = $db->selectCollection(date('Y-m'));
+		$collection = $db->selectCollection(date('Y-m'));
 		
+
 	}
 	public function index() {
 		$mLogin = new MongoClient;
@@ -47,8 +45,9 @@ class RankingController extends AppController {
 	}
 
 	public function follow() {
+
 		$id = $this->request->query['id'];
-		$data = $this->__collection->find(array($id => array('$exists' => 1)));
+		$data = $collection->find(array($id => array('$exists' => 1)));
 		if($data->count() > 0) {
 			foreach($data as $val) {
 				usort($val[$id], function($a, $b) { return $a['totalFollow'] < $b['totalFollow'] ? 1 : -1 ; } );
@@ -57,7 +56,6 @@ class RankingController extends AppController {
 			$this->set('data', $arr);
 		}
 	}
-	
 	public function hashtag () {
 	}
 }
