@@ -130,7 +130,7 @@ class GetMediaShell extends AppShell {
 				// write data into json file
 				$myfile = fopen(APP."Vendor/Data/".$date.".".$name.".media.json", "w+") or die("Unable to open file!");
 				do {
-					$media = $this->_insta->getUserMedia($id, 2, $max_id);
+					$media = $this->_insta->getUserMedia( $id, 2, $max_id);
 					// if get media successfully and user has number of media > 0
 					if (isset($media->data)) {
 						foreach ($media->data as $val) {
@@ -250,7 +250,7 @@ class GetMediaShell extends AppShell {
 					// write data into json file
 					$myfile = fopen(APP."Vendor/Data/".$date.".".$name.".media.json", "w+") or die("Unable to open file!");
 					do {
-						$media = $this->_insta->getUserMedia($id, 20, $max_id);
+						$media = $this->_insta->getUserMedia( $id, 20, $max_id);
 						// if get media successfully and user has number of media > 0
 						if (isset($media->data)) {
 							foreach ($media->data as $val) {
