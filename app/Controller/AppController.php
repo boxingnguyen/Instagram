@@ -32,11 +32,15 @@ use MetzWeb\Instagram\Instagram;
  * @link		http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
+	public $m;
+	
 	protected $_instagram;
-	private $__apiKey = '68bed720dbd14812bfb01763b433d870';
-	private $__apiSecret = 'b38ff515a4d040f3abb0abedb4b8849c';
+	private $__apiKey = '6d34b43b41bd42a09f0762cd23363358';
+	private $__apiSecret = '532e8a5dc85346358104046673bf5376';
 	
 	public function beforeFilter() {
+		$this->m = new MongoClient();
+		
 		$apiCallback = "http://$_SERVER[HTTP_HOST]/Register/detail";
 
 		$this->_instagram = new Instagram(array(

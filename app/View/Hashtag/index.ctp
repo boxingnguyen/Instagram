@@ -1,6 +1,4 @@
-<form method ='' action='' class="switchForm">
-	<input type="checkbox" checked data-toggle="toggle" data-on="TOP" data-off="HASHTAG" data-onstyle="warning" data-offstyle="info">
-</form>
+<?php echo $this->element('switch_top_hashtag'); ?>
 <div style = "float:right;display: inline-flex;">
 	<button type="button" class="buttonHead buttonReg" data-toggle="modal" data-target="#myModal">Register</button>
 	
@@ -35,21 +33,44 @@
 	</div>
 	<a class="buttonLogout buttonHead" href="javascript:void(0)">Logout</a>
 </div>
+<div class="col-xs-12">
+	<div class='col-xs-2'></div>
+	<div class='col-xs-8'>
+		<div class="col-xs-3 btn-group">
+			<button type="button" class="btn btn-default rank-by-like">Ranking by likes</button>
+		</div>
+		<div class="col-xs-3 btn-group">
+			<button type="button" class="btn btn-default rank-by-comment">Ranking by comments</button>
+		</div>
+	</div>
+	<div class='col-xs-2'></div>
+</div>
 <div class='col-xs-12'>
-	<div class='col-xs-3' ></div>	
-	<div class='col-xs-6'>
+	<div class='col-xs-2'></div>	
+	<div class='col-xs-8'>
 		<table class="table responstable">
 			<tr>
 				<th class='center'>No.</th>
 				<th class='center'>Hashtag</th>
-				<th class='center'>Media count</th>
+				<th class='center'>Total media</th>
+				<th class='center'>Likes (of 9 top posts)</th>
+				<th class='center'>Comments (of 9 top posts)</th>
 			</tr>
+			<?php
+			$i = 0;
+			foreach ($data as $value):
+				$i ++;
+			?>
 			<tr class='center'>
-				<td>1</td>
-				<td><a href="/ranking/hashtag" target="_blank">#cat</a></td>
-				<td>12,000</td>
+				<td><?php echo $i; ?></td>
+				<td><a href="<?php echo $this->request->controller; ?>/detail?hashtag=<?php echo $value['hashtag']; ?>" target="_blank">#<?php echo $value['hashtag']?></a></td>
+				<td><?php echo number_format($value['total_media']); ?></td>
+				<td><a href="<?php echo $this->request->controller; ?>/like?hashtag=<?php echo $value['hashtag']; ?>" target="_blank"><?php echo number_format($value['total_likes']); ?></a></td>
+				<td><a href="<?php echo $this->request->controller; ?>/like?hashtag=<?php echo $value['hashtag']; ?>" target="_blank"><?php echo number_format($value['total_comments']); ?></a></td>
+				
 			</tr>
+			<?php endforeach;?>
 		</table>
 	</div>
-	<div class='col-xs-3' ></div>
+	<div class='col-xs-2'></div>
 </div>

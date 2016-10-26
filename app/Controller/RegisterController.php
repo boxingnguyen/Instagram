@@ -3,7 +3,7 @@ App::uses('Controller', 'Controller');
 class RegisterController extends AppController {
 	public function login() {
 		$scope = array('basic');
-		$url = $this->_instagram->getLoginUrl($scope);
+		$url = $this->_instagram->getLoginUrl();
 		$this->set('instagrams', $url);
 	}
 	
@@ -72,7 +72,9 @@ class RegisterController extends AppController {
 		if (isset($_GET['code'])) {
 			$m = new MongoClient;
 			$db = $m->instagram_account_info;
-			$collections = $db->account_username;
+			$collections = $db->account_login;
+			$collectionsUsername = $db->account_username;
+			
 			$date = date("dmY");
 			
 			$code = $_GET['code'];
@@ -89,12 +91,19 @@ class RegisterController extends AppController {
 			$setId = $collections->find(array('id' => $id))->count();
 			if ($setId > 0) {
 				$collections->remove(array('id' => $id));
-				$collections->insert(array(
-						'access_token' => $data->access_token,
+				$collectionsUsername->remove(array('id' => $id));
+				$collectionsUsername->insert(array(
 						'id' => $id,
-						'username' => $username
+						'username' => $username,
+						'access_token' => $data->access_token
 				));
 			}
+			$collections->insert(array(
+					'access_token' => $data->access_token,
+					'id' => $id,
+					'username' => $username
+			));
+			
 			// get account info
 			$acc_info = $this->__getAccountInfo($username);
 			// save account info into db
@@ -184,7 +193,6 @@ class RegisterController extends AppController {
 				)
 		);
 		$dataInfo = $collectionInfo->aggregate($conditionInfo);
-		$result['is_private'] = isset($dataInfo['result'][0]['is_private']) ? $dataInfo['result'][0]['is_private'] : '';
 		$result['username'] = isset($dataInfo['result'][0]['username']) ? $dataInfo['result'][0]['username'] : '';
 		$result['fullname'] = isset($dataInfo['result'][0]['fullname']) ? $dataInfo['result'][0]['fullname'] : '';
 		$result['media_count'] = isset($dataInfo['result'][0]['media_count']) ? $dataInfo['result'][0]['media_count'] : 0;
@@ -257,6 +265,15 @@ class RegisterController extends AppController {
 		$collectionCaculate->insert($result);
 		
 		
+	}
+	
+	public function register_hashtag($tags) {
+		$tags = 'cat';
+		$max_id = null;
+		do {
+			$data = $this->cURLInstagram('https://www.instagram.com/explore/tags/' . $tags . '/?__a=1&');
+			print_r($data); break;
+		} while (true);
 	}
 
 }

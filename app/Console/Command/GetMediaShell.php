@@ -1,5 +1,6 @@
 <?php
 class GetMediaShell extends AppShell {
+	const TMHTEST_ACCESS_TOKEN = '4025731782.6d34b43.b723850c5e0548bfa4863dea62b98630';
 	
 	public function main() {
 		$start_time = microtime(true);
@@ -17,7 +18,7 @@ class GetMediaShell extends AppShell {
 			file_put_contents(APP."Vendor/Data/tmp_missing_acc.json", "");
 			
 			// store data OF PUBLIC ACCOUNT into json file (if data is fully get, store data into db)
-			$this->__saveDataPublic($all_account['public'], $collection, $date);
+			$this->__saveData($all_account['public'], $collection, $date, $is_private = false);
 			
 			// re-get media if media is missing (maximum 5 times, of public account)
 			$this->__getMissingMedia($collection, $date, false);
@@ -26,7 +27,7 @@ class GetMediaShell extends AppShell {
 			file_put_contents(APP."Vendor/Data/tmp_missing_acc.json", "");
 			
 			// store data OF PRIVATE ACCOUNT into json file (if data is fully get, store data into db)
-			$this->__saveDataPrivate($all_account['private'], $collection, $date);
+			$this->__saveData($all_account['private'], $collection, $date, $is_private = true);
 			
 			// re-get media if media is missing (maximum 5 times, of private account)
 			$this->__getMissingMedia($collection, $date, true);
@@ -36,18 +37,6 @@ class GetMediaShell extends AppShell {
 		}
 		$end_time = microtime(true);
 		echo "Time to get all media: " . ($end_time - $start_time) . " seconds" . PHP_EOL;
-	}
-	
-	private function __getMedia($username, $max_id = null) {
-		$data = array();
-		if(isset($username) && !empty($username) && is_string($username)){
-			if ($max_id != null) {
-				$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/media/?max_id=' . $max_id);
-			} else {
-				$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/media/');
-			}
-		}
-		return $data;
 	}
 	
 	private function __sortAccountByMedia() {
@@ -60,6 +49,7 @@ class GetMediaShell extends AppShell {
 		$result['private'] = array();
 		$result['public'] = array();
 		foreach ($data as $value) {
+			$result[] = $value['username'];
 			if ($value['is_private'] == 1) {
 				$result['private'][] = $value['username'];
 			} else {
@@ -113,30 +103,7 @@ class GetMediaShell extends AppShell {
 		}
 	}
 	
-	private function __reGetMedia($name, $date) {
-		$max_id = null;
-		$myfile = fopen(APP . "Vendor/Data/" . $date . "." . $name . ".media.json", "w+") or die("Unable to open file!");
-		do {
-			$data = $this->__getMedia($name, $max_id);
-			// write data into json file
-			if (isset($data->items) && !empty($data->items)) {
-				foreach ($data->items as $val) {
-					fwrite($myfile, json_encode($val)."\n");
-				}
-				$max_id = end($data->items)->id;
-			} else {
-				echo "Re-get data of: " . $name . PHP_EOL;
-				print_r($data);
-				break;
-			}
-		}
-		while (isset ($data->more_available) && ($data->more_available == true || $data->more_available == 1));
-		fclose($myfile);
-		// re-check if media of this account is not missing anymore
-		return $this->__checkMedia($name);
-	}
-	
-	private function __reGetMediaPrivate($name, $date) {
+	private function __reGetMedia($name, $date, $is_private) {
 		$m = new MongoClient;
 		$db = $m->instagram_account_info;
 		$collections = $db->account_username;
@@ -144,8 +111,21 @@ class GetMediaShell extends AppShell {
 		$result = $collections->find(array('username' => $name));
 		foreach ($result as $acc_info) {
 			$id = $acc_info['id'];
-			if (isset($acc_info['access_token'])) {
+			
+			$flag = true;
+			
+			if (!$is_private) {
+				// get media for public account
+				$this->_insta->setAccessToken(self::TMHTEST_ACCESS_TOKEN);
+			} else if (isset($acc_info['access_token'])) {
+				// get media for private account (this account has access token)
 				$this->_insta->setAccessToken($acc_info['access_token']);
+			} else {
+				// private account and does not have access token
+				$flag = false;
+			}
+			
+			if ($flag) {
 				$max_id = null;
 				// write data into json file
 				$myfile = fopen(APP."Vendor/Data/".$date.".".$name.".media.json", "w+") or die("Unable to open file!");
@@ -174,9 +154,6 @@ class GetMediaShell extends AppShell {
 						break;
 					}
 				} while ($max_id != null);
-			} else {
-				$this->out($acc_info['username'] . " does not have access token.");
-				break;
 			}
 			fclose($myfile);
 			// re-check if media of this account is not missing anymore
@@ -191,27 +168,25 @@ class GetMediaShell extends AppShell {
 			echo $name . "has no media or something wrong!" . PHP_EOL;
 			return;
 		}
-		$part = (int)(count($all_lines)/1000)+1;
-		$start =0;
-		if($part==1){
-			$count_get = count($all_lines)%1000;
-		}
-		else{
+		$part = (int)(count($all_lines) / 1000) + 1;
+		$start = 0;
+		if ($part == 1) {
+			$count_get = count($all_lines) % 1000;
+		} else {
 			$count_get = 1000;
 		}
 		$data = array();
-		for ($i=0; $i <$part  ; $i++) {
+		for ($i = 0; $i < $part; $i++) {
 			$my[$i] = array_slice($all_lines, $start, $count_get );
-			if($i<$part-1){
-				$start = $start +1000;
-			}
-			else{
-				$start = $start +1000;
-				$count_get = count($all_lines)%1000;
+			if ($i < $part - 1) {
+				$start = $start + 1000;
+			} else {
+				$start = $start + 1000;
+				$count_get = count($all_lines) % 1000;
 			}
 		}
 		
-		for ($i=0; $i <$part ; $i++) {
+		for ($i = 0; $i < $part ; $i++) {
 			foreach ($my[$i] as $value) {
 				$data[] = json_decode($value);
 			}
@@ -220,7 +195,7 @@ class GetMediaShell extends AppShell {
 		}
 	}
 	
-	private function __getMissingMedia($collection, $date, $private) {
+	private function __getMissingMedia($collection, $date, $is_private) {
 		$missing_account = file(APP."Vendor/Data/tmp_missing_acc.json");
 		foreach ($missing_account as $name) {
 			$name = trim(preg_replace('/\s\s+/', ' ', $name));
@@ -228,11 +203,7 @@ class GetMediaShell extends AppShell {
 			$check_count = 0;
 			$checkMedia = false;
 			while (!$checkMedia && $check_count < 5) {
-				if ($private) {
-					$checkMedia = $this->__reGetMediaPrivate($name, $date);
-				} else {
-					$checkMedia = $this->__reGetMedia($name, $date);
-				}
+				$checkMedia = $this->__reGetMedia($name, $date, $is_private);
 				$check_count ++;
 			}
 			if (!$checkMedia) {
@@ -252,79 +223,34 @@ class GetMediaShell extends AppShell {
 		echo "Total documents: " . $collection->count() . PHP_EOL;
 	}
 	
-	private function __saveDataPublic($public_account, $collection, $date) {
-		// we get data of 34 accounts at a time
-		$account_chunks = array_chunk($public_account, 34);
-		foreach ($account_chunks as $account) {
-			foreach ($account as $name) {
-				// create 2 processes here
-				$pid = pcntl_fork();
-				if ($pid == -1) {
-					die('could not fork');
-				} else if ($pid) {
-					// we are the parent
-					// collect process id to know when children complete
-					$pids[] = $pid;
-				} else {
-					// we are the child
-					$max_id = null;
-					$myfile = fopen(APP."Vendor/Data/".$date.".".$name.".media.json", "w+") or die("Unable to open file!");
-					do {
-						$data = $this->__getMedia($name, $max_id);
-						// write data into json file
-						if (isset($data->items) && !empty($data->items)) {
-							foreach ($data->items as $val) {
-								fwrite($myfile, json_encode($val)."\n");
-							}
-							$max_id = end($data->items)->id;
-						} else {
-							$this->out("Error: data is null");
-							break;
-						}
-					}
-					while (isset ($data->more_available) && ($data->more_available == true || $data->more_available == 1));
-					fclose($myfile);
-		
-					// check if account's media is missing or not
-					$checkMedia = $this->__checkMedia($name);
-					if ($checkMedia) {
-						// write data from json file to database
-						$this->__saveIntoDb($name, $collection, $date);
-						echo "Get media of " . $name . " completed!" . PHP_EOL;
-					} else {
-						file_put_contents(APP."Vendor/Data/tmp_missing_acc.json", $name . "\n", FILE_APPEND | LOCK_EX);
-						echo "Media of " . $name . " is missing (Public account) !!!!!!!" . PHP_EOL;
-					}
-					// Jump out of loop in this child. Parent will continue.
-					exit;
-				}
-			}
-			foreach ($pids as $pid) {
-				pcntl_waitpid($pid, $status);
-				unset($pids[$pid]);
-			}
-		}	
-	}
-	
-	private function __saveDataPrivate($private_account, $collection, $date) {
-		echo "List of private account: " . PHP_EOL;
-		print_r($private_account) . PHP_EOL;
-		
+	private function __saveData($account, $collection, $date, $is_private) {		
 		$m = new MongoClient;
 		$db = $m->instagram_account_info;
 		$collections = $db->account_username;
 		
-		foreach ($private_account as $name) {
+		foreach ($account as $name) {
 			$result = $collections->find(array('username' => $name));
 			foreach ($result as $acc_info) {
 				$id = $acc_info['id'];
-				if (isset($acc_info['access_token'])) {
+				$flag = true;
+				
+				if (!$is_private) {
+					// get media for public account
+					$this->_insta->setAccessToken(self::TMHTEST_ACCESS_TOKEN);
+				} else if (isset($acc_info['access_token'])) {
+					// get media for private account (this account has access token)
 					$this->_insta->setAccessToken($acc_info['access_token']);
+				} else {
+					// private account and does not have access token
+					$flag = false;
+				}
+				
+				if ($flag) {
 					$max_id = null;
 					// write data into json file
 					$myfile = fopen(APP."Vendor/Data/".$date.".".$name.".media.json", "w+") or die("Unable to open file!");
 					do {
-						$media = $this->_insta->getUserMedia($id, 2, $max_id);
+						$media = $this->_insta->getUserMedia($id, 20, $max_id);
 						// if get media successfully and user has number of media > 0
 						if (isset($media->data)) {
 							foreach ($media->data as $val) {
@@ -335,7 +261,7 @@ class GetMediaShell extends AppShell {
 							} else {
 								$max_id = null;
 								break;
-							}	
+							}
 						} else {
 							echo $name . ": ";
 							// get media unsuccessfully or user has no media
@@ -347,22 +273,22 @@ class GetMediaShell extends AppShell {
 							break;
 						}
 					} while ($max_id != null);
+					
+					fclose($myfile);
+					// check if account's media is missing or not
+					$checkMedia = $this->__checkMedia($name);
+					if ($checkMedia) {
+						// write data from json file to database
+						$this->__saveIntoDb($name, $collection, $date);
+						echo "Get media of " . $name . " completed!" . PHP_EOL;
+					} else {
+						file_put_contents(APP."Vendor/Data/tmp_missing_acc.json", $name . "\n", FILE_APPEND | LOCK_EX);
+						echo "Media of " . $name . " is missing (Public account) !!!!!!!" . PHP_EOL;
+					}
 				} else {
-					$this->out($acc_info['username'] . " does not have access token");
-					break;
-				}
-				fclose($myfile);
-				// check if account's media is missing or not
-				$checkMedia = $this->__checkMedia($name);
-				if ($checkMedia) {
-					// write data from json file to database
-					$this->__saveIntoDb($name, $collection, $date);
-					echo "Get media of " . $name . " completed!" . PHP_EOL;
-				} else {
-					file_put_contents(APP."Vendor/Data/tmp_missing_acc.json", $name . "\n", FILE_APPEND | LOCK_EX);
-					echo "Media of " . $name . " is missing (Private account) !!!!!!!" . PHP_EOL;
+					echo $name . "does not have access token !!!!" . PHP_EOL;
 				}
 			}
-		}
+		}	
 	}
 }
