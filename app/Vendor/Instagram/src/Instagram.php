@@ -614,7 +614,7 @@ class Instagram
         curl_setopt($ch, CURLOPT_URL, $apiCall);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headerData);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 20);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 90);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 300);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_HEADER, true);
@@ -627,24 +627,47 @@ class Instagram
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
                 break;
         }
-        $jsonData = curl_exec($ch);
-        // split header from JSON data
-        // and assign each to a variable
-        list($headerContent, $jsonData) = explode("\r\n\r\n", $jsonData, 2);
-
-        // convert header content into an array
-        $headers = $this->processHeaders($headerContent);
-
-        // get the 'X-Ratelimit-Remaining' header value
-//         $this->_xRateLimitRemaining = $headers['X-Ratelimit-Remaining'];
-
-        if (!$jsonData) {
-            throw new InstagramException('Error: _makeCall() - cURL error: ' . curl_error($ch));
-        }
-
+        
+        // these lines are from Ducnv
+        $i = 0;
+        do {
+        	if ($i >= 1) {
+        		echo $i . '(Not in json format) Re-get: ' . $apiCall . PHP_EOL;
+        	}
+        	if ($i > 10) {
+        		echo 'Stop get data of ' . $apiCall . PHP_EOL;
+        		break;
+        	}
+        	$jsonData = curl_exec($ch);
+        	list($headerContent, $jsonData) = array_pad(explode("\r\n\r\n", $jsonData, 2), 2, null);
+        
+        	// convert header content into an array
+        	$headers = $this->__processHeaders($headerContent);
+        	$i ++;
+        } while (!$this->isJSON($jsonData));
+        
         curl_close($ch);
-
         return json_decode($jsonData);
+        
+        
+//         $jsonData = curl_exec($ch);
+//         // split header from JSON data
+//         // and assign each to a variable
+//         list($headerContent, $jsonData) = explode("\r\n\r\n", $jsonData, 2);
+
+//         // convert header content into an array
+//         $headers = $this->processHeaders($headerContent);
+
+//         // get the 'X-Ratelimit-Remaining' header value
+// //         $this->_xRateLimitRemaining = $headers['X-Ratelimit-Remaining'];
+
+//         if (!$jsonData) {
+//             throw new InstagramException('Error: _makeCall() - cURL error: ' . curl_error($ch));
+//         }
+
+//         curl_close($ch);
+
+//         return json_decode($jsonData);
     }
 
     /**
@@ -836,5 +859,29 @@ class Instagram
     public function setSignedHeader($signedHeader)
     {
         $this->_signedheader = $signedHeader;
+    }
+    
+    /**
+     * Check if a string is in JSON format or not
+     * @param string $string
+     */
+    public function isJSON($string){
+    	return is_string($string) && is_array(json_decode($string, true)) && (json_last_error() == JSON_ERROR_NONE) ? true : false;
+    }
+    
+    private function __processHeaders($headerContent) {
+    	$headers = array();
+    
+    	foreach (explode("\r\n", $headerContent) as $i => $line) {
+    		if ($i === 0) {
+    			$headers['http_code'] = $line;
+    			continue;
+    		}
+    
+    		list($key, $value) = explode(':', $line);
+    		$headers[$key] = $value;
+    	}
+    
+    	return $headers;
     }
 }

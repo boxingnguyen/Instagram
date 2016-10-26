@@ -65,8 +65,9 @@
 				<td><?php echo $i; ?></td>
 				<td><a href="<?php echo $this->request->controller; ?>/detail?hashtag=<?php echo $value['hashtag']; ?>" target="_blank">#<?php echo $value['hashtag']?></a></td>
 				<td><?php echo number_format($value['total_media']); ?></td>
-				<td><?php echo number_format($value['total_likes']); ?></td>
-				<td><?php echo number_format($value['total_comments']); ?></td>
+				<td><a href="<?php echo $this->request->controller; ?>/like?hashtag=<?php echo $value['hashtag']; ?>" target="_blank"><?php echo number_format($value['total_likes']); ?></a></td>
+				<td><a href="<?php echo $this->request->controller; ?>/like?hashtag=<?php echo $value['hashtag']; ?>" target="_blank"><?php echo number_format($value['total_comments']); ?></a></td>
+				
 			</tr>
 			<?php endforeach;?>
 		</table>

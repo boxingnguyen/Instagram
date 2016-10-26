@@ -39,18 +39,6 @@ class GetMediaShell extends AppShell {
 		echo "Time to get all media: " . ($end_time - $start_time) . " seconds" . PHP_EOL;
 	}
 	
-	private function __getMedia($username, $max_id = null) {
-		$data = array();
-		if(isset($username) && !empty($username) && is_string($username)){
-			if ($max_id != null) {
-				$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/media/?max_id=' . $max_id);
-			} else {
-				$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/media/');
-			}
-		}
-		return $data;
-	}
-	
 	private function __sortAccountByMedia() {
 		$m = new MongoClient();
 		$db = $m->instagram_account_info;
