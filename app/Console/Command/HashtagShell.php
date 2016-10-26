@@ -73,6 +73,7 @@ class HashtagShell extends AppShell {
 					$media = $this->__getMediaHttp($tag, $max_id);
 					
 					if (!isset($media->tag->media->nodes) || empty($media->tag->media->nodes)) {
+						print_r($media);
 						echo "Last media of " . $tag . ": " . PHP_EOL;
 						print_r(end($tmp));
 						break;
@@ -88,6 +89,11 @@ class HashtagShell extends AppShell {
 							// do not get media of month before September
 							break;
 						} else {
+							if (isset($value->created_time)) {
+								$value->created_time = date('d-m-Y', $value->created_time);
+							} else if (isset($value->date)) {
+								$value->date = date('d-m-Y', $value->date);
+							}
 							fwrite($myfile, json_encode($value) . "\n");
 						}
 					}
