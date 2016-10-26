@@ -20,28 +20,33 @@ class RankingController extends AppController {
 			$accessToken = $access['access_token'];
 		}
 		$this->_instagram->setToken($accessToken);
-		$infoFollowsBy = $this->_instagram->getUserFollower();
-		if(isset($infoFollowsBy) && !empty($infoFollowsBy->data)) {
-			$getFollow = $infoFollowsBy->data;
-			$arr = array();
-			if (count($getFollow) > 0) {
-				foreach ($getFollow as $key => $val) {
-					$username = $val->username;
-					$url = 'https://www.instagram.com/'.$username.'/?__a=1';
-					$getUrl = $this->cURLInstagram($url);
-					$countFollow = $getUrl->user->followed_by->count;
-					$arr[] = array('id' => $val->id, 'username' => $val->username, 'full_name' => $val->full_name, 'totalFollow' => $countFollow);
+		if(isset($accessToken)){
+			$infoFollowsBy = $this->_instagram->getUserFollower();
+			if(isset($infoFollowsBy) && !empty($infoFollowsBy->data)) {
+				$getFollow = $infoFollowsBy->data;
+				$arr = array();
+				if (count($getFollow) > 0) {
+					foreach ($getFollow as $key => $val) {
+						$username = $val->username;
+						$url = 'https://www.instagram.com/'.$username.'/?__a=1';
+						$getUrl = $this->cURLInstagram($url);
+						$countFollow = $getUrl->user->followed_by->count;
+						$arr[] = array('id' => $val->id, 'username' => $val->username, 'full_name' => $val->full_name, 'totalFollow' => $countFollow);
+					}
+					$userId = $this->__collection->find(array($id => array('$exists' => 1)));
+					if ($userId->count() > 0) {
+						$this->__collection->remove(array($id => array('$exists' => 1)));
+					}
+					$this->__collection->insert(array($id => $arr));
+					$this->redirect (array('controller' => 'Ranking', 'action' => 'follow','?' => array('id' => $id)));
 				}
-				$userId = $this->__collection->find(array($id => array('$exists' => 1)));
-				if ($userId->count() > 0) {
-					$this->__collection->remove(array($id => array('$exists' => 1)));
-				}
-				$this->__collection->insert(array($id => $arr));
-				$this->redirect (array('controller' => 'Ranking', 'action' => 'follow','?' => array('id' => $id)));
+			} else {
+				echo "<pre>";
+				print_r($infoFollowsBy);
 			}
-		} else {
-			echo "<pre>";
-			print_r($infoFollowsBy);
+		}
+		else{
+			echo "<h1>" . " This account need to login to view follower list!" . "</h1>"; die;
 		}
 	}
 	public function follow() {
@@ -54,8 +59,5 @@ class RankingController extends AppController {
 			}
 			$this->set('data', $arr);
 		}
-	}
-	
-	public function hashtag () {
-	}
+	}	
 }
