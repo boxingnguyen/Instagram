@@ -114,22 +114,22 @@ class RegisterController extends AppController {
 			));
 			
 			// get account info
-			$acc_info = $this->__getAccountInfo($username);
-			// save account info into db
-			$this->__saveAccountIntoDb($acc_info->user);
-			// get media
-			$media = $this->__getMedia($id, $data->access_token, $date);
-			$this->__saveMediaIntoDb($media, $username);
-			$totalAccountInfo = $this->__totalAccountInfo($username);
-			$totalMediaTop = $this->__totalMedia($username);
-			$mediaTop = array('id' => $totalMediaTop['id'], 'likesTop' => $totalMediaTop['likes'], 'commentsTop' => $totalMediaTop['comments'], 'media_get' => $totalMediaTop['media_get']);
-			$date = (new DateTime())->format('Y-m-d 00:00:00');
-			$date = (string)strtotime($date);
-			$totalMediaAnalytic = $this->__totalMedia($username, $date);
-			$mediaAnalytic = array('likesAnalytic' => $totalMediaAnalytic['likes'], 'commentsAnalytic' => $totalMediaAnalytic['comments']);
-			$this->__calculateReaction($username,$totalAccountInfo, $mediaTop, $mediaAnalytic);
+// 			$acc_info = $this->__getAccountInfo($username);
+// 			// save account info into db
+// 			$this->__saveAccountIntoDb($acc_info->user);
+// 			// get media
+// 			$media = $this->__getMedia($id, $data->access_token, $date);
+// 			$this->__saveMediaIntoDb($media, $username);
+// 			$totalAccountInfo = $this->__totalAccountInfo($username);
+// 			$totalMediaTop = $this->__totalMedia($username);
+// 			$mediaTop = array('id' => $totalMediaTop['id'], 'likesTop' => $totalMediaTop['likes'], 'commentsTop' => $totalMediaTop['comments'], 'media_get' => $totalMediaTop['media_get']);
+// 			$date = (new DateTime())->format('Y-m-d 00:00:00');
+// 			$date = (string)strtotime($date);
+// 			$totalMediaAnalytic = $this->__totalMedia($username, $date);
+// 			$mediaAnalytic = array('likesAnalytic' => $totalMediaAnalytic['likes'], 'commentsAnalytic' => $totalMediaAnalytic['comments']);
+// 			$this->__calculateReaction($username,$totalAccountInfo, $mediaTop, $mediaAnalytic);
 			//get follow list and save db
-// 			$this->getFollow($username);
+			$this->getFollow();
 			// after get data successful, redirect to Top page
 			$this->redirect(array('controller' => 'top', 'action' => 'index'));
 		} else {
