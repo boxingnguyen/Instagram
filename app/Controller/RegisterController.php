@@ -1,14 +1,6 @@
 <?php
 App::uses('Controller', 'Controller');
 class RegisterController extends AppController {
-	private $__collection;
-	public function beforeFilter() {
-		parent::beforeFilter();
-		$m = new MongoClient;
-		$db = $m->follow;
-		$this->__collection = $db->selectCollection(date('Y-m'));
-	}
-	
 	public function login() {
 		$scope = array('basic');
 		$url = $this->_instagram->getLoginUrl();
@@ -95,7 +87,6 @@ class RegisterController extends AppController {
 				$this->Session->delete('username');
 			}
 			$this->Session->write('username', $username);
-			$this->Session->write('id', $id);
 			
 			$setId = $collections->find(array('id' => $id))->count();
 			if ($setId > 0) {
@@ -113,11 +104,12 @@ class RegisterController extends AppController {
 					'username' => $username
 			));
 			
+			// get account info
 			$acc_info = $this->__getAccountInfo($username);
+			// save account info into db
 			$this->__saveAccountIntoDb($acc_info->user);
+			// get media
 			$media = $this->__getMedia($id, $data->access_token, $date);
-// 			echo "<pre>";
-// 			print_r($acc_info);die;
 			$this->__saveMediaIntoDb($media, $username);
 			$totalAccountInfo = $this->__totalAccountInfo($username);
 			$totalMediaTop = $this->__totalMedia($username);
@@ -146,9 +138,7 @@ class RegisterController extends AppController {
 		$max_id = null;
 		$data = array();
 		do {
-			$media = $this->_instagram->getUserMedia($max_id, $id);
-// 			echo "<pre>";
-// 			print_r($media);die;
+			$media = $this->_instagram->getUserMedia($id, 10, $max_id);
 			foreach ($media->data as $val) {
 				$data[] = $val;
 			}
@@ -288,29 +278,29 @@ class RegisterController extends AppController {
 	}
 	public function getFollow() {
 		$mLogin = new MongoClient;
-		
+	
 		$db = $mLogin->follow;
 		$userFollow = $db->selectCollection('username'.date('Y-m'));
 		$loginFollow = $db->selectCollection('login'.date('Y-m'));
 		$id = $this->Session->read('id');
-// 		kiem tra xem da ton tai trong bang account_username chua
+		// 		// kiem tra xem da ton tai trong bang account_username chua
 		$checkName = $userFollow->find(array($id => array('$exists' => 1)));
 		if($checkName->count() <= 0) {
-// 			kiem tra user co ton tai trong loginDate khong, co roi thi thoi, chua co thi luu
+			// 			// kiem tra user co ton tai trong loginDate khong, co roi thi thoi, chua co thi luu
 			$checkLogin = $loginFollow->find(array($id => array('$exists' => 1)));
 			if ($checkLogin->count() <= 0) {
 				$this->__getInfoFollow();
 			}
-		}	
+		}
 	}
 	private function __getInfoFollow() {
 		$mLogin = new MongoClient;
 		$dbLogin = $mLogin->instagram_account_info;
 		$colLogin = $dbLogin->account_login;
-
+	
 		$db = $mLogin->follow;
 		$loginFollow = $db->selectCollection('login'.date('Y-m'));
-		
+	
 		$username = $this->Session->read('username');
 		$data = $colLogin->find(array('username' => $username), array('access_token' => true, 'id' => true));
 		foreach($data as $access) {
@@ -328,7 +318,7 @@ class RegisterController extends AppController {
 				$infoFollowsBy = $this->_instagram->getUserFollower($cursor);
 			}
 			if(isset($infoFollowsBy) && !empty($infoFollowsBy->data)) {
-		
+	
 				//get total follow each account
 				$dataFollow = $infoFollowsBy->data;
 				foreach ($dataFollow as $valFollow) {
@@ -350,7 +340,7 @@ class RegisterController extends AppController {
 							'follows' => $countFollows
 					);
 				}
-		
+	
 			} else {
 				echo "<pre>";
 				print_r($infoFollowsBy);
@@ -362,4 +352,5 @@ class RegisterController extends AppController {
 		} while (isset($infoFollowsBy->pagination->next_cursor) && !empty($infoFollowsBy->pagination->next_cursor));
 		$loginFollow->insert(array($id => $arr));
 	}
+
 }
