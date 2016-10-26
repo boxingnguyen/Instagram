@@ -49,6 +49,7 @@ class HashtagShell extends AppShell {
 		$m = new MongoClient();
 		$db = $m->hashtag;
 		$c_media = $db->media;
+		$c_media->drop();
 
 		$date = date('dmY');
 		$hashtag = $this->__getHashtag();
@@ -94,6 +95,7 @@ class HashtagShell extends AppShell {
 							} else if (isset($value->date)) {
 								$value->date = date('d-m-Y', $value->date);
 							}
+							$value->tag_name = $tag;
 							fwrite($myfile, json_encode($value) . "\n");
 						}
 					}
