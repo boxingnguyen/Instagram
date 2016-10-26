@@ -8,9 +8,6 @@ class RankingController extends AppController {
 		$userFollow = $db->selectCollection('username'.date('Y-m'));
 		$loginFollow = $db->selectCollection('login'.date('Y-m'));
 		
-		
-// 		$collection = $db->selectCollection(date('Y-m'));
-		
 		$id = $this->request->query['id'];
 		$data = $userFollow->find(array($id => array('$exists' => 1)));
 		if($data->count() > 0) {
