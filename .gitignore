@@ -2,3 +2,4 @@
 /app/tmp/*
 !/app/tmp/empty
 /app/Vendor/Data/*
+/lib/Cake/Console/Templates/skel/tmp/*
