@@ -66,29 +66,36 @@ class HashtagShell extends AppShell {
 				echo "Get hashtag of " . $tag . '...' . PHP_EOL;
 				$max_id = null;
 				// write data into json file
-				
+				$count = 0;
+				$tmp = array ();
 				$myfile = fopen(APP . "Vendor/Hashtag/" . $date . "." . $tag . ".media_hashtag.json", "w+") or die("Unable to open file!");
 				do {
 					$media = $this->__getMediaHttp($tag, $max_id);
+					
 					if (!isset($media->tag->media->nodes) || empty($media->tag->media->nodes)) {
-						print_r($media);
+						echo "Last media of " . $tag . ": " . PHP_EOL;
+						print_r(end($tmp));
 						break;
 					}
 					$data = $media->tag->media->nodes;
+					$tmp = $data;
 					foreach ($data as $value) {
+						$count ++;
 						// do not get media of October
-						if (intval(date('m', $value->date)) > 9) {
+						if (isset($value->created_time) && intval(date('m', $value->created_time)) > 9 || isset($value->date) && intval(date('m', $value->date)) > 9) {
 							continue;
-						} else if (intval(date('m', $value->date)) < 9) {
+						} else if (isset($value->created_time) && intval(date('m', $value->created_time)) < 9 || isset($value->date) && intval(date('m', $value->date)) < 9) {
 							// do not get media of month before September
 							break;
 						} else {
-							fwrite($myfile, json_encode($value)."\n");
+							fwrite($myfile, json_encode($value) . "\n");
 						}
 					}
 					// get next page of data
 					$max_id = isset($media->tag->media->page_info->end_cursor) ? $media->tag->media->page_info->end_cursor : null;
 				} while ($media->tag->media->page_info->has_next_page == 1);
+				
+				echo "Total media of " . $tag . ": " . $count . PHP_EOL;
 				
 				echo "Get HASHTAG of " . $tag . " completed!" . PHP_EOL;
 				
