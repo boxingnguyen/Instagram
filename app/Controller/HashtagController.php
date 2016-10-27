@@ -39,7 +39,7 @@ class HashtagController extends AppController {
 			}
 		}
 	}
-	public function media() {
+	public function detail() {
 		$tag = $_GET['hashtag'];
 		$db = $this->m->hashtag;
 		$c = $db->media;
