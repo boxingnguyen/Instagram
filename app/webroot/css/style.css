@@ -328,6 +328,12 @@ button.cancel{
 	position: absolute;
     top: 3%;
     right: 3%;
+}
+.hashtag_href {
+	color: white;
+}
+.hashtag_href:hover {
+	color: white;
     width: 100px;
 }
 .rank-by-media:hover, .rank-by-like:hover, .rank-by-comment:hover {
