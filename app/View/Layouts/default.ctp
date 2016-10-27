@@ -25,6 +25,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 		<?php $this->assign('title', 'Instagram Analysis | TMH Techlab');?>
 		<?php echo $this->fetch('title'); ?>
 	</title>
+
 	<?php
 		echo $this->Html->meta('icon');
 		echo $this->Html->css('css/bootstrap.min');
@@ -35,6 +36,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 		echo $this->Html->script('loader');
 		echo $this->Html->script('src/register');
 		echo $this->Html->script('src/logout');
+		echo $this->Html->script('src/rakingFollow');
 		echo $this->Html->script('js/bootstrap.min');
 		echo $this->Html->script('src/hashtag');
 
