@@ -18,6 +18,10 @@ class GetAccountInfoShell extends AppShell {
 		$acc_origin = $this->db->{self::ACCOUNT_ORIGIN}->find(array(), array('username' => true));
 		$all_account = array();
 		foreach ($acc_origin as $acc) {
+			if ($acc['username'] == null) {
+				$this->db->account_username->remove(array('username' => null));
+				continue;
+			}
 			$all_account[] = $acc['username'];
 		}
 		

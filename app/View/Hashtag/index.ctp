@@ -33,18 +33,7 @@
 	</div>
 	<a class="buttonLogout buttonHead" href="javascript:void(0)">Logout</a>
 </div>
-<div class="col-xs-12">
-	<div class='col-xs-2'></div>
-	<div class='col-xs-8'>
-		<div class="col-xs-3 btn-group">
-			<button type="button" class="btn btn-default rank-by-like">Ranking by likes</button>
-		</div>
-		<div class="col-xs-3 btn-group">
-			<button type="button" class="btn btn-default rank-by-comment">Ranking by comments</button>
-		</div>
-	</div>
-	<div class='col-xs-2'></div>
-</div>
+
 <div class='col-xs-12'>
 	<div class='col-xs-2'></div>	
 	<div class='col-xs-8'>
@@ -52,9 +41,9 @@
 			<tr>
 				<th class='center'>No.</th>
 				<th class='center'>Hashtag</th>
-				<th class='center'>Total media</th>
-				<th class='center'>Likes (of 9 top posts)</th>
-				<th class='center'>Comments (of 9 top posts)</th>
+				<th class='center rank-by-media'>Total media <span class="caret"></span></th>
+				<th class='center rank-by-like'>Likes <span class="caret"></span></th>
+				<th class='center rank-by-comment'>Comments <span class="caret"></span></th>
 			</tr>
 			<?php
 			$i = 0;
