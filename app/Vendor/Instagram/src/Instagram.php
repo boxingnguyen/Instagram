@@ -200,7 +200,7 @@ class Instagram
      *
      * @return mixed
      */
-    public function getUserMedia($max_id = null, $id = 'self', $limit = 0)
+    public function getUserMedia($id = 'self', $limit = 0, $max_id = null)
     {
         $params = array();
 
