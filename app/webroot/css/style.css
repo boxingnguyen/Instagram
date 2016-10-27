@@ -371,14 +371,14 @@ a.back-to-top {
 	-moz-border-radius: 30px;
 	border-radius: 30px;
 }
-.loadMore-hashtag {
+.loadMore, .loadMore-hashtag {
     padding: .8em 1em;
     background: #acb7c0;
     color: white;
     border-radius: 0.25em;
     text-decoration: none;
 }
-.loadMore-hashtag:hover {
+.loadMore:hover, .loadMore-hashtag:hover {
   text-decoration: none;
 }
 .danger{
