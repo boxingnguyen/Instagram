@@ -39,9 +39,8 @@ class HashtagController extends AppController {
 			}
 		}
 	}
-	public function detail() {
+	public function media() {
 		$tag = $_GET['hashtag'];
-		$date = date("d-m-Y");
 		$db = $this->m->hashtag;
 		$c = $db->statistic;
  		$statistic = $c->find(array('hashtag' =>$tag));
@@ -69,12 +68,12 @@ class HashtagController extends AppController {
 		$i=0;
 		foreach ($statistic as $val) {
 			if($i==0) {
-				$data[]= array("date"=>$val['date'],"total_media"=>0);
+				$data[]= array("date"=>$val['date'],"total_comments"=>0);
 			} else {
-				$total = $val['total_media'] - $tam;
-				$data[]= array("date"=>$val['date'],"total_media"=>$total);
+				$total = $val['total_comments'] - $tam;
+				$data[]= array("date"=>$val['date'],"total_comments"=>$total);
 			}
-			$tam = $val['total_media'];
+			$tam = $val['total_comments'];
 			$i++;
 		}
 		$this->set('data', $data);
@@ -82,7 +81,7 @@ class HashtagController extends AppController {
 	public function like() {
 		$tag = $_GET['hashtag'];
 		$db = $this->m->hashtag;
-		$c = $db->rank;
+		$c = $db->statistic;
 		$like = $c->find(array('hashtag' =>$tag));
 		$like->sort(array('date' => 1));
 		$data = array();

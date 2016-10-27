@@ -8,7 +8,7 @@
       function drawVisualization() {
         // Some raw data (not necessarily accurate)
         var data = google.visualization.arrayToDataTable([
-         ['Date', 'Total_Likes'],
+         ['Date', 'Like_Diff'],
          
         <?php foreach ($data as $value) { ?>
             [<?php echo "'".$value['date']."'";?> ,  <?php  echo $value['total_likes']; ?>],      
