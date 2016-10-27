@@ -82,12 +82,12 @@ $().ready(function(){
 
 	$(window).scroll(function() {
 		if ( $(window).scrollTop() > amountScrolled ) {
-			$('a.back-to-top').fadeIn('slow');
+			$('a.scroll-top').fadeIn('slow');
 		} else {
-			$('a.back-to-top').fadeOut('slow');
+			$('a.scroll-top').fadeOut('slow');
 		}
 	});
-	$('a.back-to-top').click(function() {
+	$('a.scroll-top').click(function() {
 		$('html, body').animate({
 			scrollTop: 0
 		}, 700);
