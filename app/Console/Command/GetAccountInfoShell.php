@@ -54,8 +54,12 @@ class GetAccountInfoShell extends AppShell {
  * @return object account's data
  */
 	private function __getAccountInfo($username) {
-		$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/?__a=1');
-		return $data;
+		if ($username == null) {
+			$this->db->account_username->remove(array('username' => null));
+		} else {
+			$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/?__a=1');
+			return $data;
+		}
 	}
 	
 	private function __writeToJson($all_account, $date) {
