@@ -41,7 +41,7 @@
 			<tr>
 				<th class='center'>No.</th>
 				<th class='center'>Hashtag</th>
-				<th class='center'>Total media</th>
+				<th class='center rank-by-media'>Total media <span class="caret"></span></th>
 				<th class='center rank-by-like'>Likes <span class="caret"></span></th>
 				<th class='center rank-by-comment'>Comments <span class="caret"></span></th>
 			</tr>

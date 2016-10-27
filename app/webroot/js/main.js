@@ -23,6 +23,9 @@ $(document).ready(function() {
 	$('.rank-by-comment').click(function() {
 		window.location.replace('./hashtag?sort=comment');
 	});
+	$('.rank-by-media').click(function() {
+		window.location.replace('./hashtag');
+	});
 });
 
 function drawChart() {
