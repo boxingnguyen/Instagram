@@ -17,7 +17,7 @@
       ]);
 
     var options = {
-      title : 'Daily amount of like rising',
+      title : 'Daily amount of media rising',
       vAxis: {title: 'Total'},
       hAxis: {title: 'Day'},
       seriesType: 'bars',
