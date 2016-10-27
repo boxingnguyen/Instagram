@@ -328,4 +328,5 @@ button.cancel{
 	position: absolute;
     top: 3%;
     right: 3%;
+    width: 100px;
 }
