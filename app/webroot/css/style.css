@@ -357,7 +357,7 @@ button.cancel{
     height: 10%;
     border-radius: 50%;
 }
-a.back-to-top {
+a.back-to-top, a.scroll-top {
 	display: none;
 	width: 60px;
 	height: 60px;

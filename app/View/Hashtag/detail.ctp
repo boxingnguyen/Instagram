@@ -17,4 +17,4 @@
 <div style="text-align: center;" >
 	<a href="javascript:void(0)" class="loadMore-hashtag">Load more</a>
 </div>
-<a href="#" class="back-to-top">Back to Top</a>
+<a href="#" class="scroll-top">Back to Top</a>
