@@ -7,8 +7,8 @@
 				<th class='center'>No.</th>
 				<th class='center'>Media URL</th>
 				<th class='center'>Caption</th>
-				<th class='center'><a class="hashtag_href" href='?hashtag=<?php echo $this->request->query['hashtag'] . '&sort=like'?>'>Like</a></th>
-				<th class='center'><a class="hashtag_href" href='?hashtag=<?php echo $this->request->query['hashtag'] . '&sort=comment'?>'>Comment</a></th>
+				<th class='center hashtag-sort'><a class="hashtag_href" href='?hashtag=<?php echo $this->request->query['hashtag'] . '&sort=like'?>'>Like <span class="caret"></a></th>
+				<th class='center hashtag-sort'><a class="hashtag_href" href='?hashtag=<?php echo $this->request->query['hashtag'] . '&sort=comment'?>'>Comment <span class="caret"></a></th>
 			</tr>
 		</table>
 	</div>
