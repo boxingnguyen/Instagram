@@ -8,16 +8,16 @@
       function drawVisualization() {
         // Some raw data (not necessarily accurate)
         var data = google.visualization.arrayToDataTable([
-         ['Date', 'Like_Diff'],
+         ['Date', 'Media_Diff'],
          
         <?php foreach ($data as $value) { ?>
-            [<?php echo "'".$value['date']."'";?> ,  <?php  echo $value['total_likes']; ?>],      
+            [<?php echo "'".$value['date']."'";?> ,  <?php  echo $value['total_media']; ?>],      
         <?php } ?> 
          
       ]);
 
     var options = {
-      title : 'Daily amount of like rising',
+      title : 'Daily amount of media rising',
       vAxis: {title: 'Total'},
       hAxis: {title: 'Day'},
       seriesType: 'bars',
