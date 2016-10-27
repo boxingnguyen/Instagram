@@ -1,5 +1,5 @@
 <div class='col-xs-3' ></div>
-<div class='col-xs-6' >
+<div class='col-xs-6 followList' >
 	<table class="table responstable" id = "appendFollow">
 	
 		<tr>
@@ -17,4 +17,3 @@
 	<footer class="footer col-xs-12">
 	<a herf="#" class="back-to-top" style = "display: inline;"> Back to Top</a>
  </footer>
-	

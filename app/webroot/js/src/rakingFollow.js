@@ -15,16 +15,37 @@ $(document).ready(function() {
 				success: function (result) {
 					console.log((result));
 					var html = '';var i = start;
-					result.forEach(function(item) {
-						html += "<tr class='center'>";
-						html += "	<td>"+i+"</td>";
-						html += "	<td>"+item.full_name+"</td>";
-						html += "	<td>"+item.username+"</td>";
-						html += "	<td>"+item.totalFollow+"</td>";
-						html += "</tr>";
-						i++;
-					});
-					$('#appendFollow').append(html);
+					if (result === 404) {
+						$('.followList').remove();
+						var tpl = '';
+						tpl += '<div class="container">';
+						tpl += '	<div class="col-md-8 col-md-offset-2" id="frame_content_error">';
+						tpl += '		<div class="col-md-10 col-md-offset-1" id="frame_error_404">';
+						tpl += '			<div class="col-md-6" id="error_404">';
+						tpl += '				<h1 >404</h1>';
+						tpl += '			</div>';
+						tpl += '			<div class="col-md-6" id="authen">';
+						tpl += '				<h3>Not found access_token.</h3>';
+						tpl += '			</div>';
+						tpl += '		</div>';
+						tpl += '	</div>';
+						tpl += '</div>';
+					
+						$("#content").html(tpl);
+					} else {
+						result.forEach(function(item) {
+							html += "<tr class='center'>";
+							html += "	<td>"+i+"</td>";
+							html += "	<td>"+item.full_name+"</td>";
+							html += "	<td>"+item.username+"</td>";
+							html += "	<td>"+item.totalFollow+"</td>";
+							html += "</tr>";
+							i++;
+						});
+						$('#appendFollow').append(html);
+					}
+					
+					
 					if((result.length) < pageCurrent) {
 						$('#loadMore').fadeOut();
 					}
@@ -43,6 +64,7 @@ $(document).ready(function() {
 	        }, 500);
 			
 		});
+		
 		$('#loadMore').click();
 		var amountScrolled = 50;
 		$(window).scroll(function() {
@@ -58,5 +80,5 @@ $(document).ready(function() {
 			}, 80);
 			return false;
 		});
-});
 
+});
