@@ -345,3 +345,13 @@ button.cancel{
 	background: white; 
 	vertical-align: inherit;
 }
+.profile-basic {
+	position: fixed;
+    right: 5%;
+    top: 5%;
+    height: 60%;
+}
+.profile-basic > img {
+    height: 10%;
+    border-radius: 50%;
+}

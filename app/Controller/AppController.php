@@ -48,6 +48,19 @@ class AppController extends Controller {
 				'apiSecret'   => $this->__apiSecret,
 				'apiCallback' => $apiCallback
 		));
+		
+		//get information of param id from url
+		if (isset($this->request->query['id'])){
+			$id = $this->request->query['id'];
+			$m = new MongoClient();
+			$db = $m->instagram_account_info;
+			$collection = $db->account_info;
+			$data = $collection->find(array('id'=>$id));
+			foreach ($data as $v) {
+				$acc_infor = $v;
+				$this->set('acc_infor',$acc_infor);
+			}
+		}
 	}
 	public function cURLInstagram($url) {
 		$headerData = array('Accept: application/json');
