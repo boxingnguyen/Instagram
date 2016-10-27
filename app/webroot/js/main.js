@@ -1,6 +1,14 @@
+$( window ).load(function() {
+	var controller = window.location.pathname.split("/")[1];
+	if (controller == 'top') {
+		$('#btn-status').html('HASHTAG');
+	} else if (controller == 'hashtag') {
+		$('#btn-status').html('TOP');
+	}
+});
 $(document).ready(function() {
-	$('.toggle-group .btn').click(function() {
-		var controller = window.location.pathname.split("/")[1];
+	var controller = window.location.pathname.split("/")[1];
+	$('#btn-status').click(function() {
 		if (controller == 'top') {
 			window.location.replace('/hashtag');
 		} else if (controller == 'hashtag') {

@@ -2,6 +2,9 @@
 App::uses('Controller', 'Controller');
 class RegisterController extends AppController {
 	public function login() {
+		if($this->Session->check('username')){
+			$this->redirect(array('controller' => 'top', 'action' => 'index'));
+		}
 		$scope = array('basic');
 		$url = $this->_instagram->getLoginUrl();
 		$this->set('instagrams', $url);
