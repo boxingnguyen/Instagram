@@ -9,7 +9,7 @@ $(document).ready(function() {
 			$('#loadMore').html('Loading ...');
 			$.ajax({
 				method: "POST",
-				url: '/PHPInstagram/Ranking/ajax',
+				url: '/Ranking/ajax',
 				dataType: 'json',
 				data: {page:page,id:koopId,currentPage:pageCurrent},
 				success: function (result) {
@@ -40,11 +40,23 @@ $(document).ready(function() {
 			
 			$('html,body').animate({
 	            scrollTop: $(this).offset().top
-	        }, 1500);
+	        }, 500);
 			
 		});
-		
 		$('#loadMore').click();
-
+		var amountScrolled = 20;
+		$(window).scroll(function() {
+			if ( $(window).scrollTop() > amountScrolled ) {
+				$('a.back-to-top').fadeIn('slow');
+			} else {			
+				$('a.back-to-top').fadeOut('slow');
+			}
+		});
+		$('a.back-to-top').click(function() {
+			$('html, body').animate({
+				scrollTop: 0
+			}, 80);
+			return false;
+		});
 });
 
