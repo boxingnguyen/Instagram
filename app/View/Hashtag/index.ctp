@@ -63,10 +63,10 @@
 			?>
 			<tr class='center'>
 				<td><?php echo $i; ?></td>
-				<td><a href="<?php echo $this->request->controller; ?>/detail?hashtag=<?php echo $value['hashtag']; ?>" target="_blank">#<?php echo $value['hashtag']?></a></td>
-				<td><?php echo number_format($value['total_media']); ?></td>
+				<td><?php echo $value['hashtag']; ?></td>
+				<td><a href="<?php echo $this->request->controller; ?>/media?hashtag=<?php echo $value['hashtag']; ?>" target="_blank"><?php echo number_format($value['total_media']);?></a></td>
 				<td><a href="<?php echo $this->request->controller; ?>/like?hashtag=<?php echo $value['hashtag']; ?>" target="_blank"><?php echo number_format($value['total_likes']); ?></a></td>
-				<td><a href="<?php echo $this->request->controller; ?>/like?hashtag=<?php echo $value['hashtag']; ?>" target="_blank"><?php echo number_format($value['total_comments']); ?></a></td>
+				<td><a href="<?php echo $this->request->controller; ?>/comment?hashtag=<?php echo $value['hashtag']; ?>" target="_blank"><?php echo number_format($value['total_comments']); ?></a></td>
 				
 			</tr>
 			<?php endforeach;?>
