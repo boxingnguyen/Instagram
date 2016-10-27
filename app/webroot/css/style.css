@@ -330,7 +330,7 @@ button.cancel{
     right: 3%;
     width: 100px;
 }
-.rank-by-like:hover, .rank-by-comment:hover {
+.rank-by-media:hover, .rank-by-like:hover, .rank-by-comment:hover {
 	cursor: pointer;
 	opacity: 0.8;
 }
