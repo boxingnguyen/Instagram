@@ -328,6 +328,7 @@ button.cancel{
 	position: absolute;
     top: 3%;
     right: 3%;
+    width: 100px;
 }
 .hashtag_href {
 	color: white;
@@ -354,4 +355,35 @@ button.cancel{
 .profile-basic > img {
     height: 10%;
     border-radius: 50%;
+}
+a.back-to-top {
+	display: none;
+	width: 60px;
+	height: 60px;
+	text-indent: -9999px;
+	position: fixed;
+	z-index: 999;
+	right: 20px;
+	bottom: 20px;
+	background: #303E49 url("/img/arrow_up.png") no-repeat center;
+	background-size: 90%;
+	-webkit-border-radius: 30px;
+	-moz-border-radius: 30px;
+	border-radius: 30px;
+}
+.loadMore-hashtag {
+    padding: .8em 1em;
+    background: #acb7c0;
+    color: white;
+    border-radius: 0.25em;
+    text-decoration: none;
+}
+.loadMore-hashtag:hover {
+  text-decoration: none;
+}
+.danger{
+	text-align: center;
+    color: red;
+    font-size: 16pt;
+    margin-top: 50px;
 }

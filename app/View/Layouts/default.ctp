@@ -36,6 +36,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 		echo $this->Html->script('src/register');
 		echo $this->Html->script('src/logout');
 		echo $this->Html->script('js/bootstrap.min');
+		echo $this->Html->script('src/hashtag');
 
 		echo $this->fetch('meta');
 		echo $this->fetch('css');
