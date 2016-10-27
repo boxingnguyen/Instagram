@@ -25,6 +25,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 		<?php $this->assign('title', 'Instagram Analysis | TMH Techlab');?>
 		<?php echo $this->fetch('title'); ?>
 	</title>
+
 	<?php
 		echo $this->Html->meta('icon');
 		echo $this->Html->css('css/bootstrap.min');
