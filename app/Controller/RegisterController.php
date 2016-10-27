@@ -120,7 +120,7 @@ class RegisterController extends AppController {
 			$mediaAnalytic = array('likesAnalytic' => $totalMediaAnalytic['likes'], 'commentsAnalytic' => $totalMediaAnalytic['comments']);
 			$this->__calculateReaction($username,$totalAccountInfo, $mediaTop, $mediaAnalytic);
 // 			get follow list and save db
-			$this->getFollow();
+			$this->getFollow($id);
 			// after get data successful, redirect to Top page
 			$this->redirect(array('controller' => 'top', 'action' => 'index'));
 		} else {
@@ -276,22 +276,25 @@ class RegisterController extends AppController {
 			print_r($data); break;
 		} while (true);
 	}
-	public function getFollow() {
+	public function getFollow($id) {
 		$mLogin = new MongoClient;
-	
 		$db = $mLogin->follow;
 		$userFollow = $db->selectCollection('username'.date('Y-m'));
 		$loginFollow = $db->selectCollection('login'.date('Y-m'));
-		$id = $this->Session->read('id');
-		// 		// kiem tra xem da ton tai trong bang account_username chua
-		$checkName = $userFollow->find(array($id => array('$exists' => 1)));
-		if($checkName->count() <= 0) {
-			// 			// kiem tra user co ton tai trong loginDate khong, co roi thi thoi, chua co thi luu
-			$checkLogin = $loginFollow->find(array($id => array('$exists' => 1)));
-			if ($checkLogin->count() <= 0) {
-				$this->__getInfoFollow();
+		if($id) {
+//          check $id exist in collections usernameDate ? "not do it" : "continue to check"
+			$checkName = $userFollow->find(array($id => array('$exists' => 1)));
+			if($checkName->count() <= 0) {
+// 			continue check $id exists in collection loginDate ? "not do it" : "save db"
+				$checkLogin = $loginFollow->find(array($id => array('$exists' => 1)));
+				if ($checkLogin->count() <= 0) {
+					$this->__getInfoFollow();
+				}
 			}
+		} else {
+			return false;
 		}
+		
 	}
 	private function __getInfoFollow() {
 		$mLogin = new MongoClient;
@@ -352,5 +355,4 @@ class RegisterController extends AppController {
 		} while (isset($infoFollowsBy->pagination->next_cursor) && !empty($infoFollowsBy->pagination->next_cursor));
 		$loginFollow->insert(array($id => $arr));
 	}
-
 }
