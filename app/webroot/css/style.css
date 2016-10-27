@@ -337,9 +337,10 @@ button.cancel{
 	color: white;
     width: 100px;
 }
-.rank-by-media:hover, .rank-by-like:hover, .rank-by-comment:hover {
+.rank-by-media:hover, .rank-by-like:hover, .rank-by-comment:hover, .hashtag-sort:hover {
 	cursor: pointer;
 	opacity: 0.8;
+	text-decoration: none;
 }
 .icon-ranking {
 	height: 35px; 
@@ -378,7 +379,7 @@ a.back-to-top {
     border-radius: 0.25em;
     text-decoration: none;
 }
-.loadMore:hover, .loadMore-hashtag:hover {
+.loadMore:hover, .loadMore-hashtag:hover,.hashtag-sort>a:hover {
   text-decoration: none;
 }
 .danger{
