@@ -329,6 +329,22 @@ button.cancel{
     top: 3%;
     right: 3%;
 }
+.hashtag_href {
+	color: white;
+}
+.hashtag_href:hover {
+	color: white;
+    width: 100px;
+}
+.rank-by-media:hover, .rank-by-like:hover, .rank-by-comment:hover {
+	cursor: pointer;
+	opacity: 0.8;
+}
+.icon-ranking {
+	height: 35px; 
+	background: white; 
+	vertical-align: inherit;
+}
 a.back-to-top {
 	display: none;
 	width: 60px;

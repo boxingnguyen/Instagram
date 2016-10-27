@@ -1,35 +1,37 @@
-<html>
-  <head>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript">
-      google.charts.load('current', {'packages':['corechart']});
-      google.charts.setOnLoadCallback(drawVisualization);
-
-      function drawVisualization() {
-        // Some raw data (not necessarily accurate)
-        var data = google.visualization.arrayToDataTable([
-         ['Date', 'Total_Media'],
-         
-        <?php foreach ($data as $value) { ?>
-            [<?php echo "'".$value['date']."'";?> ,  <?php  echo $value['total_media']; ?>],      
-        <?php } ?> 
-         
-      ]);
-
-    var options = {
-      title : 'Daily amount of like rising',
-      vAxis: {title: 'Total'},
-      hAxis: {title: 'Day'},
-      seriesType: 'bars',
-      series: {5: {type: 'line'}}
-    };
-
-    var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
-    chart.draw(data, options);
-  }
-    </script>
-  </head>
-  <body id='body_chart'>
-    <div id="chart_div"></div>
-  </body>
-</html>
+<?php 
+	if (isset($data[0]['tag_name'])):
+	$hashtag = $data[0]['tag_name'];
+	$i = 0;
+?>
+	<div class="col-xs-12">
+		<div class="col-xs-1"></div>
+		<div class="col-xs-4"><h3>Top 100 media of #<?php echo $data[0]['tag_name'];?></h3></div>
+		<div class="col-xs-7"></div>
+	</div>
+	<div class="col-xs-12">
+		<div class='col-xs-1'></div>
+		<div class='col-xs-10' >
+			<table class="table responstable">
+				<tr>
+					<th class='center'>No.</th>
+					<th class='center'>Media URL</th>
+					<th class='center'>Caption</th>
+					<th class='center'><a class="hashtag_href" href='/<?php echo $this->params['controller'] . '/' . $this->params['action'] . '?hashtag=' . $hashtag . '&sort=like'?>'>Like</a></th>
+					<th class='center'><a class="hashtag_href" href='/<?php echo $this->params['controller'] . '/' . $this->params['action'] . '?hashtag=' . $hashtag . '&sort=comment'?>'>Comment</a></th>
+				</tr>
+				<?php foreach ($data as $media) :
+					$i ++;
+				?>
+				<tr class='center'>
+					<td><?php echo $i?></td>
+					<td><a target = "_blank" href="https://instagram.com/p/<?php echo $media['code']?>"><?php echo "https://instagram.com/p/" . $media['code']?></td>
+					<td><?php echo $media['caption']?></td>
+					<td><?php echo $media['likes']['count']?></td>
+					<td><?php echo $media['comments']['count']?></td>
+				</tr>
+				<?php endforeach; ?>
+			</table>
+		</div>
+		<div class='col-xs-1' ></div>
+	</div>
+<?php endif;?>

@@ -18,6 +18,10 @@ class GetAccountInfoShell extends AppShell {
 		$acc_origin = $this->db->{self::ACCOUNT_ORIGIN}->find(array(), array('username' => true));
 		$all_account = array();
 		foreach ($acc_origin as $acc) {
+			if ($acc['username'] == null) {
+				$this->db->account_username->remove(array('username' => null));
+				continue;
+			}
 			$all_account[] = $acc['username'];
 		}
 		
@@ -54,12 +58,8 @@ class GetAccountInfoShell extends AppShell {
  * @return object account's data
  */
 	private function __getAccountInfo($username) {
-		if ($username == null) {
-			$this->db->account_username->remove(array('username' => null));
-		} else {
-			$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/?__a=1');
-			return $data;
-		}
+		$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/?__a=1');
+		return $data;
 	}
 	
 	private function __writeToJson($all_account, $date) {
