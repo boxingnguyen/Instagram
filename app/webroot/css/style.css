@@ -328,6 +328,7 @@ button.cancel{
 	position: absolute;
     top: 3%;
     right: 3%;
+    width: 100px;
 }
 .hashtag_href {
 	color: white;
@@ -345,6 +346,16 @@ button.cancel{
 	background: white; 
 	vertical-align: inherit;
 }
+.profile-basic {
+	position: fixed;
+    right: 5%;
+    top: 5%;
+    height: 60%;
+}
+.profile-basic > img {
+    height: 10%;
+    border-radius: 50%;
+}
 a.back-to-top {
 	display: none;
 	width: 60px;
@@ -360,9 +371,19 @@ a.back-to-top {
 	-moz-border-radius: 30px;
 	border-radius: 30px;
 }
-.loadMore {
+.loadMore, .loadMore-hashtag {
     padding: .8em 1em;
     background: #acb7c0;
     color: white;
     border-radius: 0.25em;
+    text-decoration: none;
+}
+.loadMore:hover, .loadMore-hashtag:hover {
+  text-decoration: none;
+}
+.danger{
+	text-align: center;
+    color: red;
+    font-size: 16pt;
+    margin-top: 50px;
 }
