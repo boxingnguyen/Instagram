@@ -46,7 +46,8 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 	<div class="container">
 		<header class="clearfix">
 			<?php if (strtolower($this->params['controller']) == 'hashtag'){ ?>
-        		<h1>Hashtag Ranking</h1>
+				<?php $hashtagName = isset($this->params['url']['hashtag']) ? '#'.$this->params['url']['hashtag'] : 'Ranking'; ?>
+        		<h1>Hashtag <?php echo $hashtagName;?></h1>
         	<?php }elseif (strtolower($this->params['controller']) == 'ranking') {?>
         		<h1>Ranking <img class="icon-ranking" src="/img/icon_ranking.png"></h1>
         	<?php } else {?>
