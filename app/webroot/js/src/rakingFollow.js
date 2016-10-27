@@ -1,6 +1,6 @@
 $(document).ready(function() {
 		var page = -1;
-		var pageCurrent = 5; //total record /page
+		var pageCurrent = 10; //total record /page
 		var baseUrl = (window.location).href; // You can also use document.URL
 		var koopId = baseUrl.substring(baseUrl.lastIndexOf('=') + 1);
 		$('#loadMore').click(function(){
@@ -44,7 +44,7 @@ $(document).ready(function() {
 			
 		});
 		$('#loadMore').click();
-		var amountScrolled = 20;
+		var amountScrolled = 50;
 		$(window).scroll(function() {
 			if ( $(window).scrollTop() > amountScrolled ) {
 				$('a.back-to-top').fadeIn('slow');
