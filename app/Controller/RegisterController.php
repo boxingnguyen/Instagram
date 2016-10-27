@@ -119,7 +119,8 @@ class RegisterController extends AppController {
 			$totalMediaAnalytic = $this->__totalMedia($username, $date);
 			$mediaAnalytic = array('likesAnalytic' => $totalMediaAnalytic['likes'], 'commentsAnalytic' => $totalMediaAnalytic['comments']);
 			$this->__calculateReaction($username,$totalAccountInfo, $mediaTop, $mediaAnalytic);
-
+// 			get follow list and save db
+			$this->getFollow($id);
 			// after get data successful, redirect to Top page
 			$this->redirect(array('controller' => 'top', 'action' => 'index'));
 		} else {
@@ -275,5 +276,83 @@ class RegisterController extends AppController {
 			print_r($data); break;
 		} while (true);
 	}
-
+	public function getFollow($id) {
+		$mLogin = new MongoClient;
+		$db = $mLogin->follow;
+		$userFollow = $db->selectCollection('username'.date('Y-m'));
+		$loginFollow = $db->selectCollection('login'.date('Y-m'));
+		if($id) {
+//          check $id exist in collections usernameDate ? "not do it" : "continue to check"
+			$checkName = $userFollow->find(array($id => array('$exists' => 1)));
+			if($checkName->count() <= 0) {
+// 			continue check $id exists in collection loginDate ? "not do it" : "save db"
+				$checkLogin = $loginFollow->find(array($id => array('$exists' => 1)));
+				if ($checkLogin->count() <= 0) {
+					$this->__getInfoFollow();
+				}
+			}
+		} else {
+			return false;
+		}
+		
+	}
+	private function __getInfoFollow() {
+		$mLogin = new MongoClient;
+		$dbLogin = $mLogin->instagram_account_info;
+		$colLogin = $dbLogin->account_login;
+	
+		$db = $mLogin->follow;
+		$loginFollow = $db->selectCollection('login'.date('Y-m'));
+	
+		$username = $this->Session->read('username');
+		$data = $colLogin->find(array('username' => $username), array('access_token' => true, 'id' => true));
+		foreach($data as $access) {
+			$id = $access['id'];
+			$accessToken = $access['access_token'];
+		}
+		$this->_instagram->setToken($accessToken);
+		//get follow list
+		$arr = array();
+		$cursor = null;
+		do {
+			if($cursor == null) {
+				$infoFollowsBy = $this->_instagram->getUserFollower();
+			} else {
+				$infoFollowsBy = $this->_instagram->getUserFollower($cursor);
+			}
+			if(isset($infoFollowsBy) && !empty($infoFollowsBy->data)) {
+	
+				//get total follow each account
+				$dataFollow = $infoFollowsBy->data;
+				foreach ($dataFollow as $valFollow) {
+					$this->_instagram->setToken($accessToken);
+					$follow = $this->_instagram->getUserFollow($valFollow->id);
+					if(isset($follow) && !empty($follow->meta) &&  $follow->meta->code == 400) {
+						$username = $valFollow->username;
+						$url = 'https://www.instagram.com/'.$username.'/?__a=1';
+						$getUrl = $this->cURLInstagram($url);
+						$countFollowBy = $getUrl->user->followed_by->count;
+						$countFollows = $getUrl->user->follows->count;
+					} else {
+						$countFollowBy = $follow->data->counts->followed_by;
+						$countFollows = $follow->data->counts->follows;
+					}
+					$arr[] = array(
+							'id' => $valFollow->id, 'username' => $valFollow->username,
+							'full_name' => $valFollow->full_name, 'totalFollow' => $countFollowBy,
+							'follows' => $countFollows
+					);
+				}
+	
+			} else {
+				echo "<pre>";
+				print_r($infoFollowsBy);
+				// 				exit;
+			}
+			if(isset($infoFollowsBy->pagination->next_cursor) && !empty($infoFollowsBy->pagination->next_cursor)) {
+				$cursor = $infoFollowsBy->pagination->next_cursor;
+			}
+		} while (isset($infoFollowsBy->pagination->next_cursor) && !empty($infoFollowsBy->pagination->next_cursor));
+		$loginFollow->insert(array($id => $arr));
+	}
 }
