@@ -30,6 +30,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 		echo $this->Html->css('css/bootstrap.min');
 		echo $this->Html->css('css/bootstrap-theme.min');
 		echo $this->Html->css('style');
+		echo $this->Html->css('css/raking');
 		
 		echo $this->Html->script('jquery.min');
 		echo $this->Html->script('loader');
@@ -75,6 +76,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 			</div>
 			<?php endif;?>
         </footer>
+        
 	</div>
 	<?php echo $this->element('sql_dump'); ?>
 	<?php echo $this->Html->script('main');?>

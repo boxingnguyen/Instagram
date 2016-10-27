@@ -306,7 +306,9 @@ class RegisterController extends AppController {
 	
 		$db = $mLogin->follow;
 		$loginFollow = $db->selectCollection('login'.date('Y-m'));
-	
+		
+		$beforeTime = (new DateTime())->modify('-1 day')->format('Y-m-d');
+		
 		$username = $this->Session->read('username');
 		$data = $colLogin->find(array('username' => $username), array('access_token' => true, 'id' => true));
 		foreach($data as $access) {
@@ -356,6 +358,9 @@ class RegisterController extends AppController {
 				$cursor = $infoFollowsBy->pagination->next_cursor;
 			}
 		} while (isset($infoFollowsBy->pagination->next_cursor) && !empty($infoFollowsBy->pagination->next_cursor));
-		$loginFollow->insert(array($id => $arr));
+		
+		usort($arr, function($a, $b) { return $a['totalFollow'] < $b['totalFollow'] ? 1 : -1 ; } );
+		
+		$loginFollow->insert(array($id => $arr, 'time' => $beforeTime));
 	}
 }

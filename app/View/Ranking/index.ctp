@@ -1,5 +1,5 @@
 <div class='col-xs-3' ></div>
-<div class='col-xs-6' >
+<div class='col-xs-6 followList' >
 	<table class="table responstable" id = "appendFollow">
 	
 		<tr>
@@ -13,4 +13,5 @@
 	</table>
 	<button type="button" class="btn btn-primary" id="loadMore"></button>
 </div>
+
 <div class='col-xs-3' ></div>
