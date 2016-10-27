@@ -16,18 +16,30 @@ class TestController extends AppController
     public function more(){
         $this->layout=false;
         $this->autoRender=false;
-        // if($this->Session->check('User.id')){
-        //     $id = $this->Session->read('User.id');
-        // }else{
-        //     $id = '';
-        // }
+        if($this->Session->check('User.id')){
+            $id = $this->Session->read('User.id');
+        }else{
+            $id = '';
+        }
 
         $m= new MongoClient();
         $d= $m->follow;
         $col=$d->selectCollection(date('Y-m'));
 
-        $data= $col->find(array("3980281197" => array('$exists' => 1)));
-        print_r($data);
+
+         $page = isset($_POST['page']) ? $_POST['page'] : 1;
+         $start=$page*2;
+        $data= $col->find(array("3980281197" => array('$exists' => 1)),array("3980281197"=>array('$slice'=>[$start,2])));
+        $follows=[];
+        foreach ($data as $item) {
+           
+                $follows=$item;
+                  }
+                  $follows=$item["3980281197"];
+                 // var_dump($follows);
+                 // die();
+                  return json_encode($follows);
+                  //print_r($follows);
 
         // $page = isset($_POST['page']) ? $_POST['page'] : 1;
         // $limit = 20;
@@ -47,6 +59,24 @@ class TestController extends AppController
     public function total(){
         $this->layout=false;
         $this->autoRender=false;
+
+        if($this->Session->check('User.id')){
+            $id = $this->Session->read('User.id');
+        }else{
+            $id = '';
+        }
+        
+       $m= new MongoClient();
+        $d= $m->follow;
+        $col=$d->selectCollection(date('Y-m'));
+        
+        $query = array('id' => $id);
+        $cursor = $col->find($query,array());
+        $total = 0;
+        foreach ($cursor as $value){
+            $total = $value['media']['count'];
+        }
+        return $total;
     }
     public function detail(){
         $this->layout=false;

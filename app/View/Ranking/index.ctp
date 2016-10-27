@@ -18,6 +18,7 @@
 			<td><?php echo $val['totalFollow']?></td>
 		</tr>
 	<?php $i++; } ?>
+	<button id="loadMore">LOAD MORE</button>
 	</table>
 </div>
 <div class='col-xs-3' ></div>

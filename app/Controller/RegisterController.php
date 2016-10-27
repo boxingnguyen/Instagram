@@ -306,9 +306,6 @@ class RegisterController extends AppController {
 		$dbLogin = $mLogin->instagram_account_info;
 		$colLogin = $dbLogin->account_login;
 
-<<<<<<< HEAD
-}
-=======
 		$db = $mLogin->follow;
 		$loginFollow = $db->selectCollection('login'.date('Y-m'));
 		
@@ -364,4 +361,4 @@ class RegisterController extends AppController {
 		$loginFollow->insert(array($id => $arr));
 	}
 }
->>>>>>> 7ecdbb8c50dd0e590d4a1b7d39dae18b009be489
+
