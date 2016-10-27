@@ -13,5 +13,7 @@
 	</table>
 	<button type="button" class="btn btn-primary" id="loadMore"></button>
 </div>
-
 <div class='col-xs-3' ></div>
+	<footer class="footer col-xs-12">
+	<a herf="#" class="back-to-top" style = "display: inline;"> Back to Top</a>
+ </footer>

@@ -1,6 +1,6 @@
 $(document).ready(function() {
 		var page = -1;
-		var pageCurrent = 20; //total record /page
+		var pageCurrent = 10; //total record /page
 		var baseUrl = (window.location).href; // You can also use document.URL
 		var koopId = baseUrl.substring(baseUrl.lastIndexOf('=') + 1);
 		$('#loadMore').click(function(){
@@ -9,7 +9,7 @@ $(document).ready(function() {
 			$('#loadMore').html('Loading ...');
 			$.ajax({
 				method: "POST",
-				url: '/PHPInstagram/Ranking/ajax',
+				url: '/Ranking/ajax',
 				dataType: 'json',
 				data: {page:page,id:koopId,currentPage:pageCurrent},
 				success: function (result) {
@@ -61,10 +61,24 @@ $(document).ready(function() {
 			
 			$('html,body').animate({
 	            scrollTop: $(this).offset().top
-	        }, 1500);
+	        }, 500);
 			
 		});
 		
 		$('#loadMore').click();
+		var amountScrolled = 50;
+		$(window).scroll(function() {
+			if ( $(window).scrollTop() > amountScrolled ) {
+				$('a.back-to-top').fadeIn('slow');
+			} else {			
+				$('a.back-to-top').fadeOut('slow');
+			}
+		});
+		$('a.back-to-top').click(function() {
+			$('html, body').animate({
+				scrollTop: 0
+			}, 80);
+			return false;
+		});
 
 });

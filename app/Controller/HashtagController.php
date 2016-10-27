@@ -40,30 +40,7 @@ class HashtagController extends AppController {
 		}
 	}
 	
-	public function detail() {
-		$tag = $_GET['hashtag'];
-		$db = $this->m->hashtag;
-		$c = $db->media;
-		
-		if (isset($this->request['url']['sort']) && $this->request['url']['sort'] == 'comment') {
-			$condition = array(
-					array('$match' => array('tag_name' => $tag)),
-					array('$sort' => array('comments.count' => -1)),
-					array('$limit' => 100)
-			);
-		} else {
-			$condition = array(
-					array('$match' => array('tag_name' => $tag)),
-					array('$sort' => array('likes.count' => -1)),
-					array('$limit' => 100)
-			);
-		}
-		
-		
-		$media = $c->aggregate($condition);
-		
- 		$this->set('data', $media['result']);
- 		
+	public function detail() {	
 	}
 	
 	public function media() {
@@ -125,5 +102,61 @@ class HashtagController extends AppController {
 			$i++;
 		}
 		$this->set('data', $data);
+	}
+	
+	public function more() {
+		$this->layout = false;
+		$this->autoRender = false;
+		
+		if (isset($_POST['tag'])){
+			$tag = $_POST['tag'];
+		}else {
+			return false;
+		}
+		
+		$db = $this->m->hashtag;
+		$c = $db->media;
+		
+		$page = isset($_POST['page']) ? $_POST['page'] : 1;
+		$limit = 20;
+		$start= ($page*$limit)-$limit;
+		
+		if ($_POST['sort'] === 'like') {
+			$sort = 'likes.count';
+		}elseif ($_POST['sort'] === 'comment') {
+			$sort = 'comments.count';
+		}else {
+			$sort = 'likes.count';
+		}
+ 		
+		$query = array('tag_name' => $tag);
+		$cursor = $c->find($query,array())->sort(array($sort=>-1))->skip($start)->limit($limit);
+		
+		$data= array();
+		foreach ($cursor as $value){
+			$value['likes']['count'] = number_format($value['likes']['count']);
+			$value['comments']['count'] = number_format($value['comments']['count']);
+			$data[]=$value;
+		}
+		
+		return json_encode($data);
+	}
+	
+	public function total(){
+		$this->layout = false;
+		$this->autoRender = false;
+		
+		if (isset($_POST['tag'])){
+			$tag = $_POST['tag'];
+		}else {
+			return false;
+		}
+		
+		$db = $this->m->hashtag;
+		$c = $db->media;
+		
+		$query = array('tag_name' => $tag);
+		$total = $c->find($query,array())->count();
+		return $total;
 	}
 }
