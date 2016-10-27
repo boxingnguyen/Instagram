@@ -27,21 +27,21 @@
 	</div>
 	<a href="#" class="back-to-top" style = "display: inline;"> Back to Top</a>
 	<style> 
-		a.back-to-top { 
- 			display: none; 
-			width: 60px; 
-			height: 60px; 
-			text-indent: -9999px; 
-			position: fixed; 
-			z-index: 999; 
-			right: 20px; 
-			bottom: 20px; 
-			background: #303E49 url("/img/arrow_up.png") no-repeat center; 
-			background-size: 90%; 
-			-webkit-border-radius: 30px; 
-			-moz-border-radius: 30px; 
-		border-radius: 30px; 
-	} 
+/* 		a.back-to-top {  */
+/*  			display: none;  */
+/* 			width: 60px;  */
+/* 			height: 60px;  */
+/* 			text-indent: -9999px;  */
+/* 			position: fixed;  */
+/* 			z-index: 999;  */
+/* 			right: 20px;  */
+/* 			bottom: 20px;  */
+/* 			background: #303E49 url("/img/arrow_up.png") no-repeat center;  */
+/* 			background-size: 90%;  */
+/* 			-webkit-border-radius: 30px;  */
+/* 			-moz-border-radius: 30px;  */
+/* 		border-radius: 30px;  */
+/* 	}  */
 	</style>
  </footer>
 	
