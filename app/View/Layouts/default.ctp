@@ -48,7 +48,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 			<?php if (strtolower($this->params['controller']) == 'hashtag'){ ?>
         		<h1>Hashtag Ranking</h1>
         	<?php }elseif (strtolower($this->params['controller']) == 'ranking') {?>
-        		<h1>Ranking</h1>
+        		<h1>Ranking <img class="icon-ranking" src="/img/icon_ranking.png"></h1>
         	<?php } else {?>
         		<h1>Instagram Analysis</h1>
         	<?php } ?>

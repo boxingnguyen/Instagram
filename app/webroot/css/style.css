@@ -334,3 +334,8 @@ button.cancel{
 	cursor: pointer;
 	opacity: 0.8;
 }
+.icon-ranking {
+	height: 35px; 
+	background: white; 
+	vertical-align: inherit;
+}
