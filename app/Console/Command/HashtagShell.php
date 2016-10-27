@@ -20,7 +20,7 @@ class HashtagShell extends AppShell {
 		}
 		
 	}
-	public function calculator($tag){
+	public function calculatorRanking($tag){
 		$m = new MongoClient();
 		$db = $m->hashtag;
 		$collection = $db->media;
@@ -34,14 +34,48 @@ class HashtagShell extends AppShell {
 						)
 				)
 		);
-		$a = $this->getPosttop($tag);
 		$data = $collection->aggregate($condition);
 		$result = array();
-		$result['total_likes'] = $data['result'][0]['total_likes'];
-		$result['total_comments'] = $data['result'][0]['total_comments'];
-		$result['total_media'] = $a['total_media'];
+		if(isset($data['result'][0])){
+			$result['total_likes'] = $data['result'][0]['total_likes'];
+			$result['total_comments'] = $data['result'][0]['total_comments'];
+		}
+		else{
+			$result['total_likes'] = 0;
+			$result['total_comments'] = 0;
+		}
+		$result['total_media'] = $collection->find(array('tag_name'=>$tag))->count();
 		$result['hashtag'] = $tag;
 		$db->ranking->insert($result);
+	}
+	public function calculatorStatistic($tag,$date){
+		$m = new MongoClient();
+		$db = $m->hashtag;
+		$collection = $db->media;
+		$condition = array(
+				array('$match' => array('tag_name' => $tag,'date' => $date)),
+				array(
+						'$group' => array(
+								'_id' => 'null',
+								'total_likes' => array('$sum' => '$likes.count'),
+								'total_comments' => array('$sum' => '$comments.count')
+						)
+				)
+		);
+		$data = $collection->aggregate($condition);
+		$result = array();
+		if(isset($data['result'][0])){
+			$result['total_likes'] = $data['result'][0]['total_likes'];
+			$result['total_comments'] = $data['result'][0]['total_comments'];
+		}
+		else{
+			$result['total_likes'] = 0;
+			$result['total_comments'] = 0;
+		}
+		$result['total_media'] = $collection->find(array('tag_name'=>$tag,'date' => $date))->count();
+		$result['date'] = $date;
+		$result['hashtag'] = $tag;
+		$db->statistic->insert($result);
 	}
 	public function main() {
 // 		$this->__getMediaApi();
@@ -118,6 +152,17 @@ class HashtagShell extends AppShell {
 		foreach ($pids as $pid) {
 			pcntl_waitpid($pid, $status);
 			unset($pids[$pid]);
+		}
+		$count_day=cal_days_in_month(CAL_GREGORIAN,9,2016);
+		$db->ranking->drop();
+		$db->statistic->drop();
+		foreach($hashtag as $tag){
+			for($i=1;$i<=$count_day;$i++){
+				$date = $i."-9-2016";
+				$date = date("d-m-Y",strtotime($date));
+				$this->calculatorStatistic($tag,$date);
+			}
+			$this->calculatorRanking($tag);
 		}
 	}
 	
@@ -248,35 +293,5 @@ class HashtagShell extends AppShell {
 				unset($pids[$pid]);
 			}
 		}
-		
-		// 		$tagArray=$db->tags->find();
-		// 		if (isset($tagArray) && !empty($tagArray)) {
-		// 			$listTag = array();
-		// 			foreach ($tagArray as $value) {
-		// 				$listTag[] = str_replace("#","",$value['tag']);
-		// 			}
-		// 			$collection->drop();
-		// 			$db->ranking->drop();
-		// 			foreach ($listTag as $tag) {
-		// 				$mediaArray=$this->getPosttop($tag);
-		// 				$collection->batchInsert($mediaArray);
-		// 				$this->calculator($tag);
-		// 			}
-		// 			$statisticArray= array();
-		// 			$statistic = array();
-		// 			foreach ($listTag as $tag) {
-		// 				$statistic['hashtag'] = $tag;
-		// 				$statistic['date']=date("d-m-Y");
-		// 				foreach ($db->ranking->find(array('hashtag' =>$tag)) as $value) {
-		// 					$total_media = $value['total_media'] ;
-		// 				}
-		// 				$statistic['total_media']=$total_media;
-		// 				$statisticArray[$tag]=$statistic;
-		// 			}
-		// 			if(!empty($statisticArray)){
-		// 				$db->statistic->batchInsert($statisticArray);
-		// 			}
-			
-		// 		}
 	}
 }
