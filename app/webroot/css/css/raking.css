@@ -1,12 +1,12 @@
 #frame_content_error{
-    background:white;
+    background:#024457;
     border: 1px solid white;
     padding-top: 65px;
     padding-bottom: 65px;
      box-shadow: 10px 10px 10px 5px #888888;
 }
 #authen h3{
-  color: black;
+  color: white;
  padding-top: 0px;
 }
 
