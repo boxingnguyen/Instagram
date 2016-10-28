@@ -1,7 +1,4 @@
 $(document).ready(function() {
-		var l = window.location;
-		var base_url = l.protocol + "//" + l.host + "/" + l.pathname.split('/')[1];
-		console.log(base_url);
 		var baseUrl = document.location.origin;
 		console.log(baseUrl);
 		var page = -1;
@@ -14,7 +11,7 @@ $(document).ready(function() {
 			$('#loadMore').html('Loading ...');
 			$.ajax({
 				method: "POST",
-				url: base_url+'/Ranking/ajax',
+				url: '/Ranking/ajax',
 				dataType: 'json',
 				data: {page:page,id:koopId,currentPage:pageCurrent},
 				success: function (result) {
