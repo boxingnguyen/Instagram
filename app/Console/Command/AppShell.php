@@ -82,6 +82,16 @@ class AppShell extends Shell {
 		curl_close($ch);
 		return json_decode($jsonData);	
 	}
+	
+	public function getMediaHashtag($tag, $max_id) {
+		if ($max_id != null) {
+			$media = $this->cURLInstagram('https://www.instagram.com/explore/tags/'.$tag.'/?__a=1&max_id=' . $max_id);
+		} else {
+			$media = $this->cURLInstagram('https://www.instagram.com/explore/tags/'.$tag.'/?__a=1');
+		}
+		return $media;
+	}
+	
 	private function __processHeaders($headerContent) {
 		$headers = array();
 	
