@@ -38,7 +38,7 @@ class HashtagController extends AppController {
 		$tag = $_GET['hashtag'];
 		$db = $this->m->hashtag;
 		$c = $db->media_daily;
-		$statistic = $c->find(array('hashtag' =>$tag));
+		$statistic = $c->find(array('tag' =>$tag));
 		$data = array();
 		$i=0;
 		foreach ($statistic as $val) {
