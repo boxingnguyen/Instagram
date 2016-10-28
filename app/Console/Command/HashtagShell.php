@@ -108,7 +108,6 @@ class HashtagShell extends AppShell {
 					$media = $this->__getMediaHttp($tag, $max_id);
 					
 					if (!isset($media->tag->media->nodes) || empty($media->tag->media->nodes)) {
-						print_r($media);
 						echo "Last media of " . $tag . ": " . PHP_EOL;
 						print_r(end($tmp));
 						break;
@@ -118,17 +117,14 @@ class HashtagShell extends AppShell {
 					foreach ($data as $value) {
 						$count ++;
 						// do not get media of October
-						if (isset($value->created_time) && intval(date('m', $value->created_time)) > 9 || isset($value->date) && intval(date('m', $value->date)) > 9) {
+						if (isset($value->date) && intval(date('m', $value->date)) > 9) {
 							continue;
-						} else if (isset($value->created_time) && intval(date('m', $value->created_time)) < 9 || isset($value->date) && intval(date('m', $value->date)) < 9) {
+						} else if (isset($value->date) && intval(date('m', $value->date)) < 9) {
+							echo $tag . " get full media" . PHP_EOL;
 							// do not get media of month before September
-							break;
+							break 2;
 						} else {
-							if (isset($value->created_time)) {
-								$value->created_time = date('d-m-Y', $value->created_time);
-							} else if (isset($value->date)) {
-								$value->date = date('d-m-Y', $value->date);
-							}
+							$value->date = date('d-m-Y', $value->date);
 							$value->tag_name = $tag;
 							fwrite($myfile, json_encode($value) . "\n");
 						}
@@ -180,8 +176,10 @@ class HashtagShell extends AppShell {
 	
 	private function __getMediaHttp($tag, $max_id) {
 		if ($max_id != null) {
+			sleep(3);
 			$media = $this->cURLInstagram('https://www.instagram.com/explore/tags/'.$tag.'/?__a=1&max_id=' . $max_id);
 		} else {
+			sleep(3);
 			$media = $this->cURLInstagram('https://www.instagram.com/explore/tags/'.$tag.'/?__a=1');
 		}
 		return $media;
