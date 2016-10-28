@@ -50,8 +50,8 @@
 			?>
 			<tr class='center'>
 				<td><?php echo $i; ?></td>
-				<td><a href="<?php echo $this->webroot . 'hashtag/detail?hashtag=' . $value['hashtag']; ?>" target="_blank">#<?php echo $value['hashtag']; ?></a></td>
-				<td><a href="<?php echo $this->webroot . "hashtag/media?hashtag=" . $value['hashtag']; ?>" target="_blank"><?php echo number_format($value['total_media']);?></a></td>
+				<td><a href="<?php echo $this->webroot . 'hashtag/detail?hashtag=' . $value['tag']; ?>" target="_blank">#<?php echo $value['tag']; ?></a></td>
+				<td><a href="<?php echo $this->webroot . "hashtag/media?hashtag=" . $value['tag']; ?>" target="_blank"><?php echo number_format($value['total_media']);?></a></td>
 			</tr>
 			<?php endforeach;?>
 		</table>
