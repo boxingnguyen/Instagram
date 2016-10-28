@@ -3,8 +3,8 @@ class HashtagController extends AppController {
 	public function index () {
 		$db = $this->m->hashtag;
 		$c = $db->media_daily;
-		
-		$data = $c->find()->sort(array('total_media' => -1));
+		$date = date('d-m-Y');
+		$data = $c->find(array('date' => $date))->sort(array('total_media' => -1));
 		
 		$this->set('data', $data);
 	}
@@ -37,8 +37,8 @@ class HashtagController extends AppController {
 	public function media() {
 		$tag = $_GET['hashtag'];
 		$db = $this->m->hashtag;
-		$c = $db->statistic;
-		$statistic = $c->find(array('hashtag' =>$tag));
+		$c = $db->media_daily;
+		$statistic = $c->find(array('tag' =>$tag))->sort(array('date' => 1));
 		$data = array();
 		$i=0;
 		foreach ($statistic as $val) {
@@ -54,46 +54,6 @@ class HashtagController extends AppController {
 		$this->set('data', $data);
 	}
 	
-	public function comment() {
-		$tag = $_GET['hashtag'];
-		$date = date("d-m-Y");
-		$db = $this->m->hashtag;
-		$c = $db->statistic;
-		$statistic = $c->find(array('hashtag' =>$tag));
-		$data = array();
-		$i=0;
-		foreach ($statistic as $val) {
-			if($i==0) {
-				$data[]= array("date"=>$val['date'],"total_comments"=>0);
-			} else {
-				$total = $val['total_comments'] - $tam;
-				$data[]= array("date"=>$val['date'],"total_comments"=>$total);
-			}
-			$tam = $val['total_comments'];
-			$i++;
-		}
-		$this->set('data', $data);
-	}
-	public function like() {
-		$tag = $_GET['hashtag'];
-		$db = $this->m->hashtag;
-		$c = $db->statistic;
-		$like = $c->find(array('hashtag' =>$tag));
-		$like->sort(array('date' => 1));
-		$data = array();
-		$i=0;
-		foreach ($like as $val) {
-			if($i==0) {
-				$data[]= array("date"=>$val['date'],"total_likes"=>0);
-			} else {
-				$total = $val['total_likes'] - $tam;
-				$data[]= array("date"=>$val['date'],"total_likes"=>$total);
-			}
-			$tam = $val['total_likes'];
-			$i++;
-		}
-		$this->set('data', $data);
-	}
 	
 	public function more() {
 		$this->layout = false;
@@ -132,7 +92,6 @@ class HashtagController extends AppController {
 		
 		return json_encode($data);
 	}
-	
 	public function total(){
 		$this->layout = false;
 		$this->autoRender = false;
