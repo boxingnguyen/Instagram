@@ -91,7 +91,7 @@ class RegisterController extends AppController {
 			}
 			$this->Session->write('username', $username);
 			
-			$setId = $collections->find(array('id' => $id))->count();
+			$setId = $collectionsUsername->find(array('id' => $id))->count();
 			if ($setId > 0) {
 				$collections->remove(array('id' => $id));
 				$collectionsUsername->remove(array('id' => $id));

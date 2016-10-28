@@ -1,4 +1,6 @@
 $(document).ready(function() {
+		var baseUrl = document.location.origin;
+		console.log(baseUrl);
 		var page = -1;
 		var pageCurrent = 10; //total record /page
 		var baseUrl = (window.location).href; // You can also use document.URL
@@ -37,7 +39,8 @@ $(document).ready(function() {
 							html += "<tr class='center'>";
 							html += "	<td>"+i+"</td>";
 							html += "	<td>"+item.full_name+"</td>";
-							html += "	<td>"+item.username+"</td>";
+							html += "	<td><a href='https://www.instagram.com/" +item.username +"'"+ ">"+item.username+" </a></td>";
+//							html += "	<td>"+item.username+"</td>";
 							html += "	<td>"+item.totalFollow+"</td>";
 							html += "</tr>";
 							i++;
