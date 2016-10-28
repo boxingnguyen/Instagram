@@ -90,7 +90,7 @@ class RegisterController extends AppController {
 			}
 			$this->Session->write('username', $username);
 			
-			$setId = $collections->find(array('id' => $id))->count();
+			$setId = $collectionsUsername->find(array('id' => $id))->count();
 			if ($setId > 0) {
 				$collections->remove(array('id' => $id));
 				$collectionsUsername->remove(array('id' => $id));
@@ -285,14 +285,16 @@ class RegisterController extends AppController {
 
 		$mLogin = new MongoClient;
 		$db = $mLogin->follow;
+		$beforeTime = (new DateTime())->modify('-1 day')->format('Y-m-d');
 		$userFollow = $db->selectCollection('username'.date('Y-m'));
 		$loginFollow = $db->selectCollection('login'.date('Y-m'));
 		if($id) {
 //          check $id exist in collections usernameDate ? "not do it" : "continue to check"
-			$checkName = $userFollow->find(array($id => array('$exists' => 1)));
+			$checkName = $userFollow->find(array($id => array('$exists' => 1), 'time' => $beforeTime));
+// 			echo $checkName->count();die;
 			if($checkName->count() <= 0) {
 // 			continue check $id exists in collection loginDate ? "not do it" : "save db"
-				$checkLogin = $loginFollow->find(array($id => array('$exists' => 1)));
+				$checkLogin = $loginFollow->find(array($id => array('$exists' => 1), 'time' => $beforeTime));
 				if ($checkLogin->count() <= 0) {
 					$this->__getInfoFollow();
 				}
