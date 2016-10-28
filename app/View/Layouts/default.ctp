@@ -25,32 +25,43 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 		<?php $this->assign('title', 'Instagram Analysis | TMH Techlab');?>
 		<?php echo $this->fetch('title'); ?>
 	</title>
+
 	<?php
 		echo $this->Html->meta('icon');
 		echo $this->Html->css('css/bootstrap.min');
 		echo $this->Html->css('css/bootstrap-theme.min');
 		echo $this->Html->css('style');
+		echo $this->Html->css('css/raking');
 		
 		echo $this->Html->script('jquery.min');
 		echo $this->Html->script('loader');
 		echo $this->Html->script('src/register');
 		echo $this->Html->script('src/logout');
+		echo $this->Html->script('src/rakingFollow');
 		echo $this->Html->script('js/bootstrap.min');
+		echo $this->Html->script('src/hashtag');
 
 		echo $this->fetch('meta');
 		echo $this->fetch('css');
 		echo $this->fetch('script');
 	?>
-	<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
-	<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 </head>
 <body>
 	<div class="container">
 		<header class="clearfix">
+			<?php 
+				if (isset($acc_infor)) {
+					echo '<div class="profile-basic">';
+					echo '<img src="' . $acc_infor['profile_pic_url'] . '" ><br>';
+					echo '<a target="_blank" href="https://www.instagram.com/'.$acc_infor['username'].'">' . $acc_infor["full_name"] . '</a>';
+					echo '</div>';
+				}
+			?>
 			<?php if (strtolower($this->params['controller']) == 'hashtag'){ ?>
-        		<h1>Hashtag Ranking</h1>
+				<?php $hashtagName = isset($this->params['url']['hashtag']) ? '#'.$this->params['url']['hashtag'] : 'Ranking'; ?>
+        		<h1>Hashtag <?php echo $hashtagName;?></h1>
         	<?php }elseif (strtolower($this->params['controller']) == 'ranking') {?>
-        		<h1>Ranking</h1>
+        		<h1>Ranking <img class="icon-ranking" src="/img/icon_ranking.png"></h1>
         	<?php } else {?>
         		<h1>Instagram Analysis</h1>
         	<?php } ?>
@@ -75,6 +86,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 			</div>
 			<?php endif;?>
         </footer>
+        
 	</div>
 	<?php echo $this->element('sql_dump'); ?>
 	<?php echo $this->Html->script('main');?>

@@ -2,6 +2,9 @@
 App::uses('Controller', 'Controller');
 class RegisterController extends AppController {
 	public function login() {
+		if($this->Session->check('username')){
+			$this->redirect(array('controller' => 'top', 'action' => 'index'));
+		}
 		$scope = array('basic');
 		$url = $this->_instagram->getLoginUrl($scope);
 		$this->set('instagrams', $url);
@@ -119,7 +122,7 @@ class RegisterController extends AppController {
 			$mediaAnalytic = array('likesAnalytic' => $totalMediaAnalytic['likes'], 'commentsAnalytic' => $totalMediaAnalytic['comments']);
 			$this->__calculateReaction($username,$totalAccountInfo, $mediaTop, $mediaAnalytic);
 // 			get follow list and save db
-			$this->getFollow();
+			$this->getFollow($id);
 			// after get data successful, redirect to Top page
 			$this->redirect(array('controller' => 'top', 'action' => 'index'));
 		} else {
@@ -276,24 +279,27 @@ class RegisterController extends AppController {
 			$data = $this->cURLInstagram('https://www.instagram.com/explore/tags/' . $tags . '/?__a=1&');
 			print_r($data); break;
 		} while (true);
-	}
 
-	public function getFollow() {
+	public function getFollow($id) {
+
 		$mLogin = new MongoClient;
-	
 		$db = $mLogin->follow;
 		$userFollow = $db->selectCollection('username'.date('Y-m'));
 		$loginFollow = $db->selectCollection('login'.date('Y-m'));
-		$id = $this->Session->read('id');
-		// 		// kiem tra xem da ton tai trong bang account_username chua
-		$checkName = $userFollow->find(array($id => array('$exists' => 1)));
-		if($checkName->count() <= 0) {
-			// 			// kiem tra user co ton tai trong loginDate khong, co roi thi thoi, chua co thi luu
-			$checkLogin = $loginFollow->find(array($id => array('$exists' => 1)));
-			if ($checkLogin->count() <= 0) {
-				$this->__getInfoFollow();
+		if($id) {
+//          check $id exist in collections usernameDate ? "not do it" : "continue to check"
+			$checkName = $userFollow->find(array($id => array('$exists' => 1)));
+			if($checkName->count() <= 0) {
+// 			continue check $id exists in collection loginDate ? "not do it" : "save db"
+				$checkLogin = $loginFollow->find(array($id => array('$exists' => 1)));
+				if ($checkLogin->count() <= 0) {
+					$this->__getInfoFollow();
+				}
 			}
+		} else {
+			return false;
 		}
+		
 	}
 
 	private function __getInfoFollow() {
@@ -303,7 +309,9 @@ class RegisterController extends AppController {
 	
 		$db = $mLogin->follow;
 		$loginFollow = $db->selectCollection('login'.date('Y-m'));
-	
+		
+		$beforeTime = (new DateTime())->modify('-1 day')->format('Y-m-d');
+		
 		$username = $this->Session->read('username');
 		$data = $colLogin->find(array('username' => $username), array('access_token' => true, 'id' => true));
 		foreach($data as $access) {
@@ -353,9 +361,10 @@ class RegisterController extends AppController {
 				$cursor = $infoFollowsBy->pagination->next_cursor;
 			}
 		} while (isset($infoFollowsBy->pagination->next_cursor) && !empty($infoFollowsBy->pagination->next_cursor));
-		$loginFollow->insert(array($id => $arr));
+		
+		usort($arr, function($a, $b) { return $a['totalFollow'] < $b['totalFollow'] ? 1 : -1 ; } );
+		
+		$loginFollow->insert(array($id => $arr, 'time' => $beforeTime));
 	}
-	
-
 }
 

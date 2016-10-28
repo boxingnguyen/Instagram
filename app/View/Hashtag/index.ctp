@@ -33,18 +33,7 @@
 	</div>
 	<a class="buttonLogout buttonHead" href="javascript:void(0)">Logout</a>
 </div>
-<div class="col-xs-12">
-	<div class='col-xs-2'></div>
-	<div class='col-xs-8'>
-		<div class="col-xs-3 btn-group">
-			<button type="button" class="btn btn-default rank-by-like">Ranking by likes</button>
-		</div>
-		<div class="col-xs-3 btn-group">
-			<button type="button" class="btn btn-default rank-by-comment">Ranking by comments</button>
-		</div>
-	</div>
-	<div class='col-xs-2'></div>
-</div>
+
 <div class='col-xs-12'>
 	<div class='col-xs-2'></div>	
 	<div class='col-xs-8'>
@@ -52,9 +41,9 @@
 			<tr>
 				<th class='center'>No.</th>
 				<th class='center'>Hashtag</th>
-				<th class='center'>Total media</th>
-				<th class='center'>Likes (of 9 top posts)</th>
-				<th class='center'>Comments (of 9 top posts)</th>
+				<th class='center rank-by-media'>Total media <span class="caret"></span></th>
+				<th class='center rank-by-like'>Likes <span class="caret"></span></th>
+				<th class='center rank-by-comment'>Comments <span class="caret"></span></th>
 			</tr>
 			<?php
 			$i = 0;
@@ -63,10 +52,10 @@
 			?>
 			<tr class='center'>
 				<td><?php echo $i; ?></td>
-				<td><a href="<?php echo $this->request->controller; ?>/detail?hashtag=<?php echo $value['hashtag']; ?>" target="_blank">#<?php echo $value['hashtag']?></a></td>
-				<td><?php echo number_format($value['total_media']); ?></td>
-				<td><a href="<?php echo $this->request->controller; ?>/like?hashtag=<?php echo $value['hashtag']; ?>" target="_blank"><?php echo number_format($value['total_likes']); ?></a></td>
-				<td><a href="<?php echo $this->request->controller; ?>/like?hashtag=<?php echo $value['hashtag']; ?>" target="_blank"><?php echo number_format($value['total_comments']); ?></a></td>
+				<td><a href="<?php echo $this->webroot . $this->request->params['controller'] . '/detail?hashtag=' . $value['hashtag']; ?>" target="_blank">#<?php echo $value['hashtag']; ?></a></td>
+				<td><a href="<?php echo $this->webroot . $this->request->controller; ?>/media?hashtag=<?php echo $value['hashtag']; ?>" target="_blank"><?php echo number_format($value['total_media']);?></a></td>
+				<td><a href="<?php echo $this->webroot . $this->request->controller; ?>/like?hashtag=<?php echo $value['hashtag']; ?>" target="_blank"><?php echo number_format($value['total_likes']); ?></a></td>
+				<td><a href="<?php echo $this->webroot . $this->request->controller; ?>/comment?hashtag=<?php echo $value['hashtag']; ?>" target="_blank"><?php echo number_format($value['total_comments']); ?></a></td>
 				
 			</tr>
 			<?php endforeach;?>

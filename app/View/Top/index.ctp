@@ -63,7 +63,7 @@
 							array('target' => '_blank')
 						)
 				?>
-				<a href="<?php echo Router::url(array('controller'=>'Ranking', 'action'=>'index', '?' => array('id' => $value['id'])))?>" target="_blank"><span style="float: right;" class="glyphicon glyphicon-list" aria-hidden="true"></span></a>
+				<a href="<?php echo Router::url(array('controller'=>'Ranking', 'action'=>'index', '?' => array('id' => $value['id'])))?>" target="_blank" class="rankingFollow"><span style="float: right;" class="glyphicon glyphicon-list" aria-hidden="true"></span></a>
 			</td>
 			
 			<td>

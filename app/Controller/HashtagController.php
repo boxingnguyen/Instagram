@@ -39,29 +39,12 @@ class HashtagController extends AppController {
 			}
 		}
 	}
-	public function detail() {
-		$tag = $_GET['hashtag'];
-		$date = date("d-m-Y");
-		$db = $this->m->hashtag;
-		$c = $db->statistic;
- 		$statistic = $c->find(array('hashtag' =>$tag));
- 		$data = array();
- 		$i=0;
- 		foreach ($statistic as $val) {
- 			if($i==0) {
- 				$data[]= array("date"=>$val['date'],"total_media"=>0);
- 			} else {
- 				$total = $val['total_media'] - $tam;
- 				$data[]= array("date"=>$val['date'],"total_media"=>$total);
- 			}
- 			$tam = $val['total_media']; 
- 			$i++;
- 		}
-		$this->set('data', $data);
+	
+	public function detail() {	
 	}
-	public function comment() {
+	
+	public function media() {
 		$tag = $_GET['hashtag'];
-		$date = date("d-m-Y");
 		$db = $this->m->hashtag;
 		$c = $db->statistic;
 		$statistic = $c->find(array('hashtag' =>$tag));
@@ -79,10 +62,31 @@ class HashtagController extends AppController {
 		}
 		$this->set('data', $data);
 	}
+	
+	public function comment() {
+		$tag = $_GET['hashtag'];
+		$date = date("d-m-Y");
+		$db = $this->m->hashtag;
+		$c = $db->statistic;
+		$statistic = $c->find(array('hashtag' =>$tag));
+		$data = array();
+		$i=0;
+		foreach ($statistic as $val) {
+			if($i==0) {
+				$data[]= array("date"=>$val['date'],"total_comments"=>0);
+			} else {
+				$total = $val['total_comments'] - $tam;
+				$data[]= array("date"=>$val['date'],"total_comments"=>$total);
+			}
+			$tam = $val['total_comments'];
+			$i++;
+		}
+		$this->set('data', $data);
+	}
 	public function like() {
 		$tag = $_GET['hashtag'];
 		$db = $this->m->hashtag;
-		$c = $db->rank;
+		$c = $db->statistic;
 		$like = $c->find(array('hashtag' =>$tag));
 		$like->sort(array('date' => 1));
 		$data = array();
@@ -98,5 +102,61 @@ class HashtagController extends AppController {
 			$i++;
 		}
 		$this->set('data', $data);
+	}
+	
+	public function more() {
+		$this->layout = false;
+		$this->autoRender = false;
+		
+		if (isset($_POST['tag'])){
+			$tag = $_POST['tag'];
+		}else {
+			return false;
+		}
+		
+		$db = $this->m->hashtag;
+		$c = $db->media;
+		
+		$page = isset($_POST['page']) ? $_POST['page'] : 1;
+		$limit = 20;
+		$start= ($page*$limit)-$limit;
+		
+		if ($_POST['sort'] === 'like') {
+			$sort = 'likes.count';
+		}elseif ($_POST['sort'] === 'comment') {
+			$sort = 'comments.count';
+		}else {
+			$sort = 'likes.count';
+		}
+ 		
+		$query = array('tag_name' => $tag);
+		$cursor = $c->find($query,array())->sort(array($sort=>-1))->skip($start)->limit($limit);
+		
+		$data= array();
+		foreach ($cursor as $value){
+			$value['likes']['count'] = number_format($value['likes']['count']);
+			$value['comments']['count'] = number_format($value['comments']['count']);
+			$data[]=$value;
+		}
+		
+		return json_encode($data);
+	}
+	
+	public function total(){
+		$this->layout = false;
+		$this->autoRender = false;
+		
+		if (isset($_POST['tag'])){
+			$tag = $_POST['tag'];
+		}else {
+			return false;
+		}
+		
+		$db = $this->m->hashtag;
+		$c = $db->media;
+		
+		$query = array('tag_name' => $tag);
+		$total = $c->find($query,array())->count();
+		return $total;
 	}
 }

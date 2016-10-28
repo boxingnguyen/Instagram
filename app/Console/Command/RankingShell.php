@@ -10,29 +10,32 @@ class RankingShell extends AppShell {
 		$this->__collectionLogin = $db->selectCollection('login'.date('Y-m'));
 	}
 	public function main() {
-		$mLogin = new MongoClient;
-		
-		
+		$mLogin = new MongoClient;		
 		$dbLogin = $mLogin->instagram_account_info;
 		$colLogin = $dbLogin->account_login;
 		$colUsername = $dbLogin->account_username;
 		//collection account_username
 		$listAccount = $colUsername->find(array('access_token' => array('$exists' => true)));
-		$this->__userFollow($listAccount, $this->__collection);
-		print_r('Finish account_username');
-		
-		//collection account_login
-// 		kiem tra nhung user ma ton tai acess_token thi xoa trong bang login di
-		foreach ($listAccount as $val) {
-			$data = $colLogin->find(array('id' => $val['id']));
-			if ($data->count() > 0) {
-				$colLogin->remove(array('id' => $val['id']));
+		if($listAccount->count() > 0) {
+			$this->__userFollow($listAccount, $this->__collection);
+			print_r('Finish account_username');
+			//collection account_login
+			//check account exitst account_username ? "delete account_login" : "get info of account"
+			foreach ($listAccount as $val) {
+				$data = $colLogin->find(array('id' => $val['id']));
+				if ($data->count() > 0) {
+					$colLogin->remove(array('id' => $val['id']));
+				}
 			}
 		}
+		
 // 		get daily collection login other account
+		$colLogin->remove(array('username' => null));
 		$listLogin = $colLogin->find();
-		$this->__userFollow($listLogin, $this->__collectionLogin);
-		print_r('Finish account_login');
+		if($listLogin->count() > 0) {
+			$this->__userFollow($listLogin, $this->__collectionLogin);
+			print_r('Finish account_login');
+		}
 	}
 	private function __userFollow($listAccount, $collection) {
 		foreach ($listAccount as $valAccount) {
@@ -50,7 +53,7 @@ class RankingShell extends AppShell {
 					//get total follow each account
 					$dataFollow = $infoFollowsBy->data;
 					foreach ($dataFollow as $valFollow) {
-						$follow = $this->_insta->getUserFollow($valFollow->id);
+						$follow = $this->_insta->getUserFollow($valFollow->id);//total follow account
 						if(isset($follow) && !empty($follow->meta) &&  $follow->meta->code == 400) {
 							$username = $valFollow->username;
 							$url = 'https://www.instagram.com/'.$username.'/?__a=1';
@@ -78,17 +81,12 @@ class RankingShell extends AppShell {
 				if(isset($infoFollowsBy->pagination->next_cursor) && !empty($infoFollowsBy->pagination->next_cursor)) {
 					$cursor = $infoFollowsBy->pagination->next_cursor;
 				}
-				echo PHP_EOL."lan ......".$i.PHP_EOL;
+				echo PHP_EOL." Number ......".$i.PHP_EOL;
 				$i++;
 			} while (isset($infoFollowsBy->pagination->next_cursor) && !empty($infoFollowsBy->pagination->next_cursor));
 			echo 'Complete'.PHP_EOL.$valAccount['username'].PHP_EOL;
-
+			
 			usort($arr, function($a, $b) { return $a['totalFollow'] < $b['totalFollow'] ? 1 : -1 ; } );
-			// foreach ($arr as $v) {
-			// 	print_r($v);
-			// }
-			// die;
-			print_r($arr);die;
 
 			$this->__saveFollow($valAccount['id'], $arr, $collection);
 		}
