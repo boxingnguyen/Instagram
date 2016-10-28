@@ -1,49 +1,30 @@
 <?php
-class HashtagShell extends AppShell {
-	const TMHTEST_ACCESS_TOKEN = '4025731782.6d34b43.b723850c5e0548bfa4863dea62b98630';
+class HashtagMonthlyShell extends AppShell {
 	
-	public function getPosttop ($tag){
-		$results_array = $this->cURLInstagram('https://www.instagram.com/explore/tags/'.$tag.'/?__a=1');
-		if(isset($results_array)&&!empty($results_array)){
-			$total_media = $results_array->tag->media->count;
-			$media=$results_array->tag->top_posts->nodes;
-			$myfile = fopen(APP . "Vendor/Hashtag/" . date('dmY') . "." . $tag . ".media.hashtag.json", "w+") or die("Unable to open file!");
-			$mediaArray = array();
-			foreach ($media as  $value) {
-				$value->tag_name = $tag;
-				fwrite($myfile, json_encode($value)."\n");
-				array_push($mediaArray, $value);
-			}
-			$mediaArray['total_media']=$total_media;
-			fclose($myfile);
-			return $mediaArray;
-		}
-		
-	}
 	public function calculatorRanking($tag){
 		$m = new MongoClient();
 		$db = $m->hashtag;
 		$collection = $db->media;
-		$condition = array(
-				array('$match' => array('tag_name' => $tag)),
-				array(
-						'$group' => array(
-								'_id' => 'null',
-								'total_likes' => array('$sum' => '$likes.count'),
-								'total_comments' => array('$sum' => '$comments.count')
-						)
-				)
-		);
-		$data = $collection->aggregate($condition);
-		$result = array();
-		if(isset($data['result'][0])){
-			$result['total_likes'] = $data['result'][0]['total_likes'];
-			$result['total_comments'] = $data['result'][0]['total_comments'];
-		}
-		else{
-			$result['total_likes'] = 0;
-			$result['total_comments'] = 0;
-		}
+// 		$condition = array(
+// 				array('$match' => array('tag_name' => $tag)),
+// 				array(
+// 						'$group' => array(
+// 								'_id' => 'null',
+// 								'total_likes' => array('$sum' => '$likes.count'),
+// 								'total_comments' => array('$sum' => '$comments.count')
+// 						)
+// 				)
+// 		);
+// 		$data = $collection->aggregate($condition);
+// 		$result = array();
+// 		if(isset($data['result'][0])){
+// 			$result['total_likes'] = $data['result'][0]['total_likes'];
+// 			$result['total_comments'] = $data['result'][0]['total_comments'];
+// 		}
+// 		else{
+// 			$result['total_likes'] = 0;
+// 			$result['total_comments'] = 0;
+// 		}
 		$result['total_media'] = $collection->find(array('tag_name'=>$tag))->count();
 		$result['hashtag'] = $tag;
 		$db->ranking->insert($result);
@@ -78,7 +59,6 @@ class HashtagShell extends AppShell {
 		$db->statistic->insert($result);
 	}
 	public function main() {
-// 		$this->__getMediaApi();
 
 		$m = new MongoClient();
 		$db = $m->hashtag;
@@ -105,7 +85,7 @@ class HashtagShell extends AppShell {
 				$tmp = array ();
 				$myfile = fopen(APP . "Vendor/Hashtag/" . $date . "." . $tag . ".media_hashtag.json", "w+") or die("Unable to open file!");
 				do {
-					$media = $this->__getMediaHttp($tag, $max_id);
+					$media = $this->getMediaHashtag($tag, $max_id);
 					
 					if (!isset($media->tag->media->nodes) || empty($media->tag->media->nodes)) {
 						echo "Last media of " . $tag . ": " . PHP_EOL;
@@ -151,13 +131,13 @@ class HashtagShell extends AppShell {
 		}
 		$count_day=cal_days_in_month(CAL_GREGORIAN,9,2016);
 		$db->ranking->drop();
-		$db->statistic->drop();
+// 		$db->statistic->drop();
 		foreach($hashtag as $tag){
-			for($i=1;$i<=$count_day;$i++){
-				$date = $i."-9-2016";
-				$date = date("d-m-Y",strtotime($date));
-				$this->calculatorStatistic($tag,$date);
-			}
+// 			for($i=1;$i<=$count_day;$i++){
+// 				$date = $i."-9-2016";
+// 				$date = date("d-m-Y",strtotime($date));
+// 				$this->calculatorStatistic($tag,$date);
+// 			}
 			$this->calculatorRanking($tag);
 		}
 	}
@@ -172,17 +152,6 @@ class HashtagShell extends AppShell {
 			$tags[] = str_replace("#", "", $value['tag']);
 		}
 		return $tags;
-	}
-	
-	private function __getMediaHttp($tag, $max_id) {
-		if ($max_id != null) {
-			sleep(3);
-			$media = $this->cURLInstagram('https://www.instagram.com/explore/tags/'.$tag.'/?__a=1&max_id=' . $max_id);
-		} else {
-			sleep(3);
-			$media = $this->cURLInstagram('https://www.instagram.com/explore/tags/'.$tag.'/?__a=1');
-		}
-		return $media;
 	}
 	
 	private function __saveIntoDb($tag, $collection, $date) {
@@ -223,73 +192,5 @@ class HashtagShell extends AppShell {
 		$this->_insta->setAccessToken(self::TMHTEST_ACCESS_TOKEN);
 		$media = $this->_insta->getTagMedia($tag);
 		return $media;
-	}
-	
-	private function __getMediaApi() {
-		$m = new MongoClient();
-		$db = $m->hashtag;
-		$c_media = $db->media;
-		$c_media->drop();
-		
-		$hashtag = $this->__getHashtag();
-		
-		$hashtag_chunk = array_chunk($hashtag, 15);
-		
-		foreach ($hashtag_chunk as $hashtag) {
-			foreach ($hashtag as $tag) {
-				// create 2 processes here
-				$pid = pcntl_fork();
-				if ($pid == -1) {
-					die('could not fork');
-				} else if ($pid) {
-					// we are the parent
-					// collect process id to know when children complete
-					$pids[] = $pid;
-				} else {
-					// we are childs
-					echo "Get hashtag of " . $tag . '...' . PHP_EOL;
-					$media = $this->__getMedia($tag);
-					$media_insert = array();
-					do {
-						if (isset($media->data)) {
-							$data = (array)$media->data;
-						} else {
-							print_r($media);
-							break;
-						}
-							
-						foreach ($data as $value) {
-							// do not get media of October
-							if (intval(date('m', $value->created_time)) > 9) {
-								continue;
-							} else if (intval(date('m', $value->created_time)) < 9) {
-								// do not get media of month before September
-								break;
-							} else {
-								$media_insert[] = $value;
-							}
-						}
-						// batch insert if data is large enough
-						if (count($media_insert) > 1000) {
-							$c_media->batchInsert($media_insert);
-							unset($media_insert);
-						}
-						// get next page of data
-						$media = $this->_insta->pagination($media, 100);
-					} while (true);
-					// insert the remaining media
-					if (!empty($media_insert)) {
-						$c_media->batchInsert($media_insert);
-					}
-					echo "Get HASHTAG of " . $tag . " completed!" . PHP_EOL;
-					// Jump out of loop in this child. Parent will continue.
-					exit;
-				}
-			}
-			foreach ($pids as $pid) {
-				pcntl_waitpid($pid, $status);
-				unset($pids[$pid]);
-			}
-		}
 	}
 }

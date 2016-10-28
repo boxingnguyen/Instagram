@@ -42,8 +42,6 @@
 				<th class='center'>No.</th>
 				<th class='center'>Hashtag</th>
 				<th class='center rank-by-media'>Total media <span class="caret"></span></th>
-				<th class='center rank-by-like'>Likes <span class="caret"></span></th>
-				<th class='center rank-by-comment'>Comments <span class="caret"></span></th>
 			</tr>
 			<?php
 			$i = 0;
@@ -52,11 +50,8 @@
 			?>
 			<tr class='center'>
 				<td><?php echo $i; ?></td>
-				<td><a href="<?php echo $this->webroot . $this->request->params['controller'] . '/detail?hashtag=' . $value['hashtag']; ?>" target="_blank">#<?php echo $value['hashtag']; ?></a></td>
-				<td><a href="<?php echo $this->webroot . $this->request->controller; ?>/media?hashtag=<?php echo $value['hashtag']; ?>" target="_blank"><?php echo number_format($value['total_media']);?></a></td>
-				<td><a href="<?php echo $this->webroot . $this->request->controller; ?>/like?hashtag=<?php echo $value['hashtag']; ?>" target="_blank"><?php echo number_format($value['total_likes']); ?></a></td>
-				<td><a href="<?php echo $this->webroot . $this->request->controller; ?>/comment?hashtag=<?php echo $value['hashtag']; ?>" target="_blank"><?php echo number_format($value['total_comments']); ?></a></td>
-				
+				<td><a href="<?php echo $this->webroot . 'hashtag/detail?hashtag=' . $value['hashtag']; ?>" target="_blank">#<?php echo $value['hashtag']; ?></a></td>
+				<td><a href="<?php echo $this->webroot . "hashtag/media?hashtag=" . $value['hashtag']; ?>" target="_blank"><?php echo number_format($value['total_media']);?></a></td>
 			</tr>
 			<?php endforeach;?>
 		</table>
