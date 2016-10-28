@@ -20,19 +20,15 @@ $(document).ready(function() {
 					if (result === 404) {
 						$('.followList').remove();
 						var tpl = '';
+
 						tpl += '<div class="container">';
-						tpl += '	<div class="col-md-8 col-md-offset-2" id="frame_content_error">';
-						tpl += '		<div class="col-md-10 col-md-offset-1" id="frame_error_404">';
-						tpl += '			<div class="col-md-6" id="error_404">';
-						tpl += '				<h1 >404</h1>';
-						tpl += '			</div>';
-						tpl += '			<div class="col-md-6" id="authen">';
-						tpl += '				<h3>Not found access_token.</h3>';
-						tpl += '			</div>';
-						tpl += '		</div>';
-						tpl += '	</div>';
-						tpl += '</div>';
-					
+						tpl +='<div class="col-md-4 col-md-offset-4" id="frame_content_error">';
+						tpl +='<div class="col-md-2 col-md-offset-2" >';
+						tpl +='<img src="/img/point.png" height="60" width="60">';
+						tpl +='</div>';	
+						tpl +='<div class="col-md-8" id="authen"><h3>Not found access_token</h3></div>'
+						tpl +='</div>'
+						tpl +='<div>';					
 						$("#content").html(tpl);
 					} else {
 						result.forEach(function(item) {

@@ -1,18 +1,28 @@
-<style>
-	.col-xs-10 {background-color: #204162; height:500px; margin-left:auto; margin-right:auto  }
-	.error{ background-color: f2f2f2; width:350px; height: 250px}
+
+<style type="text/css">
+#frame_content_error{
+	background:white;
+	border: 1px solid white;
+	padding-top: 65px;
+	padding-bottom: 65px;
+	 box-shadow: 10px 10px 10px 5px #888888;
+}
+#authen h3{
+  color: black;
+ padding-top: 0px;
+}
 
 </style>
+<div class="container">
+	<div class="col-md-4 col-md-offset-4" id="frame_content_error">
 
-<div class='col-xs-1' ></div>
-<div class='col-xs-10' >
-	<div class = "error">
-		<div class="col-md-6">
-			<h1>404</h1>
-		</div>
-		<div class="col-md-6">
-			<h4>Account don't login</h4>
+		<div class="col-md-2 col-md-offset-2" >
+		<img src="/img/point.png" height="60" width="60">
+		</div>	
+		<div class="col-md-8" id="authen">
+			<h3>Not found access_token</h3>
+			
+
 		</div>
 	</div>
-</div>
-<div class='col-xs-1' ></div>
+

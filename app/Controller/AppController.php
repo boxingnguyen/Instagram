@@ -42,6 +42,7 @@ class AppController extends Controller {
 		$this->m = new MongoClient();
 		
 		$apiCallback = "http://$_SERVER[HTTP_HOST]/Register/detail";
+		//$apiCallback = "http://192.168.33.110/Test/detail";
 
 		$this->_instagram = new Instagram(array(
 				'apiKey'      => $this->__apiKey,
