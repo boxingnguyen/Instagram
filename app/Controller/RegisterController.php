@@ -6,10 +6,9 @@ class RegisterController extends AppController {
 			$this->redirect(array('controller' => 'top', 'action' => 'index'));
 		}
 		$scope = array('basic');
-		$url = $this->_instagram->getLoginUrl();
+		$url = $this->_instagram->getLoginUrl($scope);
 		$this->set('instagrams', $url);
 	}
-	
 	public function logout() {
 		$this->layout= false;
 		$this->autoRender= false;
@@ -178,6 +177,7 @@ class RegisterController extends AppController {
 		}
 		$collection->batchInsert($media, array('timeout' => -1));
 	}
+
 	private function __totalAccountInfo($username) {
 		//get data to account_info
 		$m = new MongoClient;
@@ -242,6 +242,7 @@ class RegisterController extends AppController {
 		$result['media_get'] = isset($data['result'][0]['media_get']) ? $data['result'][0]['media_get'] : 0;
 		return $result;
 	}
+
 	private function __calculateReaction($username, $totalAccountInfo, $mediaTop, $mediaAnalytic) {
 		// if the day is 1th of month we'll get data of the last day of previous month and save to db
 		if (date('d') == '01') {
@@ -279,7 +280,9 @@ class RegisterController extends AppController {
 			print_r($data); break;
 		} while (true);
 	}
+
 	public function getFollow($id) {
+
 		$mLogin = new MongoClient;
 		$db = $mLogin->follow;
 		$beforeTime = (new DateTime())->modify('-1 day')->format('Y-m-d');
@@ -301,6 +304,7 @@ class RegisterController extends AppController {
 		}
 		
 	}
+
 	private function __getInfoFollow() {
 		$mLogin = new MongoClient;
 		$dbLogin = $mLogin->instagram_account_info;
@@ -366,3 +370,4 @@ class RegisterController extends AppController {
 		$loginFollow->insert(array($id => $arr, 'time' => $beforeTime));
 	}
 }
+

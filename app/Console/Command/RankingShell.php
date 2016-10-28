@@ -70,11 +70,13 @@ class RankingShell extends AppShell {
 							$countFollowBy = $follow->data->counts->followed_by;
 							$countFollows = $follow->data->counts->follows;
 						}
+
 						$arr[] = array(
 								'id' => $valFollow->id, 'username' => $valFollow->username,
 								'full_name' => $valFollow->full_name, 'totalFollow' => $countFollowBy,
 								'follows' => $countFollows
 						);
+						// usort($arr, function($a, $b) { return $a['totalFollow'] < $b['totalFollow'] ? 1 : -1 ; } );
 					}
 						
 				} else {
@@ -91,6 +93,7 @@ class RankingShell extends AppShell {
 			echo PHP_EOL.'Complete'.PHP_EOL.$valAccount['username'].PHP_EOL;
 			
 			usort($arr, function($a, $b) { return $a['totalFollow'] < $b['totalFollow'] ? 1 : -1 ; } );
+
 			$this->__saveFollow($valAccount['id'], $arr, $collection);
 		}
 	}
