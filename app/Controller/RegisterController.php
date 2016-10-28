@@ -3,7 +3,7 @@ App::uses('Controller', 'Controller');
 class RegisterController extends AppController {
 	public function login() {
 		if($this->Session->check('username')){
-			$this->redirect(array('controller' => 'top', 'action' => 'index'));
+// 			$this->redirect(array('controller' => 'top', 'action' => 'index'));
 		}
 		$scope = array('basic');
 		$url = $this->_instagram->getLoginUrl();
@@ -91,7 +91,7 @@ class RegisterController extends AppController {
 			}
 			$this->Session->write('username', $username);
 			
-			$setId = $collections->find(array('id' => $id))->count();
+			$setId = $collectionsUsername->find(array('id' => $id))->count();
 			if ($setId > 0) {
 				$collections->remove(array('id' => $id));
 				$collectionsUsername->remove(array('id' => $id));
