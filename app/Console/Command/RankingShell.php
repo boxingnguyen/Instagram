@@ -18,14 +18,16 @@ class RankingShell extends AppShell {
 		$listAccount = $colUsername->find(array('access_token' => array('$exists' => true)));
 		if($listAccount->count() > 0) {
 			$this->__userFollow($listAccount, $this->__collection);
-			print_r('Finish account_username');
+			echo PHP_EOL.'Finish account_username'.PHP_EOL;
 			//collection account_login
-			//check account exitst account_username ? "delete account_login" : "get info of account"
 			foreach ($listAccount as $val) {
+				//check account exitst account_username ? "delete account_login" : "get info of account"
 				$data = $colLogin->find(array('id' => $val['id']));
 				if ($data->count() > 0) {
 					$colLogin->remove(array('id' => $val['id']));
 				}
+				//check account exitst loginDate ? "delete record" : "....."
+// 				$checkColLoginData = $this->__collectionLogin->find(array())
 			}
 		}
 		
@@ -33,6 +35,7 @@ class RankingShell extends AppShell {
 		$colLogin->remove(array('username' => null));
 		$listLogin = $colLogin->find();
 		if($listLogin->count() > 0) {
+			echo "nhi";
 			$this->__userFollow($listLogin, $this->__collectionLogin);
 			print_r('Finish account_login');
 		}
