@@ -61,7 +61,7 @@ class HashtagDailyShell extends AppShell {
 	private function __checkMediaDaily($date, $collection) {
 		$count = $collection->count(array('date' => $date));
 		if ($count > 0) {
-			$collection->drop();
+			$collection->remove(array('date' => $date));
 		}
 	}
 }
