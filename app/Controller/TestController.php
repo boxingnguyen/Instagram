@@ -6,16 +6,19 @@
 class TestController extends AppController
 {
 
-     
-    public function index(){
+      public $component=['RequestHandler'];
+    //public function index(){
         // for ($i = 0; $i<100; $i++){
         //     $arr[]=$i;
         // }
         // $this->set('arr',$arr);
-    }
-    public function more(){
-        $this->layout=false;
-        $this->autoRender=false;
+   // }
+    public function index(){
+        // $this->layout=false;
+        // $this->autoRender=false;
+        if($this->request->isAjax()){
+            $this->layout=false;
+         $this->autoRender=false;
         if($this->Session->check('User.id')){
             $id = $this->Session->read('User.id');
         }else{
@@ -28,33 +31,19 @@ class TestController extends AppController
 
 
          $page = isset($_POST['page']) ? $_POST['page'] : 1;
+         $id=$_POST['ID'];
+
          $start=$page*2;
-        $data= $col->find(array("3980281197" => array('$exists' => 1)),array("3980281197"=>array('$slice'=>[$start,2])));
+        $data= $col->find(array($id => array('$exists' => 1)),array($id =>array('$slice'=>[$start,2])));
         $follows=[];
         foreach ($data as $item) {
            
                 $follows=$item;
                   }
-                  $follows=$item["3980281197"];
-                 // var_dump($follows);
-                 // die();
+                  $follows=$item[$id];
                   return json_encode($follows);
-                  //print_r($follows);
-
-        // $page = isset($_POST['page']) ? $_POST['page'] : 1;
-        // $limit = 20;
-        // $start= ($page*$limit)-$limit;
-        
-        // $query = array('user.id' => $id);
-        // $cursor = $collections->find($query,array())->sort(array('created_time'=>-1))->skip($start)->limit($limit);
-        
-        // $data= array();
-        // foreach ($cursor as $value){
-        //     $value['likes']['count'] = number_format($value['likes']['count']);
-        //     $value['comments']['count'] = number_format($value['comments']['count']);
-        //     $data[]=$value;
-        // }
-        // return json_encode($data);
+              }
+                 
     }
     public function total(){
         $this->layout=false;

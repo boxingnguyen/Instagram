@@ -1,3 +1,30 @@
+<script type="text/javascript">
+	
+	$(function () {
+	var page = -1;
+	var limit = 20;
+	$('#loadMore').click(function(){
+		page++;
+		$('#loadMore').html('Loading...');
+		$.ajax({
+			method: "POST",
+			url: '/Ranking/index',
+			dataType: 'json',
+			data:{
+				page: page
+			},
+			success: function(data){
+			                console.log(data);
+			                	}
+				
+				
+		
+		});
+		
+	});
+});
+	$('#loadMore').click();
+</script>
 <div class='col-xs-3' ></div>
 <div class='col-xs-6' >
 	<table class="table responstable">
@@ -18,7 +45,9 @@
 			<td><?php echo $val['totalFollow']?></td>
 		</tr>
 	<?php $i++; } ?>
-	<button id="loadMore">LOAD MORE</button>
+
 	</table>
 </div>
-<div class='col-xs-3' ></div>
+<div class='col-xs-12' >
+	<button id="loadMore">LOAD MORE</button>
+</div>
