@@ -25,17 +25,21 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 		<?php $this->assign('title', 'Instagram Analysis | TMH Techlab');?>
 		<?php echo $this->fetch('title'); ?>
 	</title>
+
 	<?php
 		echo $this->Html->meta('icon');
 		echo $this->Html->css('css/bootstrap.min');
 		echo $this->Html->css('css/bootstrap-theme.min');
 		echo $this->Html->css('style');
+		echo $this->Html->css('css/raking');
 		
 		echo $this->Html->script('jquery.min');
 		echo $this->Html->script('loader');
 		echo $this->Html->script('src/register');
 		echo $this->Html->script('src/logout');
+		echo $this->Html->script('src/rakingFollow');
 		echo $this->Html->script('js/bootstrap.min');
+		echo $this->Html->script('src/hashtag');
 
 		echo $this->fetch('meta');
 		echo $this->fetch('css');
@@ -45,6 +49,14 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 <body>
 	<div class="container">
 		<header class="clearfix">
+			<?php 
+				if (isset($acc_infor)) {
+					echo '<div class="profile-basic">';
+					echo '<img src="' . $acc_infor['profile_pic_url'] . '" ><br>';
+					echo '<a target="_blank" href="https://www.instagram.com/'.$acc_infor['username'].'">' . $acc_infor["full_name"] . '</a>';
+					echo '</div>';
+				}
+			?>
 			<?php if (strtolower($this->params['controller']) == 'hashtag'){ ?>
 				<?php $hashtagName = isset($this->params['url']['hashtag']) ? '#'.$this->params['url']['hashtag'] : 'Ranking'; ?>
         		<h1>Hashtag <?php echo $hashtagName;?></h1>
@@ -74,6 +86,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 			</div>
 			<?php endif;?>
         </footer>
+        
 	</div>
 	<?php echo $this->element('sql_dump'); ?>
 	<?php echo $this->Html->script('main');?>

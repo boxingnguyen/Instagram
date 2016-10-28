@@ -282,14 +282,16 @@ class RegisterController extends AppController {
 	public function getFollow($id) {
 		$mLogin = new MongoClient;
 		$db = $mLogin->follow;
+		$beforeTime = (new DateTime())->modify('-1 day')->format('Y-m-d');
 		$userFollow = $db->selectCollection('username'.date('Y-m'));
 		$loginFollow = $db->selectCollection('login'.date('Y-m'));
 		if($id) {
 //          check $id exist in collections usernameDate ? "not do it" : "continue to check"
-			$checkName = $userFollow->find(array($id => array('$exists' => 1)));
+			$checkName = $userFollow->find(array($id => array('$exists' => 1), 'time' => $beforeTime));
+// 			echo $checkName->count();die;
 			if($checkName->count() <= 0) {
 // 			continue check $id exists in collection loginDate ? "not do it" : "save db"
-				$checkLogin = $loginFollow->find(array($id => array('$exists' => 1)));
+				$checkLogin = $loginFollow->find(array($id => array('$exists' => 1), 'time' => $beforeTime));
 				if ($checkLogin->count() <= 0) {
 					$this->__getInfoFollow();
 				}
@@ -306,7 +308,9 @@ class RegisterController extends AppController {
 	
 		$db = $mLogin->follow;
 		$loginFollow = $db->selectCollection('login'.date('Y-m'));
-	
+		
+		$beforeTime = (new DateTime())->modify('-1 day')->format('Y-m-d');
+		
 		$username = $this->Session->read('username');
 		$data = $colLogin->find(array('username' => $username), array('access_token' => true, 'id' => true));
 		foreach($data as $access) {
@@ -356,6 +360,9 @@ class RegisterController extends AppController {
 				$cursor = $infoFollowsBy->pagination->next_cursor;
 			}
 		} while (isset($infoFollowsBy->pagination->next_cursor) && !empty($infoFollowsBy->pagination->next_cursor));
-		$loginFollow->insert(array($id => $arr));
+		
+		usort($arr, function($a, $b) { return $a['totalFollow'] < $b['totalFollow'] ? 1 : -1 ; } );
+		
+		$loginFollow->insert(array($id => $arr, 'time' => $beforeTime));
 	}
 }
