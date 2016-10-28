@@ -3,8 +3,8 @@ class HashtagController extends AppController {
 	public function index () {
 		$db = $this->m->hashtag;
 		$c = $db->media_daily;
-		
-		$data = $c->find()->sort(array('total_media' => -1));
+		$date = date('d-m-Y');
+		$data = $c->find(array('date' => $date))->sort(array('total_media' => -1));
 		
 		$this->set('data', $data);
 	}
