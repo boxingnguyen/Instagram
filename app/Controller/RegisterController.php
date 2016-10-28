@@ -279,6 +279,7 @@ class RegisterController extends AppController {
 			$data = $this->cURLInstagram('https://www.instagram.com/explore/tags/' . $tags . '/?__a=1&');
 			print_r($data); break;
 		} while (true);
+	}
 
 	public function getFollow($id) {
 
