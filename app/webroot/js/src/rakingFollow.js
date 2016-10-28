@@ -25,10 +25,6 @@ $(document).ready(function() {
 						i++;
 					});
 					$('#appendFollow').append(html);
-//					result.forEach(function(item){
-//						$("a").attr("href", "https://www.instagram.com/"+item.username);	
-//					});
-					
 					if((result.length) < pageCurrent) {
 						$('#loadMore').fadeOut();
 					}
