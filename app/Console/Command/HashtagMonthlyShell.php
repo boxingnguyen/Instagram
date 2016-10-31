@@ -66,6 +66,9 @@ class HashtagMonthlyShell extends AppShell {
 		$c_media->drop();
 
 		$date = date('dmY');
+		
+		$previous_month = intval(date('m')) - 1; 
+		
 		$hashtag = $this->__getHashtag();
 		foreach ($hashtag as $tag) {
 			// create 2 processes here
@@ -97,9 +100,9 @@ class HashtagMonthlyShell extends AppShell {
 					foreach ($data as $value) {
 						$count ++;
 						// do not get media of October
-						if (isset($value->date) && intval(date('m', $value->date)) > 9) {
+						if (isset($value->date) && intval(date('m', $value->date)) > $previous_month) {
 							continue;
-						} else if (isset($value->date) && intval(date('m', $value->date)) < 9) {
+						} else if (isset($value->date) && intval(date('m', $value->date)) < $previous_month) {
 							echo $tag . " get full media" . PHP_EOL;
 							// do not get media of month before September
 							break 2;
@@ -129,15 +132,9 @@ class HashtagMonthlyShell extends AppShell {
 			pcntl_waitpid($pid, $status);
 			unset($pids[$pid]);
 		}
-		$count_day=cal_days_in_month(CAL_GREGORIAN,9,2016);
 		$db->ranking->drop();
-// 		$db->statistic->drop();
+
 		foreach($hashtag as $tag){
-// 			for($i=1;$i<=$count_day;$i++){
-// 				$date = $i."-9-2016";
-// 				$date = date("d-m-Y",strtotime($date));
-// 				$this->calculatorStatistic($tag,$date);
-// 			}
 			$this->calculatorRanking($tag);
 		}
 	}
