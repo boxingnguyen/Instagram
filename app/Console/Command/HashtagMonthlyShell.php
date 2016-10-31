@@ -5,59 +5,11 @@ class HashtagMonthlyShell extends AppShell {
 		$m = new MongoClient();
 		$db = $m->hashtag;
 		$collection = $db->media;
-// 		$condition = array(
-// 				array('$match' => array('tag_name' => $tag)),
-// 				array(
-// 						'$group' => array(
-// 								'_id' => 'null',
-// 								'total_likes' => array('$sum' => '$likes.count'),
-// 								'total_comments' => array('$sum' => '$comments.count')
-// 						)
-// 				)
-// 		);
-// 		$data = $collection->aggregate($condition);
-// 		$result = array();
-// 		if(isset($data['result'][0])){
-// 			$result['total_likes'] = $data['result'][0]['total_likes'];
-// 			$result['total_comments'] = $data['result'][0]['total_comments'];
-// 		}
-// 		else{
-// 			$result['total_likes'] = 0;
-// 			$result['total_comments'] = 0;
-// 		}
 		$result['total_media'] = $collection->find(array('tag_name'=>$tag))->count();
 		$result['hashtag'] = $tag;
 		$db->ranking->insert($result);
 	}
-	public function calculatorStatistic($tag,$date){
-		$m = new MongoClient();
-		$db = $m->hashtag;
-		$collection = $db->media;
-		$condition = array(
-				array('$match' => array('tag_name' => $tag,'date' => $date)),
-				array(
-						'$group' => array(
-								'_id' => 'null',
-								'total_likes' => array('$sum' => '$likes.count'),
-								'total_comments' => array('$sum' => '$comments.count')
-						)
-				)
-		);
-		$data = $collection->aggregate($condition);
-		$result = array();
-		if(isset($data['result'][0])){
-			$result['total_likes'] = $data['result'][0]['total_likes'];
-			$result['total_comments'] = $data['result'][0]['total_comments'];
-		}
-		else{
-			$result['total_likes'] = 0;
-			$result['total_comments'] = 0;
-		}
-		$result['total_media'] = $collection->find(array('tag_name'=>$tag,'date' => $date))->count();
-		$result['date'] = $date;
-		$result['hashtag'] = $tag;
-		$db->statistic->insert($result);
-	}
+	
 	public function main() {
 
 		$m = new MongoClient();
