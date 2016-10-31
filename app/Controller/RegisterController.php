@@ -174,8 +174,8 @@ class RegisterController extends AppController {
 		$collection = $db->media;
 		if(isset($media) && count($media) > 0) {
 			$collection->remove(array("user.username" => $username));
+			$collection->batchInsert($media, array('timeout' => -1));
 		}
-		$collection->batchInsert($media, array('timeout' => -1));
 	}
 
 	private function __totalAccountInfo($username) {
