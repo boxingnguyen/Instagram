@@ -1,14 +1,14 @@
 
 <style type="text/css">
 #frame_content_error{
-	background:white;
-	border: 1px solid white;
+	background:#31b0d5;
+	border: 1px solid #31b0d5;
 	padding-top: 65px;
 	padding-bottom: 65px;
 	 box-shadow: 10px 10px 10px 5px #888888;
 }
 #authen h3{
-  color: black;
+  color: white;
  padding-top: 0px;
 }
 
