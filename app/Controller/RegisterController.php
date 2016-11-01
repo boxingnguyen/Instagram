@@ -30,7 +30,9 @@ class RegisterController extends AppController {
 					$currentTime = (new DateTime())->modify('-1 day')->format('Y-m-d');
 				}
 					
-				$time = date('Y-m', strtotime($currentTime));
+// 				$time = date('Y-m', strtotime($currentTime));
+				$currentDate = (new DateTime())->modify('-1 day')->format('Y-m-d');
+				$time = date('Y-m', strtotime($currentDate));
 				$dbAccount = $m->instagram_account_info;
 				$collectionCaculate = $dbAccount->selectCollection($time);
 				$collectionCaculate->remove(array('username' => $usename));
@@ -311,9 +313,10 @@ class RegisterController extends AppController {
 		$colLogin = $dbLogin->account_login;
 	
 		$db = $mLogin->follow;
-		$loginFollow = $db->selectCollection('login'.date('Y-m'));
 		
 		$beforeTime = (new DateTime())->modify('-1 day')->format('Y-m-d');
+		$time = date('Y-m', strtotime($beforeTime));
+		$loginFollow = $db->selectCollection('login'.$time);
 		
 		$username = $this->Session->read('username');
 		$data = $colLogin->find(array('username' => $username), array('access_token' => true, 'id' => true));
