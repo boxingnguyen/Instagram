@@ -6,8 +6,11 @@ class RankingShell extends AppShell {
 		parent::initialize();
 		$m = new MongoClient;
 		$db = $m->follow;
-		$this->__collection = $db->selectCollection('username'.date('Y-m'));
-		$this->__collectionLogin = $db->selectCollection('login'.date('Y-m'));
+		
+		$currentDate = (new DateTime())->modify('-1 day')->format('Y-m-d');
+		$time = date('Y-m', strtotime($currentDate));
+		$this->__collection = $db->selectCollection('username'.$time);
+		$this->__collectionLogin = $db->selectCollection('login'.$time);
 	}
 	public function main() {
 		$mLogin = new MongoClient;		

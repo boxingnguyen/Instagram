@@ -1,6 +1,4 @@
 $(document).ready(function() {
-		var baseUrl = document.location.origin;
-		console.log(baseUrl);
 		var page = -1;
 		var pageCurrent = 10; //total record /page
 		var baseUrl = (window.location).href; // You can also use document.URL

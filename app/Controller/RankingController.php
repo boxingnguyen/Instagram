@@ -10,9 +10,11 @@ class RankingController extends AppController {
 		$this->autoRender=false;
 		$m = new MongoClient;
 		$db = $m->follow;
-		$userFollow = $db->selectCollection('username'.date('Y-m'));
-		$loginFollow = $db->selectCollection('login'.date('Y-m'));
 		$beforeTime = (new DateTime())->modify('-1 day')->format('Y-m-d');
+		$time = date('Y-m', strtotime($beforeTime));
+		$userFollow = $db->selectCollection('username'.$time);
+		$loginFollow = $db->selectCollection('login'.$time);
+// 		$beforeTime = (new DateTime())->modify('-1 day')->format('Y-m-d');
 		$id = $_POST['id'];
 		$currentPage = (int)$_POST['currentPage'];
 		$page = isset($_POST['page']) ? $_POST['page'] : 1;
@@ -33,40 +35,6 @@ class RankingController extends AppController {
 			$error = 404;
 			return $error;
 		}
-
-		// $mLogin = new MongoClient;
-		// $dbLogin = $mLogin->instagram_account_info;
-		// $colLogin = $dbLogin->account_login;
-		// $id = $this->request->query['id'];
-		// $data = $colLogin->find(array('id' => $id), array('access_token' => true));
-		// foreach($data as $access) {
-		// 	$accessToken = $access['access_token'];
-		// }
-		// $this->_instagram->setToken($accessToken);
-		// $infoFollowsBy = $this->_instagram->getUserFollower();
-		// if(isset($infoFollowsBy) && !empty($infoFollowsBy->data)) {
-		// 	$getFollow = $infoFollowsBy->data;
-		// 	$arr = array();
-		// 	if (count($getFollow) > 0) {
-		// 		foreach ($getFollow as $key => $val) {
-		// 			$username = $val->username;
-		// 			$url = 'https://www.instagram.com/'.$username.'/?__a=1';
-		// 			$getUrl = $this->cURLInstagram($url);
-		// 			$countFollow = $getUrl->user->followed_by->count;
-		// 			$arr[] = array('id' => $val->id, 'username' => $val->username, 'full_name' => $val->full_name, 'totalFollow' => $countFollow);
-		// 		}
-		// 		$userId = $this->__collection->find(array($id => array('$exists' => 1)));
-		// 		if ($userId->count() > 0) {
-		// 			$this->__collection->remove(array($id => array('$exists' => 1)));
-		// 		}
-		// 		$this->__collection->insert(array($id => $arr));
-		// 		$this->redirect (array('controller' => 'Ranking', 'action' => 'follow','?' => array('id' => $id)));
-		// 	}
-		// } else {
-		// 	echo "<pre>";
-		// 	print_r($infoFollowsBy);
-		// }
-
 	}
 
 	public function follow() {
