@@ -14,7 +14,6 @@ class RankingController extends AppController {
 		$time = date('Y-m', strtotime($beforeTime));
 		$userFollow = $db->selectCollection('username'.$time);
 		$loginFollow = $db->selectCollection('login'.$time);
-// 		$beforeTime = (new DateTime())->modify('-1 day')->format('Y-m-d');
 		$id = $_POST['id'];
 		$currentPage = (int)$_POST['currentPage'];
 		$page = isset($_POST['page']) ? $_POST['page'] : 1;

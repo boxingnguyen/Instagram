@@ -9,7 +9,7 @@ class TopController extends AppController {
 		
 		$currentDate = (new DateTime())->modify('-1 day')->format('Y-m-d');
 		$time = date('Y-m', strtotime($currentDate));
-		$collection =$db->selectCollection($time);
+		$collection = $db->selectCollection($time);
 
 		if (isset( $this->params['url']['private'] )) {
 			$status = $this->params['url']['private'] === 'true' ? true : false;

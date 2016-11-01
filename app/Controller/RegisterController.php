@@ -1,11 +1,11 @@
 <?php
 App::uses('Controller', 'Controller');
-class RegisterController extends AppController {
+class RegisterController1 extends AppController {
 	public function login() {
 		if($this->Session->check('username')){
-// 			$this->redirect(array('controller' => 'top', 'action' => 'index'));
+			$this->redirect(array('controller' => 'top', 'action' => 'index'));
 		}
-		$scope = array('basic', 'follower_list', 'public_content');
+		$scope = array('basic','follower_list','public_content');
 		$url = $this->_instagram->getLoginUrl($scope);
 		$this->set('instagrams', $url);
 	}
@@ -115,6 +115,7 @@ class RegisterController extends AppController {
 			
 			// get account info
 			$acc_info = $this->__getAccountInfo($username);
+			
 			// save account info into db
 			$this->__saveAccountIntoDb($acc_info->user);
 			// get media
@@ -122,7 +123,11 @@ class RegisterController extends AppController {
 			$this->__saveMediaIntoDb($media, $username);
 			$totalAccountInfo = $this->__totalAccountInfo($username);
 			$totalMediaTop = $this->__totalMedia($username);
-			$mediaTop = array('id' => $totalMediaTop['id'], 'likesTop' => $totalMediaTop['likes'], 'commentsTop' => $totalMediaTop['comments'], 'media_get' => $totalMediaTop['media_get']);
+			if ($totalMediaTop['id']) {
+				$mediaTop = array('id' => $totalMediaTop['id'], 'likesTop' => $totalMediaTop['likes'], 'commentsTop' => $totalMediaTop['comments'], 'media_get' => $totalMediaTop['media_get']);
+			} else {
+				$mediaTop = array('id' => $id, 'likesTop' => $totalMediaTop['likes'], 'commentsTop' => $totalMediaTop['comments'], 'media_get' => $totalMediaTop['media_get']);
+			}
 			$date = (new DateTime())->format('Y-m-d 00:00:00');
 			$date = (string)strtotime($date);
 			$totalMediaAnalytic = $this->__totalMedia($username, $date);
@@ -263,7 +268,7 @@ class RegisterController extends AppController {
 		$m = new MongoClient;
 		$dbAccount = $m->instagram_account_info;
 		$time = date('Y-m', strtotime($currentTime));
-		$collectionCaculate = $dbAccount->selectCollection($time);
+		$collectionCaculate = $dbAccount->selectCollection($time);//2016-10
 		
 		$dateCurrent = $collectionCaculate->find(array('username' => $username, 'time' => $currentTime));
 		if($dateCurrent->count() > 0){
@@ -291,14 +296,14 @@ class RegisterController extends AppController {
 	public function getFollow($id) {
 
 		$mLogin = new MongoClient;
-		$db = $mLogin->follow;
+		$db = $mLogin->follow;		
 		$beforeTime = (new DateTime())->modify('-1 day')->format('Y-m-d');
-		$userFollow = $db->selectCollection('username'.date('Y-m'));
-		$loginFollow = $db->selectCollection('login'.date('Y-m'));
+		$time = date('Y-m', strtotime($beforeTime));
+		$userFollow = $db->selectCollection('username'.$time);
+		$loginFollow = $db->selectCollection('login'.$time);
 		if($id) {
 //          check $id exist in collections usernameDate ? "not do it" : "continue to check"
 			$checkName = $userFollow->find(array($id => array('$exists' => 1), 'time' => $beforeTime));
-// 			echo $checkName->count();die;
 			if($checkName->count() <= 0) {
 // 			continue check $id exists in collection loginDate ? "not do it" : "save db"
 				$checkLogin = $loginFollow->find(array($id => array('$exists' => 1), 'time' => $beforeTime));
@@ -347,8 +352,8 @@ class RegisterController extends AppController {
 					$this->_instagram->setToken($accessToken);
 					$follow = $this->_instagram->getUserFollow($valFollow->id);
 					if(isset($follow) && !empty($follow->meta) &&  $follow->meta->code == 400) {
-						$username = $valFollow->username;
-						$url = 'https://www.instagram.com/'.$username.'/?__a=1';
+						$usernamePrivate = $valFollow->username;
+						$url = 'https://www.instagram.com/'.$usernamePrivate.'/?__a=1';
 						$getUrl = $this->cURLInstagram($url);
 						$countFollowBy = $getUrl->user->followed_by->count;
 						$countFollows = $getUrl->user->follows->count;
@@ -368,13 +373,17 @@ class RegisterController extends AppController {
 				print_r($infoFollowsBy);
 				// 				exit;
 			}
+			
 			if(isset($infoFollowsBy->pagination->next_cursor) && !empty($infoFollowsBy->pagination->next_cursor)) {
 				$cursor = $infoFollowsBy->pagination->next_cursor;
 			}
 		} while (isset($infoFollowsBy->pagination->next_cursor) && !empty($infoFollowsBy->pagination->next_cursor));
 		
 		usort($arr, function($a, $b) { return $a['totalFollow'] < $b['totalFollow'] ? 1 : -1 ; } );
-		
+		$checkLogin = $loginFollow->find(array($id => array('$exists' => 1), 'time' => $beforeTime));
+		if($checkLogin->count() > 0) {
+			$loginFollow->remove(array($id => array('$exists' => 1), 'time' => $beforeTime));
+		}
 		$loginFollow->insert(array($id => $arr, 'time' => $beforeTime));
 	}
 }

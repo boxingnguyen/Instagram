@@ -34,7 +34,6 @@ class ChartController extends AppController {
 		$newDate = (new DateTime())->modify('-1 month');
 		$month = $newDate->format('Y-m');
 		$like = 0; $comment = 0;
-// 		echo $month;die;//2016-09
 		if (date('d') == self::FIRSTDAY) {
 			$collection = $db->selectCollection($month);
 		} else {
