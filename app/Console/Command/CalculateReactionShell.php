@@ -35,10 +35,10 @@ class CalculateReactionShell extends AppShell {
 		} else {
 			$currentTime = (new DateTime())->modify('-1 day')->format('Y-m-d');
 		}
-		
+	
 		$date = (new DateTime())->format('Y-m-d 00:00:00');
 		$date = (string)strtotime($date);
-		
+			
 		
 		foreach ($data['result'] as $key => $value) {
 			$result[$key]['time'] = $currentTime;
@@ -46,7 +46,7 @@ class CalculateReactionShell extends AppShell {
 			$reactionTop = $this->__calculateReaction($value['_id']);//display top
 			//Total: media, like, comment display analytic page
 			$reactionAnalytic = $this->__calculateReaction($value['_id'], $date);//display analytic
-			
+// 			print_r($reactionAnalytic);die;
 			$result[$key]['id'] = $value['_id'];
 			$result[$key]['is_private'] = $value['is_private'];
 			$result[$key]['likesTop'] = $reactionTop['likes'];
