@@ -5,59 +5,11 @@ class HashtagMonthlyShell extends AppShell {
 		$m = new MongoClient();
 		$db = $m->hashtag;
 		$collection = $db->media;
-// 		$condition = array(
-// 				array('$match' => array('tag_name' => $tag)),
-// 				array(
-// 						'$group' => array(
-// 								'_id' => 'null',
-// 								'total_likes' => array('$sum' => '$likes.count'),
-// 								'total_comments' => array('$sum' => '$comments.count')
-// 						)
-// 				)
-// 		);
-// 		$data = $collection->aggregate($condition);
-// 		$result = array();
-// 		if(isset($data['result'][0])){
-// 			$result['total_likes'] = $data['result'][0]['total_likes'];
-// 			$result['total_comments'] = $data['result'][0]['total_comments'];
-// 		}
-// 		else{
-// 			$result['total_likes'] = 0;
-// 			$result['total_comments'] = 0;
-// 		}
 		$result['total_media'] = $collection->find(array('tag_name'=>$tag))->count();
 		$result['hashtag'] = $tag;
 		$db->ranking->insert($result);
 	}
-	public function calculatorStatistic($tag,$date){
-		$m = new MongoClient();
-		$db = $m->hashtag;
-		$collection = $db->media;
-		$condition = array(
-				array('$match' => array('tag_name' => $tag,'date' => $date)),
-				array(
-						'$group' => array(
-								'_id' => 'null',
-								'total_likes' => array('$sum' => '$likes.count'),
-								'total_comments' => array('$sum' => '$comments.count')
-						)
-				)
-		);
-		$data = $collection->aggregate($condition);
-		$result = array();
-		if(isset($data['result'][0])){
-			$result['total_likes'] = $data['result'][0]['total_likes'];
-			$result['total_comments'] = $data['result'][0]['total_comments'];
-		}
-		else{
-			$result['total_likes'] = 0;
-			$result['total_comments'] = 0;
-		}
-		$result['total_media'] = $collection->find(array('tag_name'=>$tag,'date' => $date))->count();
-		$result['date'] = $date;
-		$result['hashtag'] = $tag;
-		$db->statistic->insert($result);
-	}
+	
 	public function main() {
 
 		$m = new MongoClient();
@@ -66,6 +18,9 @@ class HashtagMonthlyShell extends AppShell {
 		$c_media->drop();
 
 		$date = date('dmY');
+		
+		$previous_month = intval(date('m')) - 1; 
+		
 		$hashtag = $this->__getHashtag();
 		foreach ($hashtag as $tag) {
 			// create 2 processes here
@@ -97,9 +52,9 @@ class HashtagMonthlyShell extends AppShell {
 					foreach ($data as $value) {
 						$count ++;
 						// do not get media of October
-						if (isset($value->date) && intval(date('m', $value->date)) > 9) {
+						if (isset($value->date) && intval(date('m', $value->date)) > $previous_month) {
 							continue;
-						} else if (isset($value->date) && intval(date('m', $value->date)) < 9) {
+						} else if (isset($value->date) && intval(date('m', $value->date)) < $previous_month) {
 							echo $tag . " get full media" . PHP_EOL;
 							// do not get media of month before September
 							break 2;
@@ -129,15 +84,9 @@ class HashtagMonthlyShell extends AppShell {
 			pcntl_waitpid($pid, $status);
 			unset($pids[$pid]);
 		}
-		$count_day=cal_days_in_month(CAL_GREGORIAN,9,2016);
 		$db->ranking->drop();
-// 		$db->statistic->drop();
+
 		foreach($hashtag as $tag){
-// 			for($i=1;$i<=$count_day;$i++){
-// 				$date = $i."-9-2016";
-// 				$date = date("d-m-Y",strtotime($date));
-// 				$this->calculatorStatistic($tag,$date);
-// 			}
 			$this->calculatorRanking($tag);
 		}
 	}
