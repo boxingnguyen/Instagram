@@ -3,7 +3,7 @@ App::uses('Controller', 'Controller');
 class RegisterController extends AppController {
 	public function login() {
 		if($this->Session->check('username')){
-			$this->redirect(array('controller' => 'top', 'action' => 'index'));
+// 			$this->redirect(array('controller' => 'top', 'action' => 'index'));
 		}
 		$scope = array('basic');
 		$url = $this->_instagram->getLoginUrl($scope);
@@ -78,7 +78,6 @@ class RegisterController extends AppController {
 			$db = $m->instagram_account_info;
 			$collections = $db->account_login;
 			$collectionsUsername = $db->account_username;
-			
 			$date = date("dmY");
 			
 			$code = $_GET['code'];
@@ -93,6 +92,7 @@ class RegisterController extends AppController {
 			$this->Session->write('username', $username);
 			
 			$setId = $collectionsUsername->find(array('id' => $id))->count();
+			$setIdLogin = $collections->find(array('id' => $id))->count();
 			if ($setId > 0) {
 				$collections->remove(array('id' => $id));
 				$collectionsUsername->remove(array('id' => $id));
@@ -101,12 +101,17 @@ class RegisterController extends AppController {
 						'username' => $username,
 						'access_token' => $data->access_token
 				));
+			} else {
+				if($setIdLogin > 0) {
+					$collections->remove(array('id' => $id));
+				}
+				$collections->insert(array(
+						'access_token' => $data->access_token,
+						'id' => $id,
+						'username' => $username
+				));
 			}
-			$collections->insert(array(
-					'access_token' => $data->access_token,
-					'id' => $id,
-					'username' => $username
-			));
+			
 			
 			// get account info
 			$acc_info = $this->__getAccountInfo($username);
