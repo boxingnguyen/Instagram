@@ -5,7 +5,7 @@ class RegisterController extends AppController {
 		if($this->Session->check('username')){
 			$this->redirect(array('controller' => 'top', 'action' => 'index'));
 		}
-		$scope = array('basic');
+		$scope = array('basic', 'follower_list', 'public_content');
 		$url = $this->_instagram->getLoginUrl($scope);
 		$this->set('instagrams', $url);
 	}
