@@ -1,6 +1,6 @@
 <?php
 App::uses('Controller', 'Controller');
-class RegisterController1 extends AppController {
+class RegisterController extends AppController {
 	public function login() {
 		if($this->Session->check('username')){
 			$this->redirect(array('controller' => 'top', 'action' => 'index'));
