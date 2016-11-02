@@ -2,7 +2,6 @@
 App::uses('Controller', 'Controller');
 class FollowRankingController extends AppController {
 	public function index() {
-		
 	}
 	public function ajax() {
 		$this->layout=false;
@@ -14,9 +13,9 @@ class FollowRankingController extends AppController {
 		$currentPage = (int)$_POST['currentPage'];
 		$page = isset($_POST['page']) ? $_POST['page'] : 1;
 		$start = $page*$currentPage;
-		$collection->remove(array($id => array('$exists' => 0)));
+// 		$collection->remove(array('3980281197' => array('$exists' => false)));	
 		$totalPage = $collection->aggregate(array(
-				array('$project' => array('count' => array('$size' =>  array('$ifNull' => array('$'.$id , array())) )))
+				array('$project' => array('count' => array('$size' =>  array('$ifNull' => array('$'.$id , array())))))
 		));
 		$data = $collection->find(array($id => array('$exists' => 1)), array($id => array('$slice' => [$start,$currentPage]))  );
 		if($data->count() > 0) {

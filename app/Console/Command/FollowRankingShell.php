@@ -116,7 +116,6 @@ class FollowRankingShell extends AppShell {
 		foreach ($list_follow as $value) {
 			fwrite($filename, json_encode($value)."\n");
 		}
-	
 		fclose($filename);
 	}
 	private function __saveFollow($accountId, $arr) {

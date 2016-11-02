@@ -3,7 +3,7 @@ App::uses('Controller', 'Controller');
 class RegisterController extends AppController {
 	public function login() {
 		if($this->Session->check('username')){
-			$this->redirect(array('controller' => 'top', 'action' => 'index'));
+// 			$this->redirect(array('controller' => 'top', 'action' => 'index'));
 		}
 		$scope = array('basic','follower_list','public_content');
 		$url = $this->_instagram->getLoginUrl($scope);
@@ -24,10 +24,7 @@ class RegisterController extends AppController {
 			$collections = $db->account_username;
 			$testUsername = $collections->find(array('username' => $usename));
 			
-			$collectionsLogin = $db->account_login;
-			$testUsernamelogin = $collectionsLogin->find(array('username' => $usename));
-			
-			if($testUsername->count() == 0 || $testUsernamelogin->count() > 0) {
+			if($testUsername->count() == 0) {
 				//if username not collections account_username => delete username in caculalor
 				if (date('d') == '01') {
 					$month = (new DateTime())->modify('-1 month')->format('m');
@@ -101,6 +98,9 @@ class RegisterController extends AppController {
 			if($this->Session->check('username')){
 				$this->Session->delete('username');
 			}
+			if($this->Session->check('id')){
+				$this->Session->delete('id');
+			}
 			$this->Session->write('username', $username);
 			$this->Session->write('id', $id);
 			
@@ -147,7 +147,7 @@ class RegisterController extends AppController {
 			$mediaAnalytic = array('likesAnalytic' => $totalMediaAnalytic['likes'], 'commentsAnalytic' => $totalMediaAnalytic['comments']);
 			$this->__calculateReaction($username,$totalAccountInfo, $mediaTop, $mediaAnalytic);
 // 			get follow list and save db
-			$this->getFollow($id);
+			$this->getFollow($id, $username);
 			// after get data successful, redirect to Top page
 			$this->redirect(array('controller' => 'top', 'action' => 'index'));
 		} else {
@@ -306,8 +306,7 @@ class RegisterController extends AppController {
 		} while (true);
 	}
 
-	public function getFollow($id) {
-
+	public function getFollow($id, $username) {
 		$mLogin = new MongoClient;
 		$db = $mLogin->instagram;
 		$collection = $db->follow;
@@ -315,7 +314,7 @@ class RegisterController extends AppController {
 //          check $id exist in collections usernameDate ? "not do it" : "continue to check"
 			$checkName = $collection->find(array($id => array('$exists' => 1)));
 			if($checkName->count() <= 0) {
-				$this->__getInfoFollow();
+				$this->__getInfoFollow($username);
 			}
 		} else {
 			return false;
@@ -323,21 +322,22 @@ class RegisterController extends AppController {
 		
 	}
 
-	private function __getInfoFollow() {
+	private function __getInfoFollow($username) {
 		$mLogin = new MongoClient;
 		$dbLogin = $mLogin->instagram_account_info;
 		$colLogin = $dbLogin->account_login;
 		$db = $mLogin->instagram;
 		$coll = $db->follow;
-		
 		$username = $this->Session->read('username');
 		$data = $colLogin->find(array('username' => $username), array('access_token' => true, 'id' => true));
+// 		echo $data->count();die;
 		if ($data->count() > 0) {
 			foreach($data as $access) {
 				$id = $access['id'];
 				$accessToken = $access['access_token'];
 			}
 			$this->_instagram->setToken($accessToken);
+			
 			//get follow list
 			$arr = array();
 			$cursor = null;
@@ -347,6 +347,7 @@ class RegisterController extends AppController {
 				} else {
 					$infoFollowsBy = $this->_instagram->getUserFollower($cursor);
 				}
+// 				print_r($infoFollowsBy);die;
 				if(isset($infoFollowsBy) && !empty($infoFollowsBy->data)) {
 		
 					//get total follow each account
@@ -381,9 +382,10 @@ class RegisterController extends AppController {
 					$cursor = $infoFollowsBy->pagination->next_cursor;
 				}
 			} while (isset($infoFollowsBy->pagination->next_cursor) && !empty($infoFollowsBy->pagination->next_cursor));
-			
+// 			print_r($arr);
 			usort($arr, function($a, $b) { return $a['totalFollow'] < $b['totalFollow'] ? 1 : -1 ; } );
 			$coll->insert(array($id => $arr));
+// 			die;
 		}
 	}
 }
