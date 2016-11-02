@@ -35,7 +35,7 @@
 </div>
 	
 <div class='col-xs-12'>
-	<table class="table responstable">
+	<table class="table responstable table-top">
 		<tr>
 			<th class='center'>No.</th>
 			<th class='center'>Username</th>

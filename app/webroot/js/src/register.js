@@ -68,6 +68,49 @@ $().ready(function(){
 					console.log(data);
 					if(data == 1){
 						$('p.messRegis').text('You have successfully registered');
+						
+						//get data of registered account
+						$.ajax({
+							method: "POST",
+							url: '/register/getDataRegister',
+							data: {username:username},
+							dataType: 'json',
+							success: function(data){
+								console.log(data);
+								
+								var no = $('table.table-top tr').length;
+								var percentage = (data.totalMedia != 0) ? Math.round(data.mediaGet / data.totalMedia * 100, 2) : 'N/A';
+								
+								var miss_count = Math.abs(data.totalMedia - data.mediaGet);
+								var classColor = '';
+								if (miss_count > 10){ 
+									classColor = "hard_missing";
+								} else if (miss_count > 0) {	
+									classColor = "light_missing";
+								}
+								
+								var imageStatus = 'wrong.png';
+								if (percentage == 100) {
+									imageStatus = 'right.png';				
+								} else if (percentage >= 90) {
+									imageStatus = 'warning.png';
+								}
+
+								var tr = '<tr class="center '+ classColor +'"><td><a class="badge inst_order">'+no+
+											'</a></td><td><a href="https://www.instagram.com/'+username+'" target="_blank">'+ data.fullname +
+											'</a></td><td><a href="/Chart/follower?id='+ data.id +'" target="_blank">'+ data.follower +'</a><a href="/ranking?id='+ data.id +
+											'" target="_blank" class="rankingFollow"><span style="float: right;" class="glyphicon glyphicon-list" aria-hidden="true"></span></a></td><td><a href="/media?id='+data.id+'" target="_blank">'+ data.totalMedia+
+											'</a></td><td>'+ data.mediaGet +
+											'</td><td><img src="/img/'+ imageStatus +
+											'" height="15" width="15"></td><td><a href="/Chart/like?id='+data.id+'"target="_blank">'+ data.totalLike +
+											'</a></td><td><a href="/Chart/comment?id='+data.id+'"target="_blank">'+ data.totalComment +'</a></td></tr>';
+								$('table.table-top').append(tr);
+							},
+							error: function(){
+								alert('Error');
+							}
+						});
+						
 					}else{
 						if($.type(data) === "string"){
 							$('p.messRegis').text(data);
