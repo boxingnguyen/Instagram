@@ -46,12 +46,14 @@ class RankingShell extends AppShell {
 			echo PHP_EOL.'Finish account_login'.PHP_EOL;
 		}
 	}
+	//$listAccount: danh sach account
 	private function __userFollow($listAccount, $collection) {
 		foreach ($listAccount as $valAccount) {
 			$arr = array();
 			$cursor = null;$i = 1;
 			$this->_insta->setToken($valAccount['access_token']);
 			do {
+				//danh sach nhung nguoi follow account
 				if($cursor == null) {
 					$infoFollowsBy = $this->_insta->getUserFollower();
 				} else {
@@ -62,7 +64,9 @@ class RankingShell extends AppShell {
 					//get total follow each account
 					$dataFollow = $infoFollowsBy->data;
 					foreach ($dataFollow as $valFollow) {
+						//tong follow cua 1 tai khoan
 						$follow = $this->_insta->getUserFollow($valFollow->id);//total follow account
+
 						if(isset($follow) && !empty($follow->meta) &&  $follow->meta->code == 400) {
 							$username = $valFollow->username;
 							$url = 'https://www.instagram.com/'.$username.'/?__a=1';
@@ -97,7 +101,9 @@ class RankingShell extends AppShell {
 			
 			usort($arr, function($a, $b) { return $a['totalFollow'] < $b['totalFollow'] ? 1 : -1 ; } );
 
-			$this->__saveFollow($valAccount['id'], $arr, $collection);
+			$a();
+
+			$this->__saveFollow('19752', $arr, $collection);
 		}
 	}
 	
@@ -107,6 +113,10 @@ class RankingShell extends AppShell {
 		if ($userId->count() > 0) {
 			$collection->remove(array($accountId => array('$exists' => 1), 'time' => $beforeTime));
 		}
-		$collection->insert(array($accountId => $arr,'time' => $beforeTime));
+		$collection->insert(array('19752' => $arr,'time' => $beforeTime));
+	}
+
+	private function __saveData(){
+		
 	}
 }
