@@ -3,7 +3,7 @@ App::uses('Controller', 'Controller');
 class RegisterController extends AppController {
 	public function login() {
 		if($this->Session->check('username')){
-// 			$this->redirect(array('controller' => 'top', 'action' => 'index'));
+			$this->redirect(array('controller' => 'top', 'action' => 'index'));
 		}
 		$scope = array('basic','follower_list','public_content');
 		$url = $this->_instagram->getLoginUrl($scope);
@@ -40,18 +40,11 @@ class RegisterController extends AppController {
 				$currentDate = (new DateTime())->modify('-1 day')->format('Y-m-d');
 				$time = date('Y-m', strtotime($currentDate));
 				$dbAccount = $m->instagram_account_info;
-// 				$dbFollow = $m->follow;
 				
 				//delete caculateDate
 				$collectionCaculate = $dbAccount->selectCollection($time);
 				$collectionCaculate->remove(array('username' => $usename));
 				
-				//delete usernameDate
-// 				$collectionCaculate = $dbAccount->selectCollection($time);
-// 				$collectionCaculate->remove(array('username' => $usename));
-				
-				//delete loginDate
-// 				$userId = $collection->find(array($id => array('$exists' => 1), 'time' => $currentDate));
 				$colFollow = $dbFollow->follow;
 				$colFollow->remove(array($id => array('$exists' => 1)));
 			}
@@ -318,20 +311,11 @@ class RegisterController extends AppController {
 		$mLogin = new MongoClient;
 		$db = $mLogin->instagram;
 		$collection = $db->follow;
-// 		$beforeTime = (new DateTime())->modify('-1 day')->format('Y-m-d');
-// 		$time = date('Y-m', strtotime($beforeTime));
-// 		$userFollow = $db->selectCollection('username'.$time);
-// 		$loginFollow = $db->selectCollection('login'.$time);
 		if($id) {
 //          check $id exist in collections usernameDate ? "not do it" : "continue to check"
 			$checkName = $collection->find(array($id => array('$exists' => 1)));
 			if($checkName->count() <= 0) {
 				$this->__getInfoFollow();
-// 			continue check $id exists in collection loginDate ? "not do it" : "save db"
-// 				$checkLogin = $loginFollow->find(array($id => array('$exists' => 1), 'time' => $beforeTime));
-// 				if ($checkLogin->count() <= 0) {
-// 					$this->__getInfoFollow();
-// 				}
 			}
 		} else {
 			return false;
@@ -343,14 +327,8 @@ class RegisterController extends AppController {
 		$mLogin = new MongoClient;
 		$dbLogin = $mLogin->instagram_account_info;
 		$colLogin = $dbLogin->account_login;
-	
 		$db = $mLogin->instagram;
 		$coll = $db->follow;
-// 		$db = $mLogin->follow;
-		
-// 		$beforeTime = (new DateTime())->modify('-1 day')->format('Y-m-d');
-// 		$time = date('Y-m', strtotime($beforeTime));
-// 		$loginFollow = $db->selectCollection('login'.$time);
 		
 		$username = $this->Session->read('username');
 		$data = $colLogin->find(array('username' => $username), array('access_token' => true, 'id' => true));
@@ -406,11 +384,6 @@ class RegisterController extends AppController {
 			
 			usort($arr, function($a, $b) { return $a['totalFollow'] < $b['totalFollow'] ? 1 : -1 ; } );
 			$coll->insert(array($id => $arr));
-// 			$checkLogin = $loginFollow->find(array($id => array('$exists' => 1), 'time' => $beforeTime));
-// 			if($checkLogin->count() > 0) {
-// 				$loginFollow->remove(array($id => array('$exists' => 1), 'time' => $beforeTime));
-// 			}
-// 			$loginFollow->insert(array($id => $arr, 'time' => $beforeTime));
 		}
 	}
 }
