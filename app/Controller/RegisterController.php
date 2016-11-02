@@ -43,7 +43,7 @@ class RegisterController extends AppController {
 				$collectionCaculate->remove(array('username' => $usename));
 				
 				$colFollow = $dbFollow->follow;
-				$colFollow->remove(array($id => array('$exists' => 1)));
+				$colFollow->remove(array($id => array('$exists' => 1)), array('justOne' => true));
 			}
 			$this->Session->delete('username');
 			$this->Session->delete('id');
