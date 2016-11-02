@@ -19,10 +19,10 @@ class RankingController extends AppController {
 		$page = isset($_POST['page']) ? $_POST['page'] : 1;
 		$start = $page*$currentPage;
 		$totalPageUser = $userFollow->aggregate(array(
-				array('$project' => array('count' => array('$size' => '$3579361643')))
+				array('$project' => array('count' => array('$size' => '$'.$id)))
 		));
 		$totalPageLogin = $loginFollow->aggregate(array(
-				array('$project' => array('count' => array('$size' => '$3980281197')))
+				array('$project' => array('count' => array('$size' => '$'.$id)))
 		));
 		$data = $userFollow->find(array($id => array('$exists' => 1), 'time' => $beforeTime), array($id => array('$slice' => [$start,$currentPage]))  );
 		$dataLogin = $loginFollow->find(array($id => array('$exists' => 1), 'time' => $beforeTime), array($id => array('$slice' => [$start,$currentPage]))  );
