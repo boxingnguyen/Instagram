@@ -1,6 +1,6 @@
 <?php
 class GetMediaShell extends AppShell {
-	const TMHTEST_ACCESS_TOKEN = '4025731782.6d34b43.b723850c5e0548bfa4863dea62b98630';
+	const TMHTEST_ACCESS_TOKEN = '4025731782.6d34b43.643eaa621adf4c2cac062281eec11612';
 	
 	public function main() {
 		$start_time = microtime(true);
