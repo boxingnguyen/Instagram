@@ -2,7 +2,6 @@
 class FollowRankingShell extends AppShell {
 	public $loop = 1;
 	private $__collection;
-// 	private $__collectionLogin;
 	public function initialize() {
 		parent::initialize();
 		$m = new MongoClient;
