@@ -3,7 +3,7 @@ App::uses('Controller', 'Controller');
 class RegisterController extends AppController {
 	public function login() {
 		if($this->Session->check('username')){
-			$this->redirect(array('controller' => 'top', 'action' => 'index'));
+// 			$this->redirect(array('controller' => 'top', 'action' => 'index'));
 		}
 		$scope = array('basic','follower_list','public_content');
 		$url = $this->_instagram->getLoginUrl($scope);
@@ -13,14 +13,19 @@ class RegisterController extends AppController {
 		$this->layout= false;
 		$this->autoRender= false;
 
-		if($this->Session->check('username')){
+		if($this->Session->check('username') && $this->Session->check('id')){
 			$usename = $this->Session->read('username');
+			$id = $this->Session->read('id');
 
 			$m = new MongoClient;
 			$db = $m->instagram_account_info;
 			$collections = $db->account_username;
 			$testUsername = $collections->find(array('username' => $usename));
-			if($testUsername->count() == 0) {
+			
+			$collectionsLogin = $db->account_login;
+			$testUsernamelogin = $collectionsLogin->find(array('username' => $usename));
+			
+			if($testUsername->count() == 0 || $testUsernamelogin->count() > 0) {
 				//if username not collections account_username => delete username in caculalor
 				if (date('d') == '01') {
 					$month = (new DateTime())->modify('-1 month')->format('m');
@@ -29,13 +34,24 @@ class RegisterController extends AppController {
 				} else {
 					$currentTime = (new DateTime())->modify('-1 day')->format('Y-m-d');
 				}
-					
-// 				$time = date('Y-m', strtotime($currentTime));
+				
 				$currentDate = (new DateTime())->modify('-1 day')->format('Y-m-d');
 				$time = date('Y-m', strtotime($currentDate));
 				$dbAccount = $m->instagram_account_info;
+				$dbFollow = $m->follow;
+				
+				//delete caculateDate
 				$collectionCaculate = $dbAccount->selectCollection($time);
 				$collectionCaculate->remove(array('username' => $usename));
+				
+				//delete usernameDate
+// 				$collectionCaculate = $dbAccount->selectCollection($time);
+// 				$collectionCaculate->remove(array('username' => $usename));
+				
+				//delete loginDate
+// 				$userId = $collection->find(array($id => array('$exists' => 1), 'time' => $currentDate));
+				$collectionCaculateLogin = $dbFollow->selectCollection('login'.$time);
+				$collectionCaculateLogin->remove(array($id => array('$exists' => 1), 'time' => $currentDate));
 			}
 			$this->Session->delete('username');
 			return true;
@@ -90,6 +106,7 @@ class RegisterController extends AppController {
 				$this->Session->delete('username');
 			}
 			$this->Session->write('username', $username);
+			$this->Session->write('id', $id);
 			
 			$setId = $collectionsUsername->find(array('id' => $id))->count();
 			$setIdLogin = $collections->find(array('id' => $id))->count();
