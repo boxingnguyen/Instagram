@@ -69,7 +69,7 @@ class RegisterController extends AppController {
 					$id = $data->user->id;
 					// save to mongo db
 					$collection->insert(array('username'=>$username,'id'=>$id));
-					return json_encode("The account is added successfully!");
+					return true;
 				}
 				else{
 					// alert username doesn't exist
@@ -132,7 +132,7 @@ class RegisterController extends AppController {
 			// save account info into db
 			$this->__saveAccountIntoDb($acc_info->user);
 			// get media
-			$media = $this->__getMedia($id, $data->access_token, $date);
+			$media = $this->__getMedia($id, $data->access_token);
 			$this->__saveMediaIntoDb($media, $username);
 			$totalAccountInfo = $this->__totalAccountInfo($username);
 			$totalMediaTop = $this->__totalMedia($username);
@@ -155,19 +155,75 @@ class RegisterController extends AppController {
 		}	
 	}
 	
+	public function getDataRegister(){
+		$this->layout = false;
+		$this->autoRender = false;
+		
+		if(isset($_POST['username'])){
+			$username = $_POST['username'];
+			$acc = array();
+			$accessToken = '4025731782.6d34b43.643eaa621adf4c2cac062281eec11612';
+			
+			// get account info
+			$acc_info = $this->__getAccountInfo($username);
+			$acc['fullname'] = $acc_info->user->full_name;
+			$acc['follower'] = number_format($acc_info->user->followed_by->count);
+			$acc['totalMedia'] = $acc_info->user->media->count;
+			$acc['id'] = $acc_info->user->id;
+			$acc['is_private'] = $acc_info->user->is_private;
+			
+			// save account info into db
+			$this->__saveAccountIntoDb($acc_info->user);
+			
+			if(!$acc['is_private']){
+				// get media
+				$media = $this->__getMedia($acc['id'],$accessToken);
+				//save media
+				$this->__saveMediaIntoDb($media, $username);
+			}else {
+				$media = array();
+			}
+			$acc['mediaGet'] = count($media);
+			
+			
+			$totalAccountInfo = $this->__totalAccountInfo($username);
+			$totalMediaTop = $this->__totalMedia($username);
+			if ($totalMediaTop['id']) {
+				$mediaTop = array('id' => $totalMediaTop['id'], 'likesTop' => $totalMediaTop['likes'], 'commentsTop' => $totalMediaTop['comments'], 'media_get' => $totalMediaTop['media_get']);
+			} else {
+				$mediaTop = array('id' => $acc['id'], 'likesTop' => $totalMediaTop['likes'], 'commentsTop' => $totalMediaTop['comments'], 'media_get' => $totalMediaTop['media_get']);
+			}
+			$date = (new DateTime())->format('Y-m-d 00:00:00');
+			$date = (string)strtotime($date);
+			$totalMediaAnalytic = $this->__totalMedia($username, $date);
+			$mediaAnalytic = array('likesAnalytic' => $totalMediaAnalytic['likes'], 'commentsAnalytic' => $totalMediaAnalytic['comments']);
+			//save analytic
+			$this->__calculateReaction($username,$totalAccountInfo, $mediaTop, $mediaAnalytic);
+			
+			$acc['totalLike'] = number_format($totalMediaAnalytic['likes']);
+			$acc['totalComment'] = number_format($totalMediaAnalytic['comments']);
+			
+			return json_encode($acc);
+		}else{
+			return false;
+		}
+	}
+	
 	private function __getAccountInfo($username) {
 		$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/?__a=1');
 		return $data;
 	}
 	
-	private function __getMedia($id, $access_token, $date) {
+	private function __getMedia($id, $access_token) {
 		$this->_instagram->setAccessToken($access_token);
 		$max_id = null;
 		$data = array();
 		do {
 			$media = $this->_instagram->getUserMedia($id, 10, $max_id);
-			foreach ($media->data as $val) {
-				$data[] = $val;
+			if(isset($media->data)){
+				foreach ($media->data as $val) {
+					$data[] = $val;
+				}
 			}
 			if (isset($media->pagination) && !empty($media->pagination->next_max_id)) {
 				$max_id = $media->pagination->next_max_id;
