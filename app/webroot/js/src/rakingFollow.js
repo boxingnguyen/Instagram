@@ -43,7 +43,7 @@ $(document).ready(function() {
 					if((result[1].length) < pageCurrent) {
 						$('#loadMore').fadeOut();
 					}
-					if((result[0].result[0].count / pageCurrent) == 1) {
+					if((result[0] / pageCurrent) == 1) {
 						$('#loadMore').fadeOut();
 					}
 				},
