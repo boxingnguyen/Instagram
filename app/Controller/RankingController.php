@@ -20,10 +20,10 @@ class RankingController extends AppController {
 		$start = $page*$currentPage;
 // 		db['username2016-11'].aggregate([{$project : {'count' : {$size : {"$ifNull": ['$3980281197',[]]}}}}]);
 		$totalPageUser = $userFollow->aggregate(array(
-				array('$project' => array('count' => array('$size' =>  array('$ifNull' => array('$'.$id => array())) )))
+				array('$project' => array('count' => array('$size' =>  array('$ifNull' => array('$'.$id , array())) )))
 		));
 		$totalPageLogin = $loginFollow->aggregate(array(
-				array('$project' => array('count' => array('$size' =>  array('$ifNull' => array('$'.$id => array())) )))
+				array('$project' => array('count' => array('$size' =>  array('$ifNull' => array('$'.$id , array())) )))
 // 				array('$project' => array('count' => array('$size' => '$'.$id)))
 		));
 		$data = $userFollow->find(array($id => array('$exists' => 1), 'time' => $beforeTime), array($id => array('$slice' => [$start,$currentPage]))  );
