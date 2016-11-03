@@ -156,9 +156,61 @@ $().ready(function(){
 				success: function(data) {
 					if (data == 1) {
 						$('p.messRegis').text('You have successfully registered');
+						
+						//get data of registered hashtag
+						$.ajax({
+							method: "POST",
+							url: '/hashtag/getDataRegister',
+							data: {hashtag:hashtag},
+							dataType: 'json',
+							success: function(data){
+								console.log(data);
+								
+								var no = $('table.table-hashtag tr').length;
+
+								var tr = '<tr class="center"><td>'+no+
+											'</td><td><a href="#" class="mediaHashtag" target="_blank">'+ hashtag +
+											'</a></td><td><a href="/hashtag/media?hashtag='+ data.name +'" target="_blank">'+ data.totalMedia +
+											'</a></td></tr>';
+								$('table.table-hashtag').append(tr);
+								var trLast = $('table.table-hashtag tr').last();
+								trLast.css('opacity', '0.4');
+								trLast.find(">td >a.mediaHashtag").bind('click', function(e){
+							        e.preventDefault();
+								})
+								
+//								$.ajax({
+//									method: "POST",
+//									url: '/hashtag/getMediaRegister',
+//									data: {hashtag:hashtag},
+//									dataType: 'json',
+//									success: function(data){
+//										console.log(data);
+//										if (data == 1 || data == true){
+//											trLast.css('opacity', '1');
+//											trLast.find(">td >a.mediaHashtag").unbind('click');
+//										}else{
+//											alert('Error');
+//										}
+//									},
+//									error: function(){
+//										alert('Error');
+//									}
+//								});
+								
+							},
+							error: function(){
+								alert('Error');
+							}
+						});
+						
+						
 					} else {
 						if ($.type(data) === "string") {
 							$('p.messRegis').text(data);
+							
+							
+							
 						}
 					}
 					$('.loader').hide();
