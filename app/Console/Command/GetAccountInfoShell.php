@@ -4,6 +4,7 @@ class GetAccountInfoShell extends AppShell {
 	public $db;
 	const ACCOUNT_GET = "account_info";
 	const ACCOUNT_ORIGIN = "account_username";
+	const ACCOUNT_LOGIN = "account_login";
 	public $countReSend = 0;
 	
 	public function initialize() {
@@ -24,7 +25,15 @@ class GetAccountInfoShell extends AppShell {
 			}
 			$all_account[] = $acc['username'];
 		}
-		
+		// get all instagram's login
+		$acc_login = $this->db->{self::ACCOUNT_LOGIN}->find(array(), array('username' => true));
+		foreach ($acc_login as $acc) {
+			if ($acc['username'] == null) {
+				$this->db->account_login->remove(array('username' => null));
+				continue;
+			}
+			array_push($all_account, $acc['username']);
+		}
 		// collect information of account before update
 		$acc_change = array();
 		$acc_before = $this->db->{self::ACCOUNT_GET}->find(array(), array('is_private' => true, 'id' => true));
