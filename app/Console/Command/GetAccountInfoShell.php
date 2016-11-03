@@ -25,15 +25,17 @@ class GetAccountInfoShell extends AppShell {
 			}
 			$all_account[] = $acc['username'];
 		}
-		// get all instagram's login
+		
 		$acc_login = $this->db->{self::ACCOUNT_LOGIN}->find(array(), array('username' => true));
-		foreach ($acc_login as $acc) {
-			if ($acc['username'] == null) {
+		
+		foreach ($acc_login as $accLogin) {
+			if ($accLogin['username'] == null) {
 				$this->db->account_login->remove(array('username' => null));
 				continue;
 			}
-			array_push($all_account, $acc['username']);
+			array_push($all_account, $accLogin['username']);
 		}
+		
 		// collect information of account before update
 		$acc_change = array();
 		$acc_before = $this->db->{self::ACCOUNT_GET}->find(array(), array('is_private' => true, 'id' => true));
@@ -47,6 +49,7 @@ class GetAccountInfoShell extends AppShell {
 		// check account if all account is got
 		$checkAcc = $this->__checkAccount($date);
 		$checkAccCount = 0;
+		
 		// re-get missing account (maximum 5 times)
 		while (!$checkAcc && $checkAccCount < 5) {
 			$checkAcc = $this->__reGetAccount($acc_missing, $date);
@@ -95,13 +98,15 @@ class GetAccountInfoShell extends AppShell {
 		$filename = APP . "Vendor/Data/" . $date . ".acc.json";
 		$fp = file($filename);
 		$lines = count($fp);
-			
 		$m = new MongoClient();
 		$db = $m->instagram_account_info;
 		$collection = $db->account_username;
 		$total_acc = $collection->count();
+		
+		$collectionLogin = $db->account_login;
+		$total_acc_login = $collectionLogin->count();
 
-		$miss_count = $total_acc - $lines;
+		$miss_count = $total_acc + $total_acc_login - $lines;
 		if ($miss_count == 0){
 			return true;
 		} else {
