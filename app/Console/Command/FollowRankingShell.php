@@ -92,7 +92,7 @@ class FollowRankingShell extends AppShell {
 			} elseif ($totalFollow > count($arr)) {
 				$count = count($arr) - $totalFollow;
 				echo PHP_EOL.'Missing follower of account "'.$valAccount['username']. '"  '.count($arr). ' - '.$totalFollow. ' = '.$count.PHP_EOL;
-				if($count >= -3) {
+				if($count <= -3) {
 					$object = array('id' => $valAccount['id'], 'username' => $valAccount['username'], 'access_token' => $valAccount['access_token']);
 					$this->loop+=1;
 					echo $this->loop;
