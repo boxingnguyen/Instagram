@@ -9,7 +9,7 @@ $(document).ready(function() {
 			$('#loadMore').html('Loading ...');
 			$.ajax({
 				method: "POST",
-				url: '/Ranking/ajax',
+				url: '/FollowRanking/ajax',
 				dataType: 'json',
 				data: {page:page,id:koopId,currentPage:pageCurrent},
 				success: function (result) {
@@ -29,7 +29,7 @@ $(document).ready(function() {
 						tpl +='<div>';					
 						$("#content").html(tpl);
 					} else {
-						result.forEach(function(item) {
+						result[1].forEach(function(item) {
 							html += "<tr class='center'>";
 							html += "	<td>"+i+"</td>";
 							html += "	<td>"+item.full_name+"</td>";
@@ -41,9 +41,10 @@ $(document).ready(function() {
 						});
 						$('#appendFollow').append(html);
 					}
-					
-					
-					if((result.length) < pageCurrent) {
+					if((result[1].length) < pageCurrent) {
+						$('#loadMore').fadeOut();
+					}
+					if((result[0].result[0].count / pageCurrent) == 1) {
 						$('#loadMore').fadeOut();
 					}
 				},
