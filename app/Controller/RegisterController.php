@@ -3,7 +3,7 @@ App::uses('Controller', 'Controller');
 class RegisterController extends AppController {
 	public function login() {
 		if($this->Session->check('username')){
-// 			$this->redirect(array('controller' => 'top', 'action' => 'index'));
+			$this->redirect(array('controller' => 'top', 'action' => 'index'));
 		}
 		$scope = array('basic','follower_list','public_content');
 		$url = $this->_instagram->getLoginUrl($scope);
@@ -41,6 +41,9 @@ class RegisterController extends AppController {
 				//delete caculateDate
 				$collectionCaculate = $dbAccount->selectCollection($time);
 				$collectionCaculate->remove(array('username' => $usename));
+				
+				$colLogin = $db->account_login;
+				$colLogin->remove(array('id' => $id), array('justOne' => true));
 				
 				$colFollow = $dbFollow->follow;
 				$colFollow->remove(array($id => array('$exists' => 1)), array('justOne' => true));
@@ -386,14 +389,12 @@ class RegisterController extends AppController {
 		$coll = $db->follow;
 		$username = $this->Session->read('username');
 		$data = $colLogin->find(array('username' => $username), array('access_token' => true, 'id' => true));
-// 		echo $data->count();die;
 		if ($data->count() > 0) {
 			foreach($data as $access) {
 				$id = $access['id'];
 				$accessToken = $access['access_token'];
 			}
 			$this->_instagram->setToken($accessToken);
-			
 			//get follow list
 			$arr = array();
 			$cursor = null;
@@ -403,7 +404,6 @@ class RegisterController extends AppController {
 				} else {
 					$infoFollowsBy = $this->_instagram->getUserFollower($cursor);
 				}
-// 				print_r($infoFollowsBy);die;
 				if(isset($infoFollowsBy) && !empty($infoFollowsBy->data)) {
 		
 					//get total follow each account
@@ -431,17 +431,14 @@ class RegisterController extends AppController {
 				} else {
 					echo "<pre>";
 					print_r($infoFollowsBy);
-					// 				exit;
 				}
 				
 				if(isset($infoFollowsBy->pagination->next_cursor) && !empty($infoFollowsBy->pagination->next_cursor)) {
 					$cursor = $infoFollowsBy->pagination->next_cursor;
 				}
 			} while (isset($infoFollowsBy->pagination->next_cursor) && !empty($infoFollowsBy->pagination->next_cursor));
-// 			print_r($arr);
 			usort($arr, function($a, $b) { return $a['totalFollow'] < $b['totalFollow'] ? 1 : -1 ; } );
 			$coll->insert(array($id => $arr));
-// 			die;
 		}
 	}
 }

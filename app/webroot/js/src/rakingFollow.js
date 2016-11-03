@@ -1,6 +1,6 @@
 $(document).ready(function() {
 		var page = -1;
-		var pageCurrent = 10; //total record /page
+		var pageCurrent = 18; //total record /page
 		var baseUrl = (window.location).href; // You can also use document.URL
 		var koopId = baseUrl.substring(baseUrl.lastIndexOf('=') + 1);
 		$('#loadMore').click(function(){
