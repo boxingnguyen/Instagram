@@ -7,6 +7,7 @@ class FollowRankingShell extends AppShell {
 		$m = new MongoClient;
 		$db = $m->instagram;
 		$this->__collection = $db->follow;
+		$this->__collection->drop();
 	}
 	public function main() {
 		$mLogin = new MongoClient;		
@@ -44,7 +45,9 @@ class FollowRankingShell extends AppShell {
 		if ($valAccount) {
 			// total follow_by in account_info
 			$dataInfo = $collection->find(array('username'=>$valAccount['username']));
+			echo $dataInfo->count();
 			foreach ($dataInfo as $v) {
+// 				print_r($v);
 				$totalFollow = $v['followed_by']['count'];
 			}
 			$arr = array();
@@ -92,7 +95,7 @@ class FollowRankingShell extends AppShell {
 			} elseif ($totalFollow > count($arr)) {
 				$count = count($arr) - $totalFollow;
 				echo PHP_EOL.'Missing follower of account "'.$valAccount['username']. '"  '.count($arr). ' - '.$totalFollow. ' = '.$count.PHP_EOL;
-				if($count >= -3) {
+				if($count <= -3) {
 					$object = array('id' => $valAccount['id'], 'username' => $valAccount['username'], 'access_token' => $valAccount['access_token']);
 					$this->loop+=1;
 					echo $this->loop;
@@ -116,7 +119,6 @@ class FollowRankingShell extends AppShell {
 		foreach ($list_follow as $value) {
 			fwrite($filename, json_encode($value)."\n");
 		}
-	
 		fclose($filename);
 	}
 	private function __saveFollow($accountId, $arr) {

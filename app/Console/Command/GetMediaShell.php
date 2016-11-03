@@ -10,16 +10,14 @@ class GetMediaShell extends AppShell {
 		
 		$all_account = $this->__sortAccountByMedia();
 		$date = date("dmY");
-		
 		if (!empty($all_account)) {
+			
 			// drop old data
 			$collection->drop();
 			// empty file contain accounts that missed media
 			file_put_contents(APP."Vendor/Data/tmp_missing_acc.json", "");
-			
 			// store data OF PUBLIC ACCOUNT into json file (if data is fully get, store data into db)
 			$this->__saveData($all_account['public'], $collection, $date, $is_private = false);
-			
 			// re-get media if media is missing (maximum 5 times, of public account)
 			$this->__getMissingMedia($collection, $date, false);
 			

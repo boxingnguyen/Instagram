@@ -10,7 +10,7 @@ class TopController extends AppController {
 		$currentDate = (new DateTime())->modify('-1 day')->format('Y-m-d');
 		$time = date('Y-m', strtotime($currentDate));
 		$collection = $db->selectCollection($time);
-
+		$collection->remove(array('username' => " "));
 		if (isset( $this->params['url']['private'] )) {
 			$status = $this->params['url']['private'] === 'true' ? true : false;
 			$data = $collection->find(array('time' => $currentDate, 'is_private' => $status))->sort(array('followers' => -1));
