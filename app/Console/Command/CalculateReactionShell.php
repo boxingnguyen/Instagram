@@ -58,7 +58,6 @@ class CalculateReactionShell extends AppShell {
 			$reactionTop = $this->__calculateReaction($value['_id']);//display top
 			//Total: media, like, comment display analytic page
 			$reactionAnalytic = $this->__calculateReaction($value['_id'], $date);//display analytic
-// 			print_r($reactionAnalytic);die;
 			$result[$key]['id'] = $value['_id'];
 			$result[$key]['is_private'] = $value['is_private'];
 			$result[$key]['likesTop'] = $reactionTop['likes'];
