@@ -13,15 +13,27 @@ class CalculateReactionShell extends AppShell {
 		$m = new MongoClient();
 		$db = $m->instagram_account_info;
 		$collection = $db->account_info;
-
+		$collectionLogin = $db->account_login;
+		$arrLogin = $collectionLogin->find();
+		$arr = array();
+		foreach($arrLogin as $account) {
+			$arr[] = $account['username'];
+		}
 		$condition = array(
-				'$group' => array(
-						'_id' => '$id',
-						'username' => array('$first' => '$username'),
-						'fullname' => array('$first' => '$full_name'),
-						'followers' => array('$first' => '$followed_by.count'),
-						'media_count' => array('$first' => '$media.count'),
-						'is_private' => array('$first' => '$is_private')
+				array(
+					'$match' => array(
+							'username' => array('$nin' => $arr)
+					)
+				),
+				array(
+					'$group' => array(
+							'_id' => '$id',
+							'username' => array('$first' => '$username'),
+							'fullname' => array('$first' => '$full_name'),
+							'followers' => array('$first' => '$followed_by.count'),
+							'media_count' => array('$first' => '$media.count'),
+							'is_private' => array('$first' => '$is_private')
+					)
 				)
 		);
 		$data = $collection->aggregate($condition);
