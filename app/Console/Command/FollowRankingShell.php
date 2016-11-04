@@ -1,7 +1,7 @@
 <?php
 class FollowRankingShell extends AppShell {
+	public $loop = 1;
 	private $__collection;
-// 	private $__collectionLogin;
 	public function initialize() {
 		parent::initialize();
 		$m = new MongoClient;
@@ -15,30 +15,40 @@ class FollowRankingShell extends AppShell {
 		$colUsername = $dbLogin->account_username;
 		$listAccount = $colUsername->find(array('access_token' => array('$exists' => true)));
 		if($listAccount->count() > 0) {
-			$this->__userFollow($listAccount);
 			//collection account_login
 			foreach ($listAccount as $val) {
+				$this->__userFollow($val);
 				$data = $colLogin->find(array('id' => $val['id']));
 				if ($data->count() > 0) {
 					$colLogin->remove(array('id' => $val['id']));
 				}
 			}
-			echo PHP_EOL.'Finish account_username'.PHP_EOL;
+			echo PHP_EOL.'Complete account_username'.PHP_EOL;
 		}
 		
 // 		get daily collection login other account
 		$colLogin->remove(array('username' => null));
 		$listLogin = $colLogin->find();
 		if($listLogin->count() > 0) {
-			$this->__userFollow($listLogin);
-			echo PHP_EOL.'Finish account_login'.PHP_EOL;
+			foreach ($listLogin as $list) {
+				$this->__userFollow($list);
+			}
+			echo PHP_EOL.'Complete account_login'.PHP_EOL;
 		}
 	}
 
-	private function __userFollow($listAccount) {
-		foreach ($listAccount as $valAccount) {
+	
+	private function __userFollow($valAccount) {
+		$m = new MongoClient;
+		$db = $m->instagram_account_info;
+		$collection = $db->account_info;
+		if ($valAccount) {
+			$dataInfo = $collection->find(array('username'=>$valAccount['username']));
+			foreach ($dataInfo as $v) {
+				$totalFollow = $v['followed_by']['count'];
+			}
 			$arr = array();
-			$cursor = null;$i = 1;
+			$cursor = null;
 			$this->_insta->setToken($valAccount['access_token']);
 			do {
 
@@ -61,14 +71,13 @@ class FollowRankingShell extends AppShell {
 							$countFollowBy = $follow->data->counts->followed_by;
 							$countFollows = $follow->data->counts->follows;
 						}
-
 						$arr[] = array(
 								'id' => $valFollow->id, 'username' => $valFollow->username,
 								'full_name' => $valFollow->full_name, 'totalFollow' => $countFollowBy,
 								'follows' => $countFollows
 						);
 					}
-						
+		
 				} else {
 					echo "<pre>";
 					print_r($infoFollowsBy);
@@ -77,17 +86,38 @@ class FollowRankingShell extends AppShell {
 				if(isset($infoFollowsBy->pagination->next_cursor) && !empty($infoFollowsBy->pagination->next_cursor)) {
 					$cursor = $infoFollowsBy->pagination->next_cursor;
 				}
-				echo PHP_EOL." Number ......".$i.PHP_EOL;
-				$i++;
 			} while (isset($infoFollowsBy->pagination->next_cursor) && !empty($infoFollowsBy->pagination->next_cursor));
-			echo PHP_EOL.'Complete'.PHP_EOL.$valAccount['username'].PHP_EOL;
-			
+			if ($totalFollow == count($arr)) {
+				echo PHP_EOL.'Finished :  '.$valAccount['username'];
+			} elseif ($totalFollow > count($arr)) {
+				$count = count($arr) - $totalFollow;
+				echo PHP_EOL.'Missing follower of account "'.$valAccount['username']. '"  '.count($arr). ' - '.$totalFollow. ' = '.$count.PHP_EOL;
+				if($count >= -3) {
+					$object = array('id' => $valAccount['id'], 'username' => $valAccount['username'], 'access_token' => $valAccount['access_token']);
+					$this->loop+=1;
+					echo $this->loop;
+					if($this->loop > 3){
+						return false;
+					}
+					$this->__userFollow($object);
+				}
+			} else {
+				$count = count($arr) - $totalFollow;
+				echo PHP_EOL.'Missing follower of account "'.$valAccount['username']. '"  '.count($arr). ' - '.$totalFollow. ' = '.$count.PHP_EOL;
+			}
 			usort($arr, function($a, $b) { return $a['totalFollow'] < $b['totalFollow'] ? 1 : -1 ; } );
 			$this->__saveJson($valAccount['id'],$arr,$valAccount['username']);
 			$this->__saveFollow($valAccount['id'], $arr);
 		}
 	}
-	
+	private function __saveJson($accountId, $list_follow, $name){
+		$date = date("dmY");
+		$filename = fopen(APP."Vendor/Followers/".$date.".".$name.".follow.json", "w+");
+		foreach ($list_follow as $value) {
+			fwrite($filename, json_encode($value)."\n");
+		}
+		fclose($filename);
+	}
 	private function __saveFollow($accountId, $arr) {
 		$userId = $this->__collection->find(array($accountId => array('$exists' => 1)));
 		if ($userId->count() > 0) {

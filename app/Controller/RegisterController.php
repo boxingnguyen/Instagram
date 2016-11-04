@@ -24,10 +24,7 @@ class RegisterController extends AppController {
 			$collections = $db->account_username;
 			$testUsername = $collections->find(array('username' => $usename));
 			
-			$collectionsLogin = $db->account_login;
-			$testUsernamelogin = $collectionsLogin->find(array('username' => $usename));
-			
-			if($testUsername->count() == 0 || $testUsernamelogin->count() > 0) {
+			if($testUsername->count() == 0) {
 				//if username not collections account_username => delete username in caculalor
 				if (date('d') == '01') {
 					$month = (new DateTime())->modify('-1 month')->format('m');
@@ -40,20 +37,13 @@ class RegisterController extends AppController {
 				$currentDate = (new DateTime())->modify('-1 day')->format('Y-m-d');
 				$time = date('Y-m', strtotime($currentDate));
 				$dbAccount = $m->instagram_account_info;
-// 				$dbFollow = $m->follow;
 				
 				//delete caculateDate
 				$collectionCaculate = $dbAccount->selectCollection($time);
 				$collectionCaculate->remove(array('username' => $usename));
 				
-				//delete usernameDate
-// 				$collectionCaculate = $dbAccount->selectCollection($time);
-// 				$collectionCaculate->remove(array('username' => $usename));
-				
-				//delete loginDate
-// 				$userId = $collection->find(array($id => array('$exists' => 1), 'time' => $currentDate));
 				$colFollow = $dbFollow->follow;
-				$colFollow->remove(array($id => array('$exists' => 1)));
+				$colFollow->remove(array($id => array('$exists' => 1)), array('justOne' => true));
 			}
 			$this->Session->delete('username');
 			$this->Session->delete('id');
@@ -79,7 +69,7 @@ class RegisterController extends AppController {
 					$id = $data->user->id;
 					// save to mongo db
 					$collection->insert(array('username'=>$username,'id'=>$id));
-					return json_encode("The account is added successfully!");
+					return true;
 				}
 				else{
 					// alert username doesn't exist
@@ -107,6 +97,9 @@ class RegisterController extends AppController {
 			//write username into session
 			if($this->Session->check('username')){
 				$this->Session->delete('username');
+			}
+			if($this->Session->check('id')){
+				$this->Session->delete('id');
 			}
 			$this->Session->write('username', $username);
 			$this->Session->write('id', $id);
@@ -139,7 +132,7 @@ class RegisterController extends AppController {
 			// save account info into db
 			$this->__saveAccountIntoDb($acc_info->user);
 			// get media
-			$media = $this->__getMedia($id, $data->access_token, $date);
+			$media = $this->__getMedia($id, $data->access_token);
 			$this->__saveMediaIntoDb($media, $username);
 			$totalAccountInfo = $this->__totalAccountInfo($username);
 			$totalMediaTop = $this->__totalMedia($username);
@@ -154,7 +147,7 @@ class RegisterController extends AppController {
 			$mediaAnalytic = array('likesAnalytic' => $totalMediaAnalytic['likes'], 'commentsAnalytic' => $totalMediaAnalytic['comments']);
 			$this->__calculateReaction($username,$totalAccountInfo, $mediaTop, $mediaAnalytic);
 // 			get follow list and save db
-			$this->getFollow($id);
+			$this->getFollow($id, $username);
 			// after get data successful, redirect to Top page
 			$this->redirect(array('controller' => 'top', 'action' => 'index'));
 		} else {
@@ -162,19 +155,75 @@ class RegisterController extends AppController {
 		}	
 	}
 	
+	public function getDataRegister(){
+		$this->layout = false;
+		$this->autoRender = false;
+		
+		if(isset($_POST['username'])){
+			$username = $_POST['username'];
+			$acc = array();
+			$accessToken = '4025731782.6d34b43.643eaa621adf4c2cac062281eec11612';
+			
+			// get account info
+			$acc_info = $this->__getAccountInfo($username);
+			$acc['fullname'] = $acc_info->user->full_name;
+			$acc['follower'] = number_format($acc_info->user->followed_by->count);
+			$acc['totalMedia'] = $acc_info->user->media->count;
+			$acc['id'] = $acc_info->user->id;
+			$acc['is_private'] = $acc_info->user->is_private;
+			
+			// save account info into db
+			$this->__saveAccountIntoDb($acc_info->user);
+			
+			if(!$acc['is_private']){
+				// get media
+				$media = $this->__getMedia($acc['id'],$accessToken);
+				//save media
+				$this->__saveMediaIntoDb($media, $username);
+			}else {
+				$media = array();
+			}
+			$acc['mediaGet'] = count($media);
+			
+			
+			$totalAccountInfo = $this->__totalAccountInfo($username);
+			$totalMediaTop = $this->__totalMedia($username);
+			if ($totalMediaTop['id']) {
+				$mediaTop = array('id' => $totalMediaTop['id'], 'likesTop' => $totalMediaTop['likes'], 'commentsTop' => $totalMediaTop['comments'], 'media_get' => $totalMediaTop['media_get']);
+			} else {
+				$mediaTop = array('id' => $acc['id'], 'likesTop' => $totalMediaTop['likes'], 'commentsTop' => $totalMediaTop['comments'], 'media_get' => $totalMediaTop['media_get']);
+			}
+			$date = (new DateTime())->format('Y-m-d 00:00:00');
+			$date = (string)strtotime($date);
+			$totalMediaAnalytic = $this->__totalMedia($username, $date);
+			$mediaAnalytic = array('likesAnalytic' => $totalMediaAnalytic['likes'], 'commentsAnalytic' => $totalMediaAnalytic['comments']);
+			//save analytic
+			$this->__calculateReaction($username,$totalAccountInfo, $mediaTop, $mediaAnalytic);
+			
+			$acc['totalLike'] = number_format($totalMediaAnalytic['likes']);
+			$acc['totalComment'] = number_format($totalMediaAnalytic['comments']);
+			
+			return json_encode($acc);
+		}else{
+			return false;
+		}
+	}
+	
 	private function __getAccountInfo($username) {
 		$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/?__a=1');
 		return $data;
 	}
 	
-	private function __getMedia($id, $access_token, $date) {
+	private function __getMedia($id, $access_token) {
 		$this->_instagram->setAccessToken($access_token);
 		$max_id = null;
 		$data = array();
 		do {
 			$media = $this->_instagram->getUserMedia($id, 10, $max_id);
-			foreach ($media->data as $val) {
-				$data[] = $val;
+			if(isset($media->data)){
+				foreach ($media->data as $val) {
+					$data[] = $val;
+				}
 			}
 			if (isset($media->pagination) && !empty($media->pagination->next_max_id)) {
 				$max_id = $media->pagination->next_max_id;
@@ -313,25 +362,15 @@ class RegisterController extends AppController {
 		} while (true);
 	}
 
-	public function getFollow($id) {
-
+	public function getFollow($id, $username) {
 		$mLogin = new MongoClient;
 		$db = $mLogin->instagram;
 		$collection = $db->follow;
-// 		$beforeTime = (new DateTime())->modify('-1 day')->format('Y-m-d');
-// 		$time = date('Y-m', strtotime($beforeTime));
-// 		$userFollow = $db->selectCollection('username'.$time);
-// 		$loginFollow = $db->selectCollection('login'.$time);
 		if($id) {
 //          check $id exist in collections usernameDate ? "not do it" : "continue to check"
 			$checkName = $collection->find(array($id => array('$exists' => 1)));
 			if($checkName->count() <= 0) {
-				$this->__getInfoFollow();
-// 			continue check $id exists in collection loginDate ? "not do it" : "save db"
-// 				$checkLogin = $loginFollow->find(array($id => array('$exists' => 1), 'time' => $beforeTime));
-// 				if ($checkLogin->count() <= 0) {
-// 					$this->__getInfoFollow();
-// 				}
+				$this->__getInfoFollow($username);
 			}
 		} else {
 			return false;
@@ -339,27 +378,22 @@ class RegisterController extends AppController {
 		
 	}
 
-	private function __getInfoFollow() {
+	private function __getInfoFollow($username) {
 		$mLogin = new MongoClient;
 		$dbLogin = $mLogin->instagram_account_info;
 		$colLogin = $dbLogin->account_login;
-	
 		$db = $mLogin->instagram;
 		$coll = $db->follow;
-// 		$db = $mLogin->follow;
-		
-// 		$beforeTime = (new DateTime())->modify('-1 day')->format('Y-m-d');
-// 		$time = date('Y-m', strtotime($beforeTime));
-// 		$loginFollow = $db->selectCollection('login'.$time);
-		
 		$username = $this->Session->read('username');
 		$data = $colLogin->find(array('username' => $username), array('access_token' => true, 'id' => true));
+// 		echo $data->count();die;
 		if ($data->count() > 0) {
 			foreach($data as $access) {
 				$id = $access['id'];
 				$accessToken = $access['access_token'];
 			}
 			$this->_instagram->setToken($accessToken);
+			
 			//get follow list
 			$arr = array();
 			$cursor = null;
@@ -369,6 +403,7 @@ class RegisterController extends AppController {
 				} else {
 					$infoFollowsBy = $this->_instagram->getUserFollower($cursor);
 				}
+// 				print_r($infoFollowsBy);die;
 				if(isset($infoFollowsBy) && !empty($infoFollowsBy->data)) {
 		
 					//get total follow each account
@@ -403,14 +438,10 @@ class RegisterController extends AppController {
 					$cursor = $infoFollowsBy->pagination->next_cursor;
 				}
 			} while (isset($infoFollowsBy->pagination->next_cursor) && !empty($infoFollowsBy->pagination->next_cursor));
-			
+// 			print_r($arr);
 			usort($arr, function($a, $b) { return $a['totalFollow'] < $b['totalFollow'] ? 1 : -1 ; } );
 			$coll->insert(array($id => $arr));
-// 			$checkLogin = $loginFollow->find(array($id => array('$exists' => 1), 'time' => $beforeTime));
-// 			if($checkLogin->count() > 0) {
-// 				$loginFollow->remove(array($id => array('$exists' => 1), 'time' => $beforeTime));
-// 			}
-// 			$loginFollow->insert(array($id => $arr, 'time' => $beforeTime));
+// 			die;
 		}
 	}
 }
