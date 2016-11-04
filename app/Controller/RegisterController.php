@@ -165,7 +165,6 @@ class RegisterController extends AppController {
 		if(isset($_POST['username'])){
 			$username = $_POST['username'];
 			$acc = array();
-			$accessToken = '4025731782.6d34b43.643eaa621adf4c2cac062281eec11612';
 			
 			// get account info
 			$acc_info = $this->__getAccountInfo($username);
@@ -174,27 +173,47 @@ class RegisterController extends AppController {
 			$acc['totalMedia'] = $acc_info->user->media->count;
 			$acc['id'] = $acc_info->user->id;
 			$acc['is_private'] = $acc_info->user->is_private;
+			$acc['username'] = $username;
 			
 			// save account info into db
 			$this->__saveAccountIntoDb($acc_info->user);
 			
-			if(!$acc['is_private']){
+			return json_encode($acc);
+		}else{
+			return false;
+		}
+	}
+	
+	public function getMediaRegister(){
+		$this->layout = false;
+		$this->autoRender = false;
+	
+		if(isset($_POST['infor'])){
+			$infor = $_POST['infor'];
+			$username = $infor['username'];
+			$id = $infor['id'];
+			$isPrivate = $infor['is_private'];
+			
+			$acc = array();
+			$accessToken = '4025731782.6d34b43.643eaa621adf4c2cac062281eec11612';
+				
+			if($isPrivate == 'false' || $isPrivate == false){
 				// get media
-				$media = $this->__getMedia($acc['id'],$accessToken);
+				$media = $this->__getMedia($id,$accessToken);
 				//save media
 				$this->__saveMediaIntoDb($media, $username);
 			}else {
 				$media = array();
 			}
 			$acc['mediaGet'] = count($media);
-			
-			
+				
+				
 			$totalAccountInfo = $this->__totalAccountInfo($username);
 			$totalMediaTop = $this->__totalMedia($username);
 			if ($totalMediaTop['id']) {
 				$mediaTop = array('id' => $totalMediaTop['id'], 'likesTop' => $totalMediaTop['likes'], 'commentsTop' => $totalMediaTop['comments'], 'media_get' => $totalMediaTop['media_get']);
 			} else {
-				$mediaTop = array('id' => $acc['id'], 'likesTop' => $totalMediaTop['likes'], 'commentsTop' => $totalMediaTop['comments'], 'media_get' => $totalMediaTop['media_get']);
+				$mediaTop = array('id' => $id, 'likesTop' => $totalMediaTop['likes'], 'commentsTop' => $totalMediaTop['comments'], 'media_get' => $totalMediaTop['media_get']);
 			}
 			$date = (new DateTime())->format('Y-m-d 00:00:00');
 			$date = (string)strtotime($date);
@@ -202,10 +221,10 @@ class RegisterController extends AppController {
 			$mediaAnalytic = array('likesAnalytic' => $totalMediaAnalytic['likes'], 'commentsAnalytic' => $totalMediaAnalytic['comments']);
 			//save analytic
 			$this->__calculateReaction($username,$totalAccountInfo, $mediaTop, $mediaAnalytic);
-			
+				
 			$acc['totalLike'] = number_format($totalMediaAnalytic['likes']);
 			$acc['totalComment'] = number_format($totalMediaAnalytic['comments']);
-			
+				
 			return json_encode($acc);
 		}else{
 			return false;

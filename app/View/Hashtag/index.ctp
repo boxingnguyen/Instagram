@@ -37,7 +37,7 @@
 <div class='col-xs-12'>
 	<div class='col-xs-2'></div>	
 	<div class='col-xs-8'>
-		<table class="table responstable">
+		<table class="table responstable table-hashtag">
 			<tr>
 				<th class='center'>No.</th>
 				<th class='center'>Hashtag</th>
