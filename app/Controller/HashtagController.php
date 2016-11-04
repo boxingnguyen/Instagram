@@ -38,24 +38,20 @@ class HashtagController extends AppController {
 		$tag = $_GET['hashtag'];
 		$db = $this->m->hashtag;
 		$c = $db->media_daily;
-		$current_date = date("d-m-Y");
-		$day = date("d",strtotime($current_date));
-		$month = date("m",strtotime($current_date));
-		$year = date("Y",strtotime($current_date));
-		$num_of_days = cal_days_in_month(CAL_GREGORIAN, $month-1, $year);
-		$statistic = $c->find(array('tag' =>$tag))->skip(intval($day))->limit($num_of_days);
-		$statistic->sort(array('date' => 1));
-		$data = array();
-		$i=0;
+		$statistic = $c->find(array('tag' =>$tag))->limit(10);
+		$sort_date = array();
 		foreach ($statistic as $val) {
+			$sort_date[]=$val;
+		}
+		$data = array();
+		for($i=0;$i<count($sort_date);$i++){
 			if($i==0) {
-				$data[]= array("date"=>$val['date'],"total_media"=>0);
+				$data[]= array("date"=>$sort_date[$i]['date'],"total_media"=>0);
 			} else {
-				$total = $val['total_media'] - $tam;
-				$data[]= array("date"=>$val['date'],"total_media"=>$total);
+				$total = $sort_date[$i]['total_media'] - $tam;
+				$data[]= array("date"=>$sort_date[$i]['date'],"total_media"=>$total);
 			}
-			$tam = $val['total_media'];
-			$i++;
+			$tam = $sort_date[$i]['total_media'];
 		}
 		$this->set('data', $data);
 	}
