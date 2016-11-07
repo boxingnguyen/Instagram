@@ -1,23 +1,12 @@
 <?php
 class HashtagMonthlyShell extends AppShell {
-	
-	public function calculatorRanking($tag){
-		$m = new MongoClient();
-		$db = $m->hashtag;
-		$collection = $db->media;
-		$result['total_media'] = $collection->find(array('tag_name'=>$tag))->count();
-		$result['hashtag'] = $tag;
-		$db->ranking->insert($result);
-	}
-	
 	public function main() {
-
 		$m = new MongoClient();
 		$db = $m->hashtag;
 		$c_media = $db->media;
 		$c_media->drop();
 
-		$date = date('dmY');
+		$date = date('MY');
 		
 		$previous_month = intval(date('m')) - 1; 
 		
@@ -84,11 +73,6 @@ class HashtagMonthlyShell extends AppShell {
 			pcntl_waitpid($pid, $status);
 			unset($pids[$pid]);
 		}
-		$db->ranking->drop();
-
-		foreach($hashtag as $tag){
-			$this->calculatorRanking($tag);
-		}
 	}
 	
 	private function __getHashtag() {
@@ -135,11 +119,5 @@ class HashtagMonthlyShell extends AppShell {
 			$collection->batchInsert($data, array('timeout' => -1));
 			unset($data);
 		}
-	}
-	
-	private function __getMedia($tag) {
-		$this->_insta->setAccessToken(self::TMHTEST_ACCESS_TOKEN);
-		$media = $this->_insta->getTagMedia($tag);
-		return $media;
 	}
 }

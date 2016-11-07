@@ -69,45 +69,70 @@ $().ready(function(){
 					if(data == 1){
 						$('p.messRegis').text('You have successfully registered');
 						
-						//get data of registered account
+						//get information of registered account
 						$.ajax({
 							method: "POST",
 							url: '/register/getDataRegister',
 							data: {username:username},
 							dataType: 'json',
-							success: function(data){
-								console.log(data);
+							success: function(infor){
+								console.log(infor);
 								
-								var no = $('table.table-top tr').length;
-								var percentage = (data.totalMedia != 0) ? Math.round(data.mediaGet / data.totalMedia * 100, 2) : 'N/A';
-								
-								var miss_count = Math.abs(data.totalMedia - data.mediaGet);
-								var classColor = '';
-								if (miss_count > 10){ 
-									classColor = "hard_missing";
-								} else if (miss_count > 0) {	
-									classColor = "light_missing";
-								}
-								
-								var imageStatus = 'wrong.png';
-								if (percentage == 100) {
-									imageStatus = 'right.png';				
-								} else if (percentage >= 90) {
-									imageStatus = 'warning.png';
-								}
-
-								var tr = '<tr class="center '+ classColor +'"><td><a class="badge inst_order">'+no+
-											'</a></td><td><a href="https://www.instagram.com/'+username+'" target="_blank">'+ data.fullname +
-											'</a></td><td><a href="/Chart/follower?id='+ data.id +'" target="_blank">'+ data.follower +'</a><a href="/ranking?id='+ data.id +
-											'" target="_blank" class="rankingFollow"><span style="float: right;" class="glyphicon glyphicon-list" aria-hidden="true"></span></a></td><td><a href="/media?id='+data.id+'" target="_blank">'+ data.totalMedia+
-											'</a></td><td>'+ data.mediaGet +
-											'</td><td><img src="/img/'+ imageStatus +
-											'" height="15" width="15"></td><td><a href="/Chart/like?id='+data.id+'"target="_blank">'+ data.totalLike +
-											'</a></td><td><a href="/Chart/comment?id='+data.id+'"target="_blank">'+ data.totalComment +'</a></td></tr>';
+								var no = $('table.table-top tr').length; 
+								var tr = '<tr class="center"><td><a class="badge inst_order">'+no+
+											'</a></td><td><a href="https://www.instagram.com/'+username+'" target="_blank">'+ infor.fullname +
+											'</a></td><td><a href="/Chart/follower?id='+ infor.id +'" target="_blank">'+ infor.follower +'</a><a href="/FollowRanking?id='+ infor.id +
+											'" target="_blank" class="rankingFollow"><span style="float: right;" class="glyphicon glyphicon-list" aria-hidden="true"></span></a></td><td><a href="/media?id='+infor.id+'" target="_blank">'+ infor.totalMedia+
+											'</a></td><td></td><td></td><td></td><td></td></tr>';
 								$('table.table-top').append(tr);
+								var trLast = $('table.table-top tr').last();
+								trLast.css('opacity', '0.4');
+								
+								//get media of registered account
+								$.ajax({
+									method: "POST",
+									url: '/register/getMediaRegister',
+									data: {infor:infor},
+									dataType: 'json',
+									success: function(data){
+										console.log(data);
+										
+										var no = $('table.table-top tr').length-1;
+										var percentage = (infor.totalMedia != 0) ? Math.round(data.mediaGet / infor.totalMedia * 100, 2) : 'N/A';
+										
+										var miss_count = Math.abs(infor.totalMedia - data.mediaGet);
+										var classColor = '';
+										if (miss_count > 10){ 
+											classColor = "hard_missing";
+										} else if (miss_count > 0) {	
+											classColor = "light_missing";
+										}
+										
+										var imageStatus = 'wrong.png';
+										if (percentage == 100) {
+											imageStatus = 'right.png';				
+										} else if (percentage >= 90) {
+											imageStatus = 'warning.png';
+										}
+
+										var tr = '<tr class="center '+ classColor +'"><td><a class="badge inst_order">'+no+
+													'</a></td><td><a href="https://www.instagram.com/'+username+'" target="_blank">'+ infor.fullname +
+													'</a></td><td><a href="/Chart/follower?id='+ infor.id +'" target="_blank">'+ infor.follower +'</a><a href="/FollowRanking?id='+ infor.id +
+													'" target="_blank" class="rankingFollow"><span style="float: right;" class="glyphicon glyphicon-list" aria-hidden="true"></span></a></td><td><a href="/media?id='+infor.id+'" target="_blank">'+ infor.totalMedia+
+													'</a></td><td>'+ data.mediaGet +
+													'</td><td><img src="/img/'+ imageStatus +
+													'" height="15" width="15"></td><td><a href="/Chart/like?id='+infor.id+'"target="_blank">'+ data.totalLike +
+													'</a></td><td><a href="/Chart/comment?id='+infor.id+'"target="_blank">'+ data.totalComment +'</a></td></tr>';
+										trLast.replaceWith(tr);
+									},
+									error: function(){
+										alert('Error when getting media');
+									}
+								});
+								
 							},
 							error: function(){
-								alert('Error');
+								alert('Error when getting information');
 							}
 						});
 						
@@ -156,9 +181,60 @@ $().ready(function(){
 				success: function(data) {
 					if (data == 1) {
 						$('p.messRegis').text('You have successfully registered');
+						
+						//get data of registered hashtag
+						$.ajax({
+							method: "POST",
+							url: '/hashtag/getDataRegister',
+							data: {hashtag:hashtag},
+							dataType: 'json',
+							success: function(data){
+								console.log(data);
+								
+								var no = $('table.table-hashtag tr').length;
+
+								var tr = '<tr class="center"><td>'+no+
+											'</td><td><a href="/hashtag/detail?hashtag='+ data.name +'" class="mediaHashtag" target="_blank">'+ hashtag +
+											'</a></td><td><a href="/hashtag/media?hashtag='+ data.name +'" target="_blank">'+ data.totalMedia +
+											'</a></td></tr>';
+								$('table.table-hashtag').append(tr);
+								
+								
+//								var trLast = $('table.table-hashtag tr').last();
+//								trLast.css('opacity', '0.4');
+//								trLast.find(">td >a.mediaHashtag").bind('click', function(e){
+//							        e.preventDefault();
+//								})
+								
+//								$.ajax({
+//									method: "POST",
+//									url: '/hashtag/getMediaRegister',
+//									data: {hashtag:hashtag},
+//									dataType: 'json',
+//									success: function(data){
+//										console.log(data);
+//										if (data == 1 || data == true){
+//											trLast.css('opacity', '1');
+//											trLast.find(">td >a.mediaHashtag").unbind('click');
+//										}else{
+//											alert('Error');
+//										}
+//									},
+//									error: function(){
+//										alert('Error');
+//									}
+//								});
+								
+							},
+							error: function(){
+								alert('Error');
+							}
+						});
+						
+						
 					} else {
 						if ($.type(data) === "string") {
-							$('p.messRegis').text(data);
+							$('p.messRegis').text(data);	
 						}
 					}
 					$('.loader').hide();
