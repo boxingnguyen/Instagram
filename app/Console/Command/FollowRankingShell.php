@@ -45,9 +45,7 @@ class FollowRankingShell extends AppShell {
 		if ($valAccount) {
 			// total follow_by in account_info
 			$dataInfo = $collection->find(array('username'=>$valAccount['username']));
-			echo $dataInfo->count();
 			foreach ($dataInfo as $v) {
-// 				print_r($v);
 				$totalFollow = $v['followed_by']['count'];
 			}
 			$arr = array();
@@ -82,9 +80,8 @@ class FollowRankingShell extends AppShell {
 					}
 		
 				} else {
-					echo "<pre>";
 					print_r($infoFollowsBy);
-					exit;
+					return false;
 				}
 				if(isset($infoFollowsBy->pagination->next_cursor) && !empty($infoFollowsBy->pagination->next_cursor)) {
 					$cursor = $infoFollowsBy->pagination->next_cursor;
