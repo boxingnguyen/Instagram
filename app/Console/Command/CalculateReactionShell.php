@@ -47,13 +47,10 @@ class CalculateReactionShell extends AppShell {
 		} else {
 			$currentTime = (new DateTime())->modify('-1 day')->format('Y-m-d');
 		}
-	
 		$date = (new DateTime())->format('Y-m-d 00:00:00');
-		$date = (string)strtotime($date);
-			
-		
+		$date = (string)strtotime($date);		
 		foreach ($data['result'] as $key => $value) {
-			$result[$key]['time'] = $currentTime;
+			$result[$key]['time'] = new MongoDate(strtotime($currentTime));
 			//Total: media, like, comment display top page
 			$reactionTop = $this->__calculateReaction($value['_id']);//display top
 			//Total: media, like, comment display analytic page
