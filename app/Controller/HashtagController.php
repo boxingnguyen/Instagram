@@ -205,8 +205,8 @@ class HashtagController extends AppController {
 		}
 		$data = array();
 		for($i=count($sort_date)-1;$i>=0;$i--){
-			if($i==9) {
-				if(isset($value['date']->sec)){
+			if($i==count($sort_date)-1) {
+				if(isset($sort_date[$i]['date']->sec)){
 					$data[]= array("date"=>date("d-m-Y",$sort_date[$i]['date']->sec),"total_media"=>0);
 				}
 				else{
