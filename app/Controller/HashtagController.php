@@ -3,9 +3,9 @@ class HashtagController extends AppController {
 	public function index () {
 		$db = $this->m->hashtag;
 		$c = $db->media_daily;
+		$count_hashtag = $db->tags->find()->count();
 		$date = date('d-m-Y');
-		$data = $c->find(array('date' => $date))->sort(array('total_media' => -1));
-		
+		$data = $c->find()->sort(array('_id'=>-1))->limit($count_hashtag);
 		$this->set('data', $data);
 	}
 	public function register() {
@@ -198,24 +198,34 @@ class HashtagController extends AppController {
 		$tag = $_GET['hashtag'];
 		$db = $this->m->hashtag;
 		$c = $db->media_daily;
-		$statistic = $c->find(array('tag' =>$tag))->limit(10);
+		$statistic = $c->find(array('tag' =>$tag))->sort(array('_id'=>-1))->limit(10);
 		$sort_date = array();
 		foreach ($statistic as $val) {
 			$sort_date[]=$val;
 		}
 		$data = array();
-		for($i=0;$i<count($sort_date);$i++){
-			if($i==0) {
-				$data[]= array("date"=>$sort_date[$i]['date'],"total_media"=>0);
+		for($i=count($sort_date)-1;$i>=0;$i--){
+			if($i==9) {
+				if(isset($value['date']->sec)){
+					$data[]= array("date"=>date("d-m-Y",$sort_date[$i]['date']->sec),"total_media"=>0);
+				}
+				else{
+					$data[]= array("date"=>$sort_date[$i]['date'],"total_media"=>0);
+				}
 			} else {
-				$total = $sort_date[$i]['total_media'] - $tam;
-				$data[]= array("date"=>$sort_date[$i]['date'],"total_media"=>$total);
+					$total = $sort_date[$i]['total_media'] - $tam;
+					if(isset($sort_date[$i]['date']->sec)){
+						$data[]= array("date"=>date("d-m-Y",$sort_date[$i]['date']->sec),"total_media"=>$total);
+					}
+					else{
+						$data[]= array("date"=>$sort_date[$i]['date'],"total_media"=>$total);
+					}
 			}
 			$tam = $sort_date[$i]['total_media'];
 		}
 		$this->set('data', $data);
+		
 	}
-	
 	
 	public function more() {
 		$this->layout = false;
