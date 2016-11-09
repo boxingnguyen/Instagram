@@ -47,6 +47,7 @@ class CalculateReactionShell extends AppShell {
 		} else {
 			$currentTime = (new DateTime())->modify('-1 day')->format('Y-m-d');
 		}
+		
 		$date = (new DateTime())->format('Y-m-d 00:00:00');
 		$date = (string)strtotime($date);		
 		foreach ($data['result'] as $key => $value) {
@@ -80,10 +81,10 @@ class CalculateReactionShell extends AppShell {
 		$collection = $db->selectCollection($time);
 		
 		if(isset($result) && count($result) > 0) {
-			$dateCurrent = $collection->find(array('time' => $currentTime));
+			$dateCurrent = $collection->find(array('time' => new MongoDate(strtotime($currentTime))));
 			if($dateCurrent->count() > 0){
 				$collection->remove(array(
-						'time' => $currentTime
+						'time' => new MongoDate(strtotime($currentTime))
 				));
 				$collection->batchInsert($result);				
 			} else {
@@ -108,7 +109,7 @@ class CalculateReactionShell extends AppShell {
 		} else {
 			// data in analysis pages
 			$condition = array(
-					array('$match' => array('user.id' => $account_id, 'created_time' => array('$lt' => $date))),
+					array('$match' => array('user.id' => $account_id, 'created_time' => array('$lt' => new MongoDate(strtotime($date))  ))),
 					array(
 							'$group' => array(
 									'_id' => '$user.id',

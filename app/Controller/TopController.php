@@ -13,9 +13,9 @@ class TopController extends AppController {
 		$collection->remove(array('username' => " "));
 		if (isset( $this->params['url']['private'] )) {
 			$status = $this->params['url']['private'] === 'true' ? true : false;
-			$data = $collection->find(array('time' => $currentDate, 'is_private' => $status))->sort(array('followers' => -1));
+			$data = $collection->find(array('time' => new MongoDate(strtotime($currentDate)) , 'is_private' => $status))->sort(array('followers' => -1));
 		}else {
-			$data = $collection->find(array('time' => $currentDate))->sort(array('followers' => -1));
+			$data = $collection->find(array('time' => new MongoDate(strtotime($currentDate)) ))->sort(array('followers' => -1));
 		}
 		
 		$this->set(compact('data'));

@@ -361,14 +361,14 @@ class RegisterController extends AppController {
 		$time = date('Y-m', strtotime($currentTime));
 		$collectionCaculate = $dbAccount->selectCollection($time);//2016-10
 		
-		$dateCurrent = $collectionCaculate->find(array('username' => $username, 'time' => $currentTime));
+		$dateCurrent = $collectionCaculate->find(array('username' => $username, 'time' => new MongoDate(strtotime($currentTime)) ));
 		if($dateCurrent->count() > 0){
 			$collectionCaculate->remove(array(
 					'username' => $username,
 					'time' => $currentTime
 			));
 		}
-		$date['time'] = $currentTime;
+		$date['time'] = new MongoDate(strtotime($currentTime)) ;
 		$result = array_merge($totalAccountInfo, $mediaTop, $mediaAnalytic, $date);
 		$collectionCaculate->insert($result);
 		
