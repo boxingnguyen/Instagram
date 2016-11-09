@@ -126,13 +126,4 @@ class FollowRankingShell extends AppShell {
 
 		$this->__collection->insert(array($accountId => $arr));
 	}
-	private function __saveJson($accountId, $list_follow, $name){
-		$date = date("dmY");
-		$filename = fopen(APP."Vendor/Followers/".$date.".".$name.".follow.json", "w+");
-		foreach ($list_follow as $value) {
-			fwrite($filename, json_encode($value)."\n");
-		}
-		
-		fclose($filename);
-	}
 }
