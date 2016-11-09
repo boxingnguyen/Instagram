@@ -16,24 +16,29 @@ class GetAccountInfoLoginShell extends AppShell {
 		$dbUser = $colUser->find(array(), array('username' => true));
 		
 		$all_account = array();
-		foreach ($dbUser as $accUser) {
-			if ($accUser['username'] == null) {
-				$this->db->account_login->remove(array('username' => null));
-				continue;
+		if($dbUser->count() > 0) {
+			foreach ($dbUser as $accUser) {
+				if ($accUser['username'] == null) {
+					$this->db->account_login->remove(array('username' => null));
+					continue;
+				}
+				$all_account[] = $accUser['username'];
 			}
-			$all_account[] = $accUser['username'];
 		}
 		
 		$acc_login = $this->db->account_login->find(array(), array('username' => true));
 		$collections = $this->db->account_info_login;
 		$collections->drop();
-		foreach ($acc_login as $accLogin) {
-			if ($accLogin['username'] == null) {
-				$this->db->account_login->remove(array('username' => null));
-				continue;
+		if($acc_login->count() > 0) {
+			foreach ($acc_login as $accLogin) {
+				if ($accLogin['username'] == null) {
+					$this->db->account_login->remove(array('username' => null));
+					continue;
+				}
+				array_push($all_account,$accLogin['username'] );
 			}
-			array_push($all_account,$accLogin['username'] );
 		}
+		
 		$data = $this->__getAccountInfo($all_account);
 		$collections->batchInsert($data);		
 		$time_end = microtime(true);
@@ -46,10 +51,15 @@ class GetAccountInfoLoginShell extends AppShell {
  * @return object account's data
  */
 	private function __getAccountInfo($username) {
-		foreach ($username as $val) {
-			$data[] = $this->cURLInstagram('https://www.instagram.com/' . $val . '/?__a=1')->user;
-			echo PHP_EOL."Account ".$val.PHP_EOL;
+		if(!empty($username)) {
+			return false;
+		} else {
+			foreach ($username as $val) {
+				$data[] = $this->cURLInstagram('https://www.instagram.com/' . $val . '/?__a=1')->user;
+				echo PHP_EOL."Account ".$val.PHP_EOL;
+			}
+			return $data;
 		}
-		return $data;
+		
 	}
 }
