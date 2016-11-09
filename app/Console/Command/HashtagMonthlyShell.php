@@ -114,7 +114,7 @@ class HashtagMonthlyShell extends AppShell {
 	
 		for ($i = 0; $i < $part ; $i++) {
 			foreach ($my[$i] as $value) {
-				$data[] = json_decode($value);
+				$data[] =  json_decode($value);
 			}
 			$collection->batchInsert($data, array('timeout' => -1));
 			unset($data);
