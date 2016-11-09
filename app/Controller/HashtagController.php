@@ -93,7 +93,7 @@ class HashtagController extends AppController {
 			$data = array(
 					'total_media' => $media->tag->media->count,
 					'tag' => $tag,
-					'date' => $date
+					'date' => new MongoDate(strtotime($date))
 			);
 			$insert = $media_daily->insert($data);
 // 			$insert = true;
