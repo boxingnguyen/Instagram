@@ -38,9 +38,10 @@ class GetAccountInfoLoginShell extends AppShell {
 				array_push($all_account,$accLogin['username'] );
 			}
 		}
-		
 		$data = $this->__getAccountInfo($all_account);
-		$collections->batchInsert($data);		
+		if(!empty($data)) {
+			$collections->batchInsert($data);
+		}	
 		$time_end = microtime(true);
 		echo "Time to get all account: " . ($time_end - $time_start) . " seconds" . PHP_EOL;
 	}
@@ -52,13 +53,13 @@ class GetAccountInfoLoginShell extends AppShell {
  */
 	private function __getAccountInfo($username) {
 		if(!empty($username)) {
-			return false;
-		} else {
 			foreach ($username as $val) {
 				$data[] = $this->cURLInstagram('https://www.instagram.com/' . $val . '/?__a=1')->user;
 				echo PHP_EOL."Account ".$val.PHP_EOL;
 			}
 			return $data;
+		} else {
+			return false;			
 		}
 		
 	}
