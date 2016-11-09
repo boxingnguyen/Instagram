@@ -42,7 +42,7 @@ class FollowRankingShell extends AppShell {
 	private function __userFollow($valAccount) {
 		$m = new MongoClient;
 		$db = $m->instagram_account_info;
-		$collection = $db->account_info;
+		$collection = $db->account_info_login;
 		if ($valAccount) {
 			$dataInfo = $collection->find(array('username'=>$valAccount['username']));
 			foreach ($dataInfo as $v) {
@@ -80,6 +80,7 @@ class FollowRankingShell extends AppShell {
 					}
 		
 				} else {
+					echo PHP_EOL;
 					print_r($infoFollowsBy);
 					return false;
 				}
@@ -97,6 +98,7 @@ class FollowRankingShell extends AppShell {
 					$this->loop+=1;
 					echo $this->loop;
 					if($this->loop > 3){
+						unset($this->loop);
 						return false;
 					}
 					$this->__userFollow($object);

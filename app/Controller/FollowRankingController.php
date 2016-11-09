@@ -1,22 +1,7 @@
  <?php
 App::uses('Controller', 'Controller');
 class FollowRankingController extends AppController {
-	public function index() {
-// 		$m = new MongoClient;
-// 		$db = $m->instagram;
-// 		$collection = $db->follow;
-// 		$totalPage = $collection->aggregate(array(
-// 				array('$project' => array('count' => array('$size' =>  array('$ifNull' => array('$2124049456' , array())))))
-// 		));
-// 		echo "<pre>";
-// 		print_r($totalPage['result']);
-// 		foreach($totalPage['result'] as $a) {
-// 			if($a['count'] > 0) {
-// 				echo $a['count'];
-// 			}
-			
-// 		}
-		
+	public function index() {		
 	}
 	public function ajax() {
 		$this->layout=false;
