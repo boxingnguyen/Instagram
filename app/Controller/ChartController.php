@@ -20,7 +20,7 @@ class ChartController extends AppController {
 		if(isset($data) && ($data->count() > 0)) {
 			foreach ($data as $val) {
 				$follow = $val['followers'];
-				$timedb = $val['time'];
+				$timedb = date('Y-m-d',$val['time']->sec);
 				$arr[$timedb] = $follow;
 			}
 			$this->set('data', $arr);
@@ -47,7 +47,7 @@ class ChartController extends AppController {
 			$d=cal_days_in_month(CAL_GREGORIAN,$newDate->format('m'),$newDate->format('Y'));
 			$time = $month.'-'.$d;//2016-09-30
 			$lastCollection = $db->selectCollection($month);
-			$lastdata = $lastCollection->find(array('id' => $id,'time' => $time));
+			$lastdata = $lastCollection->find(array('id' => $id,'time' => new MongoDate(strtotime($time)) ));
 			if(isset($lastdata) && $lastdata->count() > 0) {
 				foreach ($lastdata as $val) {
 					$like = $val['likesAnalytic'];
@@ -63,15 +63,16 @@ class ChartController extends AppController {
 			$dt[] = $item;
 		}
 		if(isset($dt) && !empty($dt)) {
+			$secTime = date('Y-m-d',$dt[0]['time']->sec);
 			if($like > 0 || $comment > 0) {
-				$arr[$dt[0]['time']] = array('comment' => ($dt[0]['commentsAnalytic'] - $comment), 'like' => ($dt[0]['likesAnalytic'] - $like) );
+				$arr[$secTime] = array('comment' => ($dt[0]['commentsAnalytic'] - $comment), 'like' => ($dt[0]['likesAnalytic'] - $like) );
 			} else {
-				$arr[$dt[0]['time']] = 0;
+				$arr[$secTime] = 0;
 			}
 			for ($i = 0; $i < count($dt) - 1; $i++) {
 				for ($j = $i + 1; $j < count($dt); $j++) {
-					if(strtotime($dt[$i]['time']) !=  strtotime($dt[$j]['time'])) {
-						$arr[$dt[$j]['time']] = array('comment' => ($dt[$j]['commentsAnalytic'] - $dt[$i]['commentsAnalytic']), 'like' => ($dt[$j]['likesAnalytic'] - $dt[$i]['likesAnalytic']));
+					if($dt[$i]['time']->sec !=  $dt[$j]['time']->sec) {
+						$arr[date('Y-m-d', $dt[$j]['time']->sec)] = array('comment' => ($dt[$j]['commentsAnalytic'] - $dt[$i]['commentsAnalytic']), 'like' => ($dt[$j]['likesAnalytic'] - $dt[$i]['likesAnalytic']));
 					}
 					break;
 				}
