@@ -47,7 +47,7 @@ class ChartController extends AppController {
 			$d=cal_days_in_month(CAL_GREGORIAN,$newDate->format('m'),$newDate->format('Y'));
 			$time = $month.'-'.$d;//2016-09-30
 			$lastCollection = $db->selectCollection($month);
-			$lastdata = $lastCollection->find(array('id' => $id,'time' => $time));
+			$lastdata = $lastCollection->find(array('id' => $id,'time' => new MongoDate(strtotime($time)) ));
 			if(isset($lastdata) && $lastdata->count() > 0) {
 				foreach ($lastdata as $val) {
 					$like = $val['likesAnalytic'];
