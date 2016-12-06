@@ -47,23 +47,20 @@ class CalculateReactionShell extends AppShell {
 		} else {
 			$currentTime = (new DateTime())->modify('-1 day')->format('Y-m-d');
 		}
-	
+		
 		$date = (new DateTime())->format('Y-m-d 00:00:00');
-		$date = (string)strtotime($date);
-			
 		
 		foreach ($data['result'] as $key => $value) {
-			$result[$key]['time'] = $currentTime;
-			//Total: media, like, comment display top page
-			$reactionTop = $this->__calculateReaction($value['_id']);//display top
-			//Total: media, like, comment display analytic page
-			$reactionAnalytic = $this->__calculateReaction($value['_id'], $date);//display analytic
+			$result[$key]['time'] = new MongoDate(strtotime($currentTime));	
 			$result[$key]['id'] = $value['_id'];
 			$result[$key]['is_private'] = $value['is_private'];
+			//Total: media, like, comment display top page
+			$reactionTop = $this->__calculateReaction($value['_id']);//display top
 			$result[$key]['likesTop'] = $reactionTop['likes'];
 			$result[$key]['commentsTop'] = $reactionTop['comments'];
 			$result[$key]['media_get'] = $reactionTop['media_get'];
-			
+			//Total: media, like, comment display analytic page
+			$reactionAnalytic = $this->__calculateReaction($value['_id'], $date);//display analytic
 			$result[$key]['likesAnalytic'] = $reactionAnalytic['likes'];
 			$result[$key]['commentsAnalytic'] = $reactionAnalytic['comments'];
 			
@@ -81,12 +78,11 @@ class CalculateReactionShell extends AppShell {
 		
 		$time = date('Y-m', strtotime($currentTime));
 		$collection = $db->selectCollection($time);
-		
 		if(isset($result) && count($result) > 0) {
-			$dateCurrent = $collection->find(array('time' => $currentTime));
+			$dateCurrent = $collection->find(array('time' => new MongoDate(strtotime($currentTime))));
 			if($dateCurrent->count() > 0){
 				$collection->remove(array(
-						'time' => $currentTime
+						'time' => new MongoDate(strtotime($currentTime))
 				));
 				$collection->batchInsert($result);				
 			} else {
@@ -95,7 +91,8 @@ class CalculateReactionShell extends AppShell {
 		}		
 	}
 	private function __calculateReaction($account_id, $date = null) {
-		if($date == null) {
+		$timeCheck = strtotime($date);
+		if($timeCheck == null) {
 			// data in top page
 			$condition = array(
 					array('$match' => array('user.id' => $account_id)),
@@ -110,8 +107,9 @@ class CalculateReactionShell extends AppShell {
 			);
 		} else {
 			// data in analysis pages
+			$time =  (new MongoDate($timeCheck))->sec;
 			$condition = array(
-					array('$match' => array('user.id' => $account_id, 'created_time' => array('$lt' => $date))),
+					array('$match' => array('user.id' => $account_id, 'created_time' => array('$lt' => (string)$time ))),
 					array(
 							'$group' => array(
 									'_id' => '$user.id',
