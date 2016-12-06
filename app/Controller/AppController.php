@@ -20,9 +20,12 @@
  */
 
 App::uses('Controller', 'Controller');
+App::import('Vendor','Package',array('file'=>'vendor/autoload.php'));
 App::import('Vendor', 'instagram', array('file' => 'Instagram' . DS . 'src' . DS . 'Instagram.php'));
+
 use MetzWeb\Instagram\Instagram;
-/**
+
+	/**
  * Application Controller
  *
  * Add your application-wide methods in the class below, your controllers
@@ -33,6 +36,10 @@ use MetzWeb\Instagram\Instagram;
  */
 class AppController extends Controller {
 	public $m;
+	private $__username = 'tmh_techlab';
+	private $__password = '!!tmhtechlab20150123';
+	protected $_story;
+	const DEBUG = false;
 	
 	protected $_instagram;
 	private $__apiKey = '6d34b43b41bd42a09f0762cd23363358';
@@ -40,6 +47,7 @@ class AppController extends Controller {
 	
 	public function beforeFilter() {
 		$this->m = new MongoClient();
+		$this->_story = new \InstagramAPI\Instagram($this->__username,$this->__password,self::DEBUG);
 		
 		$apiCallback = "http://$_SERVER[HTTP_HOST]/Register/detail";
 		//$apiCallback = "http://192.168.33.110/Test/detail";

@@ -32,7 +32,7 @@ class AppShell extends Shell {
 	private $__password = '!!tmh!!';
 	protected $_instagram;
 	const DEBUG = false;
-	
+
 	protected $_insta;
 	private $__apiKey = '6d34b43b41bd42a09f0762cd23363358';
 	private $__apiSecret = '532e8a5dc85346358104046673bf5376';
