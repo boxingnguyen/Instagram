@@ -127,5 +127,5 @@ class FollowRankingShell extends AppShell {
 		}
 
 		$this->__collection->insert(array($accountId => $arr));
-	}
+	} 
 }

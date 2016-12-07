@@ -42,14 +42,18 @@ $().ready(function(){
 											post+
 											'<p>'+textmess+'</p>'+
 											'<div class="div-like-insta">'+
-												'<img class="icon-insta" src="/img/like_insta.png" alt="Picture">'+
+												'<img  class="icon-insta" src="/img/like_insta.png" alt="Picture">'+
 												'<span class="number-insta">'+ data[i].likes.count+'</span>'+
 											'</div>'+
 										'<div>'+
-											'<img class="icon-insta" src="/img/cmt_insta.png" alt="Picture">'+
+											'<img class="icon-insta comment" src="/img/cmt_insta.png" alt="Picture" data-id="'+ data[i].id +'">'+
 											'<span class="number-insta">' +data[i].comments.count+ '</span>'+
 										'</div>'+
 										'<span class="cd-date">'+location+'</span>'+
+										'<div id="'+ data[i].id +'" class="addComment">'+
+											'<input placeholder="Add Comment" class="form-control">'+
+											'<button class="btn btn-info sendComment" data-id="'+ data[i].id +'">'+'Send'+'</button>'+
+										'</div>'+		
 									'</div>'+
 									'</div>';
 						$('#cd-timeline').append(html);
@@ -63,8 +67,33 @@ $().ready(function(){
 					$('.loadMore').remove();
 					$('#cd-timeline').remove();
 				}
-				
-				
+
+				//show form comment
+				$('.addComment').hide();
+				$('.comment').click(function(){
+					var id = $(this).attr('data-id');
+					$('#'+id).show();
+				});
+
+				// ajax send comment
+				$('.sendComment').click(function(){
+					var id = $(this).attr('data-id');
+					$.ajax({
+							url: '/media/postComment',
+							type: 'post',
+							data: {id:id},
+							success: function (data) {
+							// 	if(data == 'ok')
+							// 	alert('ajax ok');
+							// else return false;
+							alert('<pre>'+data+'</pre>');
+							}
+						});
+
+					});
+
+
+
 				$.ajax({
 					method: "POST",
 					url: '/media/total',
@@ -89,6 +118,7 @@ $().ready(function(){
 			}
 		})
 		
+		
 	});
 	$('.loadMore').click();
 	
@@ -107,4 +137,6 @@ $().ready(function(){
 		}, 700);
 		return false;
 	});
+
+	
 });

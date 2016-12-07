@@ -128,7 +128,6 @@ class RegisterController extends AppController {
 				));
 			}
 			
-			
 			// get account info
 			$acc_info = $this->__getAccountInfo($username);
 			
