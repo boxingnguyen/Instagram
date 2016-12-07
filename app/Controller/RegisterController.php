@@ -364,7 +364,7 @@ class RegisterController extends AppController {
 		if($dateCurrent->count() > 0){
 			$collectionCaculate->remove(array(
 					'username' => $username,
-					'time' => $currentTime
+					'time' => new MongoDate(strtotime($currentTime))
 			));
 		}
 		$date['time'] = new MongoDate(strtotime($currentTime)) ;

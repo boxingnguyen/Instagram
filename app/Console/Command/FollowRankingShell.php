@@ -43,6 +43,7 @@ class FollowRankingShell extends AppShell {
 		$m = new MongoClient;
 		$db = $m->instagram_account_info;
 		$collection = $db->account_info_login;
+		$totalFollow = 0;
 		if ($valAccount) {
 			$dataInfo = $collection->find(array('username'=>$valAccount['username']));
 			foreach ($dataInfo as $v) {
