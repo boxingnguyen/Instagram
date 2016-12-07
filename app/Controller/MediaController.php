@@ -63,10 +63,10 @@ class MediaController extends AppController {
 
 		$idMedia = $_POST['id'];
 		$idAccount = $this->Session->read('id');
-
+		$text = $_POST['text'];
 		$m = new MongoClient;
 		$db = $m->instagram_account_info;
-		$collections = $db->account_login;
+		$collections = $db->account_username;
 
 		$access_token = $collections->find(array("id"=>$idAccount));
 
@@ -76,7 +76,7 @@ class MediaController extends AppController {
 
 		$this->_instagram->setToken($access_token);
 
-		$selectt = $this->_instagram->likeMedia($idMedia);
+		$selectt = $this->_instagram->addMediaComment($idMedia,$text);
 		
 		
 		if($selectt->meta->code == 400){

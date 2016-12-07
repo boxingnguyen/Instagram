@@ -78,10 +78,11 @@ $().ready(function(){
 				// ajax send comment
 				$('.sendComment').click(function(){
 					var id = $(this).attr('data-id');
+					var text = "aaa"
 					$.ajax({
 							url: '/media/postComment',
 							type: 'post',
-							data: {id:id},
+							data: {id:id,text:text},
 							success: function (data) {
 							// 	if(data == 'ok')
 							// 	alert('ajax ok');
