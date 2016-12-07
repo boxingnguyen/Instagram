@@ -35,8 +35,11 @@ class AppController extends Controller {
 	public $m;
 	
 	protected $_instagram;
-	private $__apiKey = '6d34b43b41bd42a09f0762cd23363358';
-	private $__apiSecret = '532e8a5dc85346358104046673bf5376';
+	// private $__apiKey = '6d34b43b41bd42a09f0762cd23363358';
+	// private $__apiSecret = '532e8a5dc85346358104046673bf5376';
+
+	private $__apiKey = 'f972dee6a6b64abb9af5ec877a73c62c';
+	private $__apiSecret = '2dc4d6f730394fbbbe9120ee21d6190c';
 	
 	public function beforeFilter() {
 		$this->m = new MongoClient();
