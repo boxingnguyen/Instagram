@@ -37,6 +37,7 @@ class FollowRankingShell extends AppShell {
 			echo PHP_EOL.'Complete account_login'.PHP_EOL;
 		}
 	}
+
 	
 	private function __userFollow($valAccount) {
 		$m = new MongoClient;
@@ -44,7 +45,6 @@ class FollowRankingShell extends AppShell {
 		$collection = $db->account_info_login;
 		$totalFollow = 0;
 		if ($valAccount) {
-			// total follow_by in account_info
 			$dataInfo = $collection->find(array('username'=>$valAccount['username']));
 			foreach ($dataInfo as $v) {
 				$totalFollow = $v['followed_by']['count'];
@@ -53,16 +53,16 @@ class FollowRankingShell extends AppShell {
 			$cursor = null;
 			$this->_insta->setToken($valAccount['access_token']);
 			do {
+
 				if($cursor == null) {
 					$infoFollowsBy = $this->_insta->getUserFollower();
 				} else {
 					$infoFollowsBy = $this->_insta->getUserFollower($cursor);
 				}
 				if(isset($infoFollowsBy) && !empty($infoFollowsBy->data)) {
-					//get total follow each account
 					$dataFollow = $infoFollowsBy->data;
 					foreach ($dataFollow as $valFollow) {
-						$follow = $this->_insta->getUserFollow($valFollow->id);//total follow account
+						$follow = $this->_insta->getUserFollow($valFollow->id);
 						if(isset($follow) && !empty($follow->meta) &&  $follow->meta->code == 400) {
 							$username = $valFollow->username;
 							$url = 'https://www.instagram.com/'.$username.'/?__a=1';
@@ -126,6 +126,7 @@ class FollowRankingShell extends AppShell {
 		if ($userId->count() > 0) {
 			$this->__collection->remove(array($accountId => array('$exists' => 1)));
 		}
+
 		$this->__collection->insert(array($accountId => $arr));
-	}
+	} 
 }
