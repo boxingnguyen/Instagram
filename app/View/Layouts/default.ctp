@@ -32,7 +32,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 		echo $this->Html->css('css/bootstrap-theme.min');
 		echo $this->Html->css('style');
 		echo $this->Html->css('css/raking');
-		
+
 		echo $this->Html->script('jquery.min');
 		echo $this->Html->script('loader');
 		echo $this->Html->script('src/register');
@@ -49,7 +49,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 <body>
 	<div class="container">
 		<header class="clearfix">
-			<?php 
+			<?php
 				if (isset($acc_infor)) {
 					echo '<div class="profile-basic">';
 					echo '<img src="' . $acc_infor['profile_pic_url'] . '" ><br>';
@@ -86,7 +86,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 			</div>
 			<?php endif;?>
         </footer>
-        
+
 	</div>
 	<?php echo $this->element('sql_dump'); ?>
 	<?php echo $this->Html->script('main');?>

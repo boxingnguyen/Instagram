@@ -20,9 +20,12 @@
  */
 
 App::uses('Controller', 'Controller');
+App::import('Vendor','Package',array('file'=>'vendor/autoload.php'));
 App::import('Vendor', 'instagram', array('file' => 'Instagram' . DS . 'src' . DS . 'Instagram.php'));
+
 use MetzWeb\Instagram\Instagram;
-/**
+
+	/**
  * Application Controller
  *
  * Add your application-wide methods in the class below, your controllers
@@ -33,17 +36,51 @@ use MetzWeb\Instagram\Instagram;
  */
 class AppController extends Controller {
 	public $m;
-	
+	private $__username = 'tmh_techlab';
+	private $__password = '!!tmhtechlab20150123';
+	protected $_story;
+	protected $_token;
+	const DEBUG = false;
+
 	protected $_instagram;
+<<<<<<< HEAD
+	private $__apiKey = '9a0eb7b3e06949b98980256fccf93599';
+	private $__apiSecret = 'eeaeda3bc5774eb196e53d064e41c7b5'; // QuyenAnhTMH
+
+=======
 	// private $__apiKey = '6d34b43b41bd42a09f0762cd23363358';
 	// private $__apiSecret = '532e8a5dc85346358104046673bf5376';
 
 	private $__apiKey = 'f972dee6a6b64abb9af5ec877a73c62c';
 	private $__apiSecret = '2dc4d6f730394fbbbe9120ee21d6190c';
 	
+>>>>>>> refs/remotes/origin/master
 	public function beforeFilter() {
-		$this->m = new MongoClient();
-		
+		//get accessToken
+		$m = new MongoClient;
+		$db = $m->instagram_account_info;
+		$colLogin = $db->account_login;
+		$colUsername = $db->account_username;
+		$usename = $this->Session->read('username');
+		$id = $this->Session->read('id');
+		$listToken = $colUsername->find(array('access_token' => array('$exists' => true)));
+		if($listToken->count()>0){
+			$accountLogin = $colUsername->find(array('id' => $id));
+			foreach ($accountLogin as $value) {
+				$this->_token = $value['access_token'];
+			}
+		}
+		else{
+			$accountLogin = $colLogin->find(array('id' => $id));
+			foreach ($accountLogin as $value) {
+				$this->_token = $value['access_token'];
+			}
+		}
+
+
+		// get story
+		$this->_story = new \InstagramAPI\Instagram($this->__username,$this->__password,self::DEBUG);
+
 		$apiCallback = "http://$_SERVER[HTTP_HOST]/Register/detail";
 		//$apiCallback = "http://192.168.33.110/Test/detail";
 
@@ -52,7 +89,7 @@ class AppController extends Controller {
 				'apiSecret'   => $this->__apiSecret,
 				'apiCallback' => $apiCallback
 		));
-		
+
 		//get information of param id from url
 		if (isset($this->request->query['id'])){
 			$id = $this->request->query['id'];
@@ -76,7 +113,7 @@ class AppController extends Controller {
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($ch, CURLOPT_HEADER, true);
-	
+
 		$jsonData = curl_exec($ch);
 		// if get data failed, get it until successfully
 		while (!$jsonData) {
@@ -85,31 +122,31 @@ class AppController extends Controller {
 		// split header from JSON data
 		// and assign each to a variable
 		list($headerContent, $jsonData) = explode("\r\n\r\n", $jsonData, 2);
-	
+
 		// convert header content into an array
 		$headers = $this->__processHeaders($headerContent);
-	
+
 		if (!$jsonData) {
 			throw new Exception('Error: _makeCall() - cURL error: ' . curl_error($ch));
 		}
-	
+
 		curl_close($ch);
-	
+
 		return json_decode($jsonData);
 	}
 	private function __processHeaders($headerContent) {
 		$headers = array();
-	
+
 		foreach (explode("\r\n", $headerContent) as $i => $line) {
 			if ($i === 0) {
 				$headers['http_code'] = $line;
 				continue;
 			}
-	
+
 			list($key, $value) = explode(':', $line);
 			$headers[$key] = $value;
 		}
-	
+
 		return $headers;
 	}
 }
