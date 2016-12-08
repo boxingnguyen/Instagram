@@ -36,9 +36,9 @@ use MetzWeb\Instagram\Instagram;
  */
 class AppController extends Controller {
 	public $m;
-	private $__username = 'tmh_techlab';
-	private $__password = '!!tmhtechlab20150123';
-	protected $_story;
+// 	private $__username = 'tmh_techlab';
+// 	private $__password = '!!tmhtechlab20150123';
+// 	protected $_story;
 	protected $_token;
 	const DEBUG = false;
 
@@ -77,7 +77,7 @@ class AppController extends Controller {
 
 
 		// get story
-		$this->_story = new \InstagramAPI\Instagram($this->__username,$this->__password,self::DEBUG);
+// 		$this->_story = new \InstagramAPI\Instagram($this->__username,$this->__password,self::DEBUG);
 
 		$apiCallback = "http://$_SERVER[HTTP_HOST]/Register/detail";
 		//$apiCallback = "http://192.168.33.110/Test/detail";
