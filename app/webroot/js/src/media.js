@@ -52,14 +52,6 @@ $().ready(function(){
 										'<span class="cd-date">'+location+'</span>'+
 										'<div class="listComment">'+
 											'<ul class="'+data[i].id+'">'+
-												'<li>'+
-													'<a href="' +'https://www.instagram.com/hang__dt/' +'">'+ 'hang__dt' + '</a>'+
-													'<label>'+ 'ngay mai troi lai sang ngay mai troi lai sang ngay mai troi lai sang ngay mai troi' + '</label>'+
-												'</li>'+
-												'<li>'+
-													'<a>'+ 'hang__dt' + '</a>'+
-													'<label>'+ 'ngay mai troi lai sang ngay mai troi lai sang ngay mai troi lai sang ngay mai troi' + '</label>'+
-												'</li>'+
 											'</ul>'+
 										'</div>'+
 										'<div id="'+ data[i].id +'" class="addComment">'+
