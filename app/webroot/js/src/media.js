@@ -120,6 +120,46 @@ $().ready(function(){
 					$('.loadMore').remove();
 					$('#cd-timeline').remove();
 				}
+
+
+				//show form comment
+				$('.addComment').hide();
+				$('.comment').click(function(){
+					var id = $(this).attr('data-id');
+					$('#'+id).show();
+				});
+
+				// ajax send comment
+				$('.form-control').keyup(function(e){
+					if(e.keyCode ==13 && $(this).val() != ""){
+						var id = $(this).attr('data-id');
+						var text = $(this).val().trim();
+					$.ajax({
+							url: '/media/postComment',
+							type: 'post',
+							data: {id:id,text:text},
+							success: function (data) {
+								if(data == 400){
+								 alert('error');
+								 e.preventDefault();
+								}
+							 	else{
+							 		$('.form-control').val('');
+							 		var html = '<li>'+
+													'<a href="' +'https://www.instagram.com/'+data+'/' +'">'+ data + '</a>'+
+													'<label>'+ text + '</label>'+
+												'</li>';
+									$('.'+id).append(html);
+							 	}
+			
+							}
+						});
+
+					}
+					else e.preventDefault();
+				});
+
+
 				$.ajax({
 					method: "POST",
 					url: '/media/total',

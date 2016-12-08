@@ -57,6 +57,46 @@ class MediaController extends AppController {
 		}
 		return json_encode($data);
 	}
+
+	public function postComment(){
+		$this->layout = false;
+		$this->autoRender = false;
+
+		$idMedia = $_POST['id'];
+		$idAccount = $this->Session->read('id');
+		$username = $this->Session->read('username');
+		$text = $_POST['text'];
+		$m = new MongoClient;
+		$db = $m->instagram_account_info;
+		$collections = $db->account_username;
+		$collection = $db->account_login;
+
+		$account_login = $collection->find(array("id"=>$idAccount));
+		if($account_login->count()>0){
+
+				foreach ($account_login as $value) {
+					$access_token = $value['access_token'];
+				}
+		}
+		else {
+			$account_username = $collections->find(array("id"=>$idAccount));
+			foreach ($account_username as $value) {
+					$access_token = $value['access_token'];
+				}
+		}
+
+		$this->_instagram->setToken($access_token);
+
+		$selectt = $this->_instagram->addMediaComment($idMedia,$text);
+		
+		
+		if($selectt->meta->code == 400){
+			$error = 400;
+			return $error;
+		}
+		else return $username;
+		
+	}
 	public function total(){
 		$this->layout = false;
 		$this->autoRender = false;

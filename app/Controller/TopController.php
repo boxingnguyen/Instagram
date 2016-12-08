@@ -1,5 +1,11 @@
 <?php
+App::import('Vendor','Package',array('file'=>'vendor/autoload.php'));
 class TopController extends AppController {
+	public $instagram;
+	const DEBUG = false;
+	public function beforeFilter(){
+		parent::beforeFilter();
+	}
 	public function index () {
 		if(!$this->Session->check('username')){
 			$this->redirect( array('controller' => 'register','action' => 'login' ));
@@ -19,5 +25,14 @@ class TopController extends AppController {
 		}
 		
 		$this->set(compact('data'));
+	}
+	public function story(){
+		$this->layout=false;
+		$this->autoRender=false;
+		$instagram = new \InstagramAPI\Instagram("tmh_techlab","!!tmhtechlab20150123",self::DEBUG);
+		$this->_Instagram->login();
+		$data = $this->_Instagram->getReelsTrayFeed();
+		//$data = $this->_Instagram->aaa();
+		print_r($data);die;
 	}
 }

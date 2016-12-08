@@ -28,8 +28,7 @@ use MetzWeb\Instagram\Instagram;
  * @package       app.Console.Command
  */
 class AppShell extends Shell {
-	private $__username = 'tmhtest';
-	private $__password = '!!tmh!!';
+	
 	protected $_instagram;
 	const DEBUG = false;
 
