@@ -1,6 +1,8 @@
 $().ready(function(){
 	var page = 0;
 	var limit = 20;
+  var like_img = "/img/like_insta.png";
+  var unlike_img = "/img/unlike_insta.png";
 	$('.loadMore').click(function(){
 		page++;
 		$('.loadMore').html('Loading...');
@@ -12,38 +14,42 @@ $().ready(function(){
 			success: function(data){
 				console.log(data);
 				if(data.length>0){
+          var media_id =[];
 					for(var i=0;i<data.length;i++){
-						
-					    var myDate = new Date(1000*data[i].created_time);
-//					    console.log(myDate.toLocaleString());
-					    
+
+            media_id.push({id:data[i].id});
+
+				    var myDate = new Date(1000*data[i].created_time);
+				    // console.log(myDate.toLocaleString());
+
 						var textmess = '';
 						if(typeof(data[i].caption) != "undefined" && data[i].caption !== null){
 						 textmess = data[i].caption.text;
 						}
-						
+
 						var typeOfPost = '<div class="cd-timeline-img cd-picture"><img src="/img/cd-icon-picture.svg" alt="Picture"></div>';
 						var post = '<a href="'+data[i].link+'" target="_blank"><img class="pre-media" src="'+ data[i].images.low_resolution.url +'" ></a>';
 						if(data[i].type == 'video'){
 							typeOfPost = '<div class="cd-timeline-img cd-movie"><img src="/img/cd-icon-movie.svg" alt="Movie"></div>';
 							post = '<video class="pre-media" controls width="320" height="320"><source src="'+data[i].alt_media_url+'" type="video/mp4"></video>';
 						}
-						
+
 						var location = '';
 						if(data[i].location !== null){
 							typeOfPost = '<div class="cd-timeline-img cd-location"><img src="/img/cd-icon-location.svg" alt="Location"></div>';
 							var location = data[i].location.name;
 						}
-						
+            var numberOfLike = data[i].likes.count;
+            var id = data[i].id;
 						var html = '<div class="cd-timeline-block">'+
-										typeOfPost+ 
+										typeOfPost+
 										'<div class="cd-timeline-content">'+
 											'<a href="'+ data[i].link +'" target="_blank"><h2>'+ myDate.toUTCString().substr(5, 11)+'</h2></a>'+
 											post+
 											'<p>'+textmess+'</p>'+
 											'<div class="div-like-insta">'+
-												'<img class="icon-insta" src="/img/like_insta.png" alt="Picture">'+
-												'<span class="number-insta">'+ data[i].likes.count+'</span>'+
+												'<span id="'+id+'" class = "like"></span>'+
+												'<span class="number-insta'+id+'">'+ numberOfLike+'</span>'+
 											'</div>'+
 										'<div>'+
 											'<img class="icon-insta" src="/img/cmt_insta.png" alt="Picture">'+
@@ -52,9 +58,60 @@ $().ready(function(){
 										'<span class="cd-date">'+location+'</span>'+
 									'</div>'+
 									'</div>';
-						$('#cd-timeline').append(html);
-						$('.loadMore').html('Load More');
+            $('#cd-timeline').append(html);
+            $('.loadMore').html('Load More');
+            $img = $('<img class="icon-insta" alt="Picture">');
+
+            if(data[i].user_has_liked == "true"){
+              $('#'+id).append(
+                $img.attr('src', like_img)
+              ).attr('like', 'true');
+            }
+            else{
+              $('#'+id).append(
+                $img.attr('src', unlike_img)
+              ).attr('like', 'false');
+            }
 					}
+          // like
+          // have to check and get from mongodb
+          $('.like').click(function(){
+            id = this.id;
+            liked = $(this).attr('like');
+            like_count = parseInt($('.number-insta'+id).text());
+            // console.log("media id: "+id + " and like_count: " + like_count);
+            $.ajax({
+
+              method: "POST",
+              url: '/media/like',
+              data: {
+                media_id:id,
+                like_status: liked,
+                num_likes: like_count
+              },
+              success: function(data){
+                // console.log(data);
+              },
+              error: function(jqXHR, textStatus, errorThrown) {
+                console.log(textStatus, errorThrown);
+                alert('Sorry, Ajax has a problem!');
+                $('.loadMore').remove();
+              }
+            });
+            if(liked == 'true'){
+              $(this).attr('like', 'false');
+              dislike = like_count-1;
+              $('.number-insta'+id).text(dislike);
+              $('#'+id+' img').attr('src', unlike_img);
+            }
+            else{
+              $(this).attr('like', 'true');
+              add_like = like_count+1;
+              $('.number-insta'+id).text(add_like);
+              $('#'+id+' img').attr('src', like_img);
+            }
+            // toggle, like = true -> php call likeMedia() else like = false and call deleteLikeMedia()
+          });
 					if(data.length < limit){
 						$('.loadMore').remove();
 					}
@@ -63,8 +120,6 @@ $().ready(function(){
 					$('.loadMore').remove();
 					$('#cd-timeline').remove();
 				}
-				
-				
 				$.ajax({
 					method: "POST",
 					url: '/media/total',
@@ -88,10 +143,9 @@ $().ready(function(){
 				$('.loadMore').remove();
 			}
 		})
-		
 	});
 	$('.loadMore').click();
-	
+
 	var amountScrolled = 300;
 
 	$(window).scroll(function() {

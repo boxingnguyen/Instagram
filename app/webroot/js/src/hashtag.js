@@ -3,7 +3,7 @@ $().ready(function(){
 	var limit = 20;
 	var tag = getUrlParameter('hashtag');
 	var sort = getUrlParameter('sort') === undefined ? '' : getUrlParameter('sort');
-	console.log(sort);
+	// console.log(sort);
 	var count = 0;
 	$('.loadMore-hashtag').click(function(){
 		page++;
@@ -36,7 +36,7 @@ $().ready(function(){
 					$('.loadMore-hashtag').remove();
 					$('.hashtag-detail').remove();
 				}
-				
+
 				$.ajax({
 					method: "POST",
 					url: '/hashtag/total',
@@ -61,7 +61,7 @@ $().ready(function(){
 				$('.loadMore-hashtag').remove();
 			}
 		})
-		
+
 	});
 	$('.loadMore-hashtag').click();
 	function getUrlParameter(sParam) {
