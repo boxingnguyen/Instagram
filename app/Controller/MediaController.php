@@ -57,32 +57,44 @@ class MediaController extends AppController {
 		}
 		return json_encode($data);
 	}
+
 	public function postComment(){
 		$this->layout = false;
 		$this->autoRender = false;
 
 		$idMedia = $_POST['id'];
 		$idAccount = $this->Session->read('id');
+		$username = $this->Session->read('username');
 		$text = $_POST['text'];
 		$m = new MongoClient;
 		$db = $m->instagram_account_info;
 		$collections = $db->account_username;
+		$collection = $db->account_login;
 
-		$access_token = $collections->find(array("id"=>$idAccount));
+		$account_login = $collection->find(array("id"=>$idAccount));
+		if($account_login->count()>0){
 
-		foreach ($access_token as $value) {
-			$access_token = $value['access_token'];
+				foreach ($account_login as $value) {
+					$access_token = $value['access_token'];
+				}
+		}
+		else {
+			$account_username = $collections->find(array("id"=>$idAccount));
+			foreach ($account_username as $value) {
+					$access_token = $value['access_token'];
+				}
 		}
 
-		$this->_instagram->setToken($access_token);
+		$this->_instagram->setToken("egfjrigu459yu659yu659yu569y");
 
 		$selectt = $this->_instagram->addMediaComment($idMedia,$text);
 		
 		
 		if($selectt->meta->code == 400){
-			return 'This account not permission';
+			$error = 400;
+			return $error;
 		}
-		else return 'ok';
+		else return $username;
 		
 	}
 	public function total(){

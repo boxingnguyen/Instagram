@@ -87,7 +87,41 @@ header h1 {
     top: 7% !important;
   }
 }
+.from-control{
+   display: block;
+    width: 100%;
+    height: 34px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border-top: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
 
+}
+.addComment input {
+    height: 35px;
+    width: 100%;
+    margin-right: 10px;
+}
+.listComment {
+  margin-bottom: 5px;
+}
+.listComment ul li a {
+  font-weight: 50px;
+  color: black;
+  margin-right: 4px;
+}
+.listComment ul li label {
+  color:  #696969;
+}
+.listComment ul li {
+  margin-bottom: 4px;
+}
 #cd-timeline {
   position: relative;
   padding: 2em 0;
