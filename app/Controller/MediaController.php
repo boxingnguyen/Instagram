@@ -88,14 +88,14 @@ class MediaController extends AppController {
 		$this->_instagram->setToken($access_token);
 
 		$selectt = $this->_instagram->addMediaComment($idMedia,$text);
-		
-		
+
+
 		if($selectt->meta->code == 400){
 			$error = 400;
 			return $error;
 		}
 		else return $username;
-		
+
 	}
 	public function total(){
 		$this->layout = false;
