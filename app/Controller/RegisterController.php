@@ -127,12 +127,7 @@ class RegisterController extends AppController {
 						'username' => $username
 				));
 			}
-<<<<<<< HEAD
 
-
-=======
-			
->>>>>>> refs/remotes/origin/master
 			// get account info
 			$acc_info = $this->__getAccountInfo($username);
 
