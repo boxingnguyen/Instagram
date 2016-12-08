@@ -78,7 +78,7 @@ $().ready(function(){
             // console.log("media id: "+id + " and like_count: " + like_count);
             $.ajax({
               method: "POST",
-              url: '/media/like',
+              url: '/media/postLike',
               data: {
                 media_id:id,
                 like_status: liked,

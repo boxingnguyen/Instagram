@@ -118,12 +118,12 @@ class MediaController extends AppController {
 		}
 		return $total;
 	}
-	function like(){
+	public function postLike(){
 			$this->layout = false;
 			$this->autoRender = false;
 			$token = $this->_token;
 			$this->_instagram->setAccessToken($token);
-			// print_r($token);
+// 			print_r($token);
 			$like_status = $_POST['like_status'];
 			$id = $_POST['media_id'];
 			$numLikes = $_POST['num_likes'];
