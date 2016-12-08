@@ -14,11 +14,7 @@ $().ready(function(){
 			success: function(data){
 				console.log(data);
 				if(data.length>0){
-          var media_id =[];
 					for(var i=0;i<data.length;i++){
-
-            media_id.push({id:data[i].id});
-
 				    var myDate = new Date(1000*data[i].created_time);
 				    // console.log(myDate.toLocaleString());
 
@@ -39,8 +35,8 @@ $().ready(function(){
 							typeOfPost = '<div class="cd-timeline-img cd-location"><img src="/img/cd-icon-location.svg" alt="Location"></div>';
 							var location = data[i].location.name;
 						}
-            var numberOfLike = data[i].likes.count;
-            var id = data[i].id;
+			            var numberOfLike = data[i].likes.count;
+			            var id = data[i].id;
 						var html = '<div class="cd-timeline-block">'+
 										typeOfPost+
 										'<div class="cd-timeline-content">'+
@@ -81,7 +77,6 @@ $().ready(function(){
             like_count = parseInt($('.number-insta'+id).text());
             // console.log("media id: "+id + " and like_count: " + like_count);
             $.ajax({
-
               method: "POST",
               url: '/media/like',
               data: {
@@ -110,7 +105,6 @@ $().ready(function(){
               $('.number-insta'+id).text(add_like);
               $('#'+id+' img').attr('src', like_img);
             }
-            // toggle, like = true -> php call likeMedia() else like = false and call deleteLikeMedia()
           });
 					if(data.length < limit){
 						$('.loadMore').remove();
