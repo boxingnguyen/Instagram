@@ -85,7 +85,7 @@ class MediaController extends AppController {
 				}
 		}
 
-		$this->_instagram->setToken("egfjrigu459yu659yu659yu569y");
+		$this->_instagram->setToken($access_token);
 
 		$selectt = $this->_instagram->addMediaComment($idMedia,$text);
 		
