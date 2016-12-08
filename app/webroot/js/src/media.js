@@ -50,9 +50,20 @@ $().ready(function(){
 											'<span class="number-insta">' +data[i].comments.count+ '</span>'+
 										'</div>'+
 										'<span class="cd-date">'+location+'</span>'+
+										'<div class="listComment">'+
+											'<ul class="'+data[i].id+'">'+
+												'<li>'+
+													'<a href="' +'https://www.instagram.com/hang__dt/' +'">'+ 'hang__dt' + '</a>'+
+													'<label>'+ 'ngay mai troi lai sang ngay mai troi lai sang ngay mai troi lai sang ngay mai troi' + '</label>'+
+												'</li>'+
+												'<li>'+
+													'<a>'+ 'hang__dt' + '</a>'+
+													'<label>'+ 'ngay mai troi lai sang ngay mai troi lai sang ngay mai troi lai sang ngay mai troi' + '</label>'+
+												'</li>'+
+											'</ul>'+
+										'</div>'+
 										'<div id="'+ data[i].id +'" class="addComment">'+
-											'<input placeholder="Add Comment" class="form-control">'+
-											'<button class="btn btn-info sendComment" data-id="'+ data[i].id +'">'+'Send'+'</button>'+
+											'<input placeholder="Add Comment" class="form-control" data-id="'+ data[i].id +'">'+
 										'</div>'+		
 									'</div>'+
 									'</div>';
@@ -76,23 +87,34 @@ $().ready(function(){
 				});
 
 				// ajax send comment
-				$('.sendComment').click(function(){
-					var id = $(this).attr('data-id');
-					var text = "aaa"
+				$('.form-control').keyup(function(e){
+					if(e.keyCode ==13 && $(this).val() != ""){
+						var id = $(this).attr('data-id');
+						var text = $(this).val().trim();
 					$.ajax({
 							url: '/media/postComment',
 							type: 'post',
 							data: {id:id,text:text},
 							success: function (data) {
-							// 	if(data == 'ok')
-							// 	alert('ajax ok');
-							// else return false;
-							alert('<pre>'+data+'</pre>');
+								if(data == 400){
+								 alert('error');
+								 e.preventDefault();
+								}
+							 	else{
+							 		$('.form-control').val('');
+							 		var html = '<li>'+
+													'<a href="' +'https://www.instagram.com/'+data+'/' +'">'+ data + '</a>'+
+													'<label>'+ text + '</label>'+
+												'</li>';
+									$('.'+id).append(html);
+							 	}
+			
 							}
 						});
 
-					});
-
+					}
+					else e.preventDefault();
+				});
 
 
 				$.ajax({
