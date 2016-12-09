@@ -88,7 +88,7 @@ class MediaController extends AppController {
 		$idAccount = $this->Session->read('id');
 		$username = $this->Session->read('username');
 		$text = $_POST['text'];
-		$access_token = $this->_token;
+		$access_token = $this->Session->read('access_token');
 		$this->_instagram->setAccessToken($access_token);
 		$selectt = $this->_instagram->addMediaComment($idMedia,$text);
 		$link = $_POST['link'];
