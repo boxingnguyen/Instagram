@@ -47,7 +47,7 @@ $().ready(function(){
 												'<span id="'+id+'" class = "like"></span>'+
 												'<span class="number-insta'+id+'">'+ numberOfLike+'</span>'+
 											'</div>'+
-										'<div>'+
+										  '<div>'+
 												'<img class="icon-insta comment" src="/img/cmt_insta.png" alt="Picture" data-id="'+ data[i].id +'">'+
 												'<span class="number-insta">' +data[i].comments.count+ '</span>'+
 											'</div>'+
@@ -60,7 +60,7 @@ $().ready(function(){
 											'<div id="'+ data[i].id +'" class="addComment">'+
 												'<input placeholder="Add Comment" class="form-control" data-id="'+ data[i].id +'" data-link ="'+ data[i].link +'" >'+
 											'</div>'+
-                      '</div>'+
+                    '</div>'+
 									'</div>';
             $('#cd-timeline').append(html);
             $('.loadMore').html('Load More');
@@ -139,7 +139,6 @@ $().ready(function(){
 							$('#'+id+'.addComment').show();
 						}
 					});
-          $('#'+id+'.addComment').show();
 				});
 				// ajax send comment
 				$('.form-control').keyup(function(e){
