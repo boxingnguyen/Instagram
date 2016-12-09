@@ -57,7 +57,29 @@ class MediaController extends AppController {
 		}
 		return json_encode($data);
 	}
-
+	public function showComment(){
+		$this->layout = false;
+		$this->autoRender = false;
+		$link = "https://www.instagram.com/p/BLYFddzBU-r/";
+		$result = $this->cURLInstagram($link."?__a=1")->media->comments->nodes;;
+		$data = array();
+		$t=0;
+		foreach ($result as $value) {
+			if(count($result)<6){
+				$data[]=$value;
+			}
+			else{
+				if($t>count($result)-6){
+					$data[]=$value;
+					$t++;
+				}
+				else{
+					$t++;
+				}
+			}
+		}
+		return json_encode($data);
+	}
 	public function postComment(){
 		$this->layout = false;
 		$this->autoRender = false;
