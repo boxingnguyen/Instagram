@@ -52,8 +52,8 @@ $().ready(function(){
 												'<span class="number-insta">' +data[i].comments.count+ '</span>'+
 											'</div>'+
 											'<span class="cd-date">'+location+'</span>'+
-											'<div class="listComment">'+
-												'<div class="bodyComment">'+
+											'<div id="'+ data[i].id +'" class="listComment">'+
+												'<div id="'+ data[i].id +'" class="bodyComment">'+
 									
 												'</div>'+
 											'</div>'+
@@ -126,6 +126,7 @@ $().ready(function(){
 
 				//show form comment
 				$('.addComment').hide();
+				$('.bodyComment').hide();
 				$('.comment').click(function(){
 					var id = $(this).attr('data-id');
 					$.ajax({
@@ -133,8 +134,9 @@ $().ready(function(){
 					    url: './media/showComment',
 					    dataType: 'json',
 						success: function (data) {
+							$('#'+id+'.bodyComment').show();
 							$.each(data, function(k,v) {
-								 $("<p>"+v['user']['username']+': '+v['text']+"</p>").appendTo(".bodyComment");
+								 $("<p>"+v['user']['username']+': '+v['text']+"</p>").appendTo("#"+id+ ".bodyComment");
 							})
 							$('#'+id+'.addComment').show();
 						}
@@ -154,12 +156,13 @@ $().ready(function(){
 							dataType: 'json',
 						    data: {id:id,text:text,link:link},
 							success: function (data) {
-								$('.bodyComment').remove();
-								$( ".listComment" ).append('<div class="bodyComment">'+'</div>');
+								$('#'+id+'.bodyComment').remove();
+                                $( "#"+id+ ".listComment" ).append('<div id="'+ id +'" class="bodyComment">'+'</div>');
 								$('.form-control').val('');
 								$.each(data, function(k,v) {
-									 $("<p>"+v['user']['username']+': '+v['text']+"</p>").appendTo(".bodyComment");
+									 $("<p>"+v['user']['username']+': '+v['text']+"</p>").appendTo("#"+id+".bodyComment");
 								})
+								$('#'+id+'.bodyComment').show();
 			                    return;
 							}
 						});
