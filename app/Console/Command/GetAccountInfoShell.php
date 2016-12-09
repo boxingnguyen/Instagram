@@ -17,7 +17,6 @@ class GetAccountInfoShell extends AppShell {
 	public function main() {
 		// $this->_instagram->login();
 		// $data = $this->_instagram->getReelsTrayFeed();
-		print_r($data);die;
 		$time_start = microtime(true);
 		// get all instagram's username
 		$acc_origin = $this->db->{self::ACCOUNT_ORIGIN}->find(array(), array('username' => true));
