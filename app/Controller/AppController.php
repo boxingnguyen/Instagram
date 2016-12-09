@@ -42,13 +42,9 @@ class AppController extends Controller {
 	protected $_instagram;
 
 	private $__apiKey = '38c0b7dbaec9477dbf4e88bcb6899071';
-	private $__apiSecret = '2cd7341fe2704279a47db32fad98b1b1'; // QuyenAnhTMH
-
+	private $__apiSecret = '2cd7341fe2704279a47db32fad98b1b1'; // new app TribalMediaHouseAnalysis
 	// private $__apiKey = '6d34b43b41bd42a09f0762cd23363358';
-	// private $__apiSecret = '532e8a5dc85346358104046673bf5376';
-
-	// private $__apiKey = 'f972dee6a6b64abb9af5ec877a73c62c';
-	// private $__apiSecret = '2dc4d6f730394fbbbe9120ee21d6190c';
+	// private $__apiSecret = '532e8a5dc85346358104046673bf5376'; // SocialAnalysis reviewed
 
 	public function beforeFilter() {
 		//get accessToken

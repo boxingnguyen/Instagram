@@ -33,18 +33,16 @@ class AppShell extends Shell {
 	const DEBUG = false;
 
 	protected $_insta;
-	private $__apiKey = '9a0eb7b3e06949b98980256fccf93599';
-	private $__apiSecret = 'eeaeda3bc5774eb196e53d064e41c7b5'; // QuyenAnhTMH
+	private $__apiKey = '38c0b7dbaec9477dbf4e88bcb6899071';
+	private $__apiSecret = '2cd7341fe2704279a47db32fad98b1b1'; // new app TribalMediaHouseAnalysis
 	// private $__apiKey = '6d34b43b41bd42a09f0762cd23363358';
-	// private $__apiSecret = '532e8a5dc85346358104046673bf5376';
+	// private $__apiSecret = '532e8a5dc85346358104046673bf5376'; // SocialAnalysis reviewed
 	private $__apiCallback = '';
 // 	private $__apiCallback = "http://192.168.33.20/PHPInstagram/Register/detail";
 
 	public function initialize() {
 		parent::initialize();
 		ini_set('memory_limit', '1G');
-		$this->_instagram = new \InstagramAPI\Instagram($this->__username,$this->__password,self::DEBUG);
-
 		$this->_insta = new Instagram(array(
 				'apiKey'      => $this->__apiKey,
 				'apiSecret'   => $this->__apiSecret,
