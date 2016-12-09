@@ -88,30 +88,9 @@ class MediaController extends AppController {
 		$idAccount = $this->Session->read('id');
 		$username = $this->Session->read('username');
 		$text = $_POST['text'];
-		$m = new MongoClient;
-		$db = $m->instagram_account_info;
-		$collections = $db->account_username;
-		$collection = $db->account_login;
-
-		$account_login = $collection->find(array("id"=>$idAccount));
-		if($account_login->count()>0){
-
-				foreach ($account_login as $value) {
-					$access_token = $value['access_token'];
-				}
-		}
-		else {
-			$account_username = $collections->find(array("id"=>$idAccount));
-			foreach ($account_username as $value) {
-					$access_token = $value['access_token'];
-				}
-		}
-
-		$this->_instagram->setToken($access_token);
-
+		$access_token = $this->_token;
+		$this->_instagram->setAccessToken($access_token);
 		$selectt = $this->_instagram->addMediaComment($idMedia,$text);
-
-
 		$link = $_POST['link'];
 		$result = $this->cURLInstagram($link."?__a=1")->media->comments->nodes;;
 		$data = array();
@@ -154,12 +133,12 @@ class MediaController extends AppController {
 		}
 		return $total;
 	}
-	function like(){
+	public function postLike(){
 			$this->layout = false;
 			$this->autoRender = false;
 			$token = $this->_token;
 			$this->_instagram->setAccessToken($token);
-			// print_r($token);
+// 			print_r($token);
 			$like_status = $_POST['like_status'];
 			$id = $_POST['media_id'];
 			$numLikes = $_POST['num_likes'];

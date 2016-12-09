@@ -35,8 +35,8 @@ $().ready(function(){
 							typeOfPost = '<div class="cd-timeline-img cd-location"><img src="/img/cd-icon-location.svg" alt="Location"></div>';
 							var location = data[i].location.name;
 						}
-			            var numberOfLike = data[i].likes.count;
-			            var id = data[i].id;
+            			var numberOfLike = data[i].likes.count;
+            			var id = data[i].id;
 						var html = '<div class="cd-timeline-block">'+
 										typeOfPost+
 										'<div class="cd-timeline-content">'+
@@ -47,20 +47,20 @@ $().ready(function(){
 												'<span id="'+id+'" class = "like"></span>'+
 												'<span class="number-insta'+id+'">'+ numberOfLike+'</span>'+
 											'</div>'+
-											'<div>'+
-												'<img class="icon-insta comment" src="/img/cmt_insta.png" alt="Picture" data-id="'+ data[i].id +'" data-link ="'+ data[i].link +'" >'+
+										  '<div>'+
+												'<img class="icon-insta comment" src="/img/cmt_insta.png" alt="Picture" data-id="'+ data[i].id +'">'+
 												'<span class="number-insta">' +data[i].comments.count+ '</span>'+
 											'</div>'+
 											'<span class="cd-date">'+location+'</span>'+
 											'<div id="'+ data[i].id +'" class="listComment">'+
 												'<div id="'+ data[i].id +'" class="bodyComment">'+
-									
+
 												'</div>'+
 											'</div>'+
 											'<div id="'+ data[i].id +'" class="addComment">'+
 												'<input placeholder="Add Comment" class="form-control" data-id="'+ data[i].id +'" data-link ="'+ data[i].link +'" >'+
-											'</div>'+	
-										'</div>'+
+											'</div>'+
+                    					'</div>'+
 									'</div>';
             $('#cd-timeline').append(html);
             $('.loadMore').html('Load More');
@@ -77,43 +77,6 @@ $().ready(function(){
               ).attr('like', 'false');
             }
 					}
-          // like
-          // have to check and get from mongodb
-          $('.like').click(function(){
-            id = this.id;
-            liked = $(this).attr('like');
-            like_count = parseInt($('.number-insta'+id).text());
-            // console.log("media id: "+id + " and like_count: " + like_count);
-            $.ajax({
-              method: "POST",
-              url: '/media/like',
-              data: {
-                media_id:id,
-                like_status: liked,
-                num_likes: like_count
-              },
-              success: function(data){
-                // console.log(data);
-              },
-              error: function(jqXHR, textStatus, errorThrown) {
-                console.log(textStatus, errorThrown);
-                alert('Sorry, Ajax has a problem!');
-                $('.loadMore').remove();
-              }
-            });
-            if(liked == 'true'){
-              $(this).attr('like', 'false');
-              dislike = like_count-1;
-              $('.number-insta'+id).text(dislike);
-              $('#'+id+' img').attr('src', unlike_img);
-            }
-            else{
-              $(this).attr('like', 'true');
-              add_like = like_count+1;
-              $('.number-insta'+id).text(add_like);
-              $('#'+id+' img').attr('src', like_img);
-            }
-          });
 					if(data.length < limit){
 						$('.loadMore').remove();
 					}
@@ -123,6 +86,42 @@ $().ready(function(){
 					$('#cd-timeline').remove();
 				}
 
+        // like post
+        $('.like').click(function(){
+          id = this.id;
+          liked = $(this).attr('like');
+          like_count = parseInt($('.number-insta'+id).text());
+          // console.log("media id: "+id + " and like_count: " + like_count);
+          $.ajax({
+            method: "POST",
+            url: '/media/postLike',
+            data: {
+              media_id:id,
+              like_status: liked,
+              num_likes: like_count
+            },
+            success: function(data){
+              // console.log(data);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              console.log(textStatus, errorThrown);
+              alert('Sorry, Ajax has a problem!');
+              $('.loadMore').remove();
+            }
+          });
+          if(liked == 'true'){
+            $(this).attr('like', 'false');
+            dislike = like_count-1;
+            $('.number-insta'+id).text(dislike);
+            $('#'+id+' img').attr('src', unlike_img);
+          }
+          else{
+            $(this).attr('like', 'true');
+            add_like = like_count+1;
+            $('.number-insta'+id).text(add_like);
+            $('#'+id+' img').attr('src', like_img);
+          }
+        });
 
 				//show form comment
 				$('.addComment').hide();
@@ -145,9 +144,8 @@ $().ready(function(){
 					});
 					
 				});
-
 				// ajax send comment
-				$('.form-control').keyup(function(e){
+					$('.form-control').keyup(function(e){
 					if(e.keyCode ==13 && $(this).val() != ""){
 						var id = $(this).attr('data-id');
 						var link = $(this).attr('data-link');
@@ -172,8 +170,6 @@ $().ready(function(){
 					}
 					else e.preventDefault();
 				});
-
-
 				$.ajax({
 					method: "POST",
 					url: '/media/total',

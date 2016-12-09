@@ -38,18 +38,18 @@ class AppController extends Controller {
 	public $m;
 	protected $_token;
 	const DEBUG = false;
-	
+
 	protected $_instagram;
-	
+
 	private $__apiKey = '38c0b7dbaec9477dbf4e88bcb6899071';
 	private $__apiSecret = '2cd7341fe2704279a47db32fad98b1b1'; // QuyenAnhTMH
-	
+
 	// private $__apiKey = '6d34b43b41bd42a09f0762cd23363358';
 	// private $__apiSecret = '532e8a5dc85346358104046673bf5376';
-	
+
 	// private $__apiKey = 'f972dee6a6b64abb9af5ec877a73c62c';
 	// private $__apiSecret = '2dc4d6f730394fbbbe9120ee21d6190c';
-	
+
 	public function beforeFilter() {
 		//get accessToken
 		$m = new MongoClient;
@@ -73,13 +73,13 @@ class AppController extends Controller {
 		}
 		$apiCallback = "http://$_SERVER[HTTP_HOST]/Register/detail";
 		//$apiCallback = "http://192.168.33.110/Test/detail";
-		
+
 		$this->_instagram = new Instagram(array(
 		'apiKey'      => $this->__apiKey,
 		'apiSecret'   => $this->__apiSecret,
 		'apiCallback' => $apiCallback
 		));
-		
+
 		//get information of param id from url
 		if (isset($this->request->query['id'])){
 			$id = $this->request->query['id'];
@@ -103,7 +103,7 @@ class AppController extends Controller {
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($ch, CURLOPT_HEADER, true);
-		
+
 		$jsonData = curl_exec($ch);
 		// if get data failed, get it until successfully
 		while (!$jsonData) {
@@ -112,10 +112,10 @@ class AppController extends Controller {
 		// split header from JSON data
 		// and assign each to a variable
 		list($headerContent, $jsonData) = explode("\r\n\r\n", $jsonData, 2);
-		
+
 		// convert header content into an array
 		$headers = $this->__processHeaders($headerContent);
-		
+
 		if (!$jsonData) {
 			throw new Exception('Error: _makeCall() - cURL error: ' . curl_error($ch));
 		}
