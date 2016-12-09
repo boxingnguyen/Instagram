@@ -35,8 +35,8 @@ $().ready(function(){
 							typeOfPost = '<div class="cd-timeline-img cd-location"><img src="/img/cd-icon-location.svg" alt="Location"></div>';
 							var location = data[i].location.name;
 						}
-            var numberOfLike = data[i].likes.count;
-            var id = data[i].id;
+            			var numberOfLike = data[i].likes.count;
+            			var id = data[i].id;
 						var html = '<div class="cd-timeline-block">'+
 										typeOfPost+
 										'<div class="cd-timeline-content">'+
@@ -52,15 +52,15 @@ $().ready(function(){
 												'<span class="number-insta">' +data[i].comments.count+ '</span>'+
 											'</div>'+
 											'<span class="cd-date">'+location+'</span>'+
-											'<div class="listComment">'+
-												'<div class="bodyComment">'+
+											'<div id="'+ data[i].id +'" class="listComment">'+
+												'<div id="'+ data[i].id +'" class="bodyComment">'+
 
 												'</div>'+
 											'</div>'+
 											'<div id="'+ data[i].id +'" class="addComment">'+
 												'<input placeholder="Add Comment" class="form-control" data-id="'+ data[i].id +'" data-link ="'+ data[i].link +'" >'+
 											'</div>'+
-                    '</div>'+
+                    					'</div>'+
 									'</div>';
             $('#cd-timeline').append(html);
             $('.loadMore').html('Load More');
@@ -125,40 +125,46 @@ $().ready(function(){
 
 				//show form comment
 				$('.addComment').hide();
+				$('.bodyComment').hide();
 				$('.comment').click(function(){
 					var id = $(this).attr('data-id');
-
 					$.ajax({
 					    method: "POST",
 					    url: './media/showComment',
 					    dataType: 'json',
 						success: function (data) {
+							$('#'+id+'.bodyComment').show();
 							$.each(data, function(k,v) {
-								 $("<p>"+v['user']['username']+': '+v['text']+"</p>").appendTo(".bodyComment");
+								 $("<p>"+v['user']['username']+': '+v['text']+"</p>").appendTo("#"+id+ ".bodyComment");
 							})
 							$('#'+id+'.addComment').show();
 						}
 					});
+					
 				});
 				// ajax send comment
-				$('.form-control').keyup(function(e){
+					$('.form-control').keyup(function(e){
 					if(e.keyCode ==13 && $(this).val() != ""){
 						var id = $(this).attr('data-id');
+						var link = $(this).attr('data-link');
 						var text = $(this).val().trim();
 					$.ajax({
+							method: "POST",
 							url: '/media/postComment',
-							dataType: 'post',
-							data: {id:id,text:text},
+							dataType: 'json',
+						    data: {id:id,text:text,link:link},
 							success: function (data) {
-								$('.bodyComment').remove();
-								$( ".listComment" ).append('<div class="bodyComment">'+'</div>');
+								$('#'+id+'.bodyComment').remove();
+                                $( "#"+id+ ".listComment" ).append('<div id="'+ id +'" class="bodyComment">'+'</div>');
 								$('.form-control').val('');
 								$.each(data, function(k,v) {
-									 $("<p>"+v['user']['username']+': '+v['text']+"</p>").appendTo(".bodyComment");
+									 $("<p>"+v['user']['username']+': '+v['text']+"</p>").appendTo("#"+id+".bodyComment");
 								})
-                return;
+								$('#'+id+'.bodyComment').show();
+			                    return;
 							}
 						});
+
 					}
 					else e.preventDefault();
 				});
