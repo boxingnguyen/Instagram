@@ -48,18 +48,18 @@ $().ready(function(){
 												'<span class="number-insta'+id+'">'+ numberOfLike+'</span>'+
 											'</div>'+
 										'<div>'+
-											'<img class="icon-insta comment" src="/img/cmt_insta.png" alt="Picture" data-id="'+ data[i].id +'">'+
-											'<span class="number-insta">' +data[i].comments.count+ '</span>'+
-										'</div>'+
-										'<span class="cd-date">'+location+'</span>'+
-                    '<div class="listComment">'+
-                      '<ul class="'+data[i].id+'">'+
-                      '</ul>'+
-                    '</div>'+
-                    '<div id="'+ data[i].id +'" class="addComment">'+
-                      '<input placeholder="Add Comment" class="form-control" data-id="'+ data[i].id +'">'+
-                    '</div>'+
-									'</div>'+
+												'<img class="icon-insta comment" src="/img/cmt_insta.png" alt="Picture" data-id="'+ data[i].id +'">'+
+												'<span class="number-insta">' +data[i].comments.count+ '</span>'+
+											'</div>'+
+											'<span class="cd-date">'+location+'</span>'+
+											'<div class="listComment">'+
+												'<div class="bodyComment">'+
+									
+												'</div>'+
+											'</div>'+
+											'<div id="'+ data[i].id +'" class="addComment">'+
+												'<input placeholder="Add Comment" class="form-control" data-id="'+ data[i].id +'" data-link ="'+ data[i].link +'" >'+
+											'</div>'+	
 									'</div>';
             $('#cd-timeline').append(html);
             $('.loadMore').html('Load More');
@@ -126,7 +126,19 @@ $().ready(function(){
 				$('.addComment').hide();
 				$('.comment').click(function(){
 					var id = $(this).attr('data-id');
-					$('#'+id+' .addComment').show();
+					$('#'+id+'.addComment').show();
+					$.ajax({
+					    method: "POST",
+					    url: './media/showComment',
+					    dataType: 'json',
+						success: function (data) {
+							$.each(data, function(k,v) {
+								 $("<p>"+v['user']['username']+': '+v['text']+"</p>").appendTo(".bodyComment");
+							})
+							$('#'+id+'.addComment').show();
+						}
+					});
+					
 				});
 
 				// ajax send comment
@@ -139,18 +151,13 @@ $().ready(function(){
 							type: 'post',
 							data: {id:id,text:text},
 							success: function (data) {
-								if(data == 400){
-								 alert('error');
-								 e.preventDefault();
-								}
-							 	else{
-							 		$('.form-control').val('');
-							 		var html = '<li>'+
-													'<a href="' +'https://www.instagram.com/'+data+'/' +'">'+ data + '</a>'+
-													'<label>'+ text + '</label>'+
-												'</li>';
-									$('.'+id).append(html);
-							 	}
+								$('.bodyComment').remove();
+								$( ".listComment" ).append('<div class="bodyComment">'+'</div>');
+								$('.form-control').val('');
+								$.each(data, function(k,v) {
+									 $("<p>"+v['user']['username']+': '+v['text']+"</p>").appendTo(".bodyComment");
+								})
+			                    return;
 							}
 						});
 					}

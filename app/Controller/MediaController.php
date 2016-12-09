@@ -57,22 +57,59 @@ class MediaController extends AppController {
 		}
 		return json_encode($data);
 	}
-
+	public function showComment(){
+		$this->layout = false;
+		$this->autoRender = false;
+		$link = "https://www.instagram.com/p/BLYFddzBU-r/";
+		$result = $this->cURLInstagram($link."?__a=1")->media->comments->nodes;;
+		$data = array();
+		$t=0;
+		foreach ($result as $value) {
+			if(count($result)<6){
+				$data[]=$value;
+			}
+			else{
+				if($t>count($result)-6){
+					$data[]=$value;
+					$t++;
+				}
+				else{
+					$t++;
+				}
+			}
+		}
+		return json_encode($data);
+	}
 	public function postComment(){
 		$this->layout = false;
 		$this->autoRender = false;
 
 		$idMedia = $_POST['id'];
+		$idAccount = $this->Session->read('id');
 		$username = $this->Session->read('username');
 		$text = $_POST['text'];
 		$access_token = $this->_token;
 		$this->_instagram->setAccessToken($access_token);
 		$selectt = $this->_instagram->addMediaComment($idMedia,$text);
-		if($selectt->meta->code == 400){
-			$error = 400;
-			return $error;
+		$link = $_POST['link'];
+		$result = $this->cURLInstagram($link."?__a=1")->media->comments->nodes;;
+		$data = array();
+		$t=0;
+		foreach ($result as $value) {
+			if(count($result)<6){
+				$data[]=$value;
+			}
+			else{
+				if($t>count($result)-6){
+					$data[]=$value;
+					$t++;
+				}
+				else{
+					$t++;
+				}
+			}
 		}
-		else return $username;
+		return json_encode($data);
 
 	}
 	public function total(){
@@ -119,7 +156,7 @@ class MediaController extends AppController {
 					array('id' => $id),
 					array('$set' => array('user_has_liked' => 'true', 'likes.count' => $numLikes +1))
 				);
-			 	return json_encode("Success! The image was liked ");
+			 	echo json_encode("Success! The image was liked ");
 			} else if($unlike->meta->code === 200){
 				$collection->update(
 					array('id' => $id),
