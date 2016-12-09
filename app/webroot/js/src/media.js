@@ -128,10 +128,12 @@ $().ready(function(){
 				$('.bodyComment').hide();
 				$('.comment').click(function(){
 					var id = $(this).attr('data-id');
+					var link = $(this).attr('data-link');
 					$.ajax({
 					    method: "POST",
-					    url: './media/showComment',
+					    url: '/media/showComment',
 					    dataType: 'json',
+					    data: {link:link},
 						success: function (data) {
 							$('#'+id+'.bodyComment').show();
 							$.each(data, function(k,v) {

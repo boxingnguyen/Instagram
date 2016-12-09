@@ -60,7 +60,7 @@ class MediaController extends AppController {
 	public function showComment(){
 		$this->layout = false;
 		$this->autoRender = false;
-		$link = "https://www.instagram.com/p/BLYFddzBU-r/";
+		$link = $_POST['link'];
 		$result = $this->cURLInstagram($link."?__a=1")->media->comments->nodes;;
 		$data = array();
 		$t=0;
