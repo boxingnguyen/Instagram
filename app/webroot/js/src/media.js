@@ -35,9 +35,9 @@ $().ready(function(){
 							typeOfPost = '<div class="cd-timeline-img cd-location"><img src="/img/cd-icon-location.svg" alt="Location"></div>';
 							var location = data[i].location.name;
 						}
-			            var numberOfLike = data[i].likes.count;
-			            var id = data[i].id;
-						var html = '<div class="cd-timeline-block">'+ 
+            var numberOfLike = data[i].likes.count;
+            var id = data[i].id;
+						var html = '<div class="cd-timeline-block">'+
 										typeOfPost+
 										'<div class="cd-timeline-content">'+
 											'<a href="'+ data[i].link +'" target="_blank"><h2>'+ myDate.toUTCString().substr(5, 11)+'</h2></a>'+
@@ -54,12 +54,13 @@ $().ready(function(){
 											'<span class="cd-date">'+location+'</span>'+
 											'<div class="listComment">'+
 												'<div class="bodyComment">'+
-									
+
 												'</div>'+
 											'</div>'+
 											'<div id="'+ data[i].id +'" class="addComment">'+
 												'<input placeholder="Add Comment" class="form-control" data-id="'+ data[i].id +'" data-link ="'+ data[i].link +'" >'+
-											'</div>'+	
+											'</div>'+
+                      '</div>'+
 									'</div>';
             $('#cd-timeline').append(html);
             $('.loadMore').html('Load More');
@@ -126,7 +127,7 @@ $().ready(function(){
 				$('.addComment').hide();
 				$('.comment').click(function(){
 					var id = $(this).attr('data-id');
-					$('#'+id+'.addComment').show();
+
 					$.ajax({
 					    method: "POST",
 					    url: './media/showComment',
@@ -138,9 +139,8 @@ $().ready(function(){
 							$('#'+id+'.addComment').show();
 						}
 					});
-					
+          $('#'+id+'.addComment').show();
 				});
-
 				// ajax send comment
 				$('.form-control').keyup(function(e){
 					if(e.keyCode ==13 && $(this).val() != ""){
@@ -148,7 +148,7 @@ $().ready(function(){
 						var text = $(this).val().trim();
 					$.ajax({
 							url: '/media/postComment',
-							type: 'post',
+							dataType: 'post',
 							data: {id:id,text:text},
 							success: function (data) {
 								$('.bodyComment').remove();
@@ -157,7 +157,7 @@ $().ready(function(){
 								$.each(data, function(k,v) {
 									 $("<p>"+v['user']['username']+': '+v['text']+"</p>").appendTo(".bodyComment");
 								})
-			                    return;
+                return;
 							}
 						});
 					}
