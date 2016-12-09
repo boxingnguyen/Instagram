@@ -48,7 +48,7 @@ $().ready(function(){
 												'<span class="number-insta'+id+'">'+ numberOfLike+'</span>'+
 											'</div>'+
 										  '<div>'+
-												'<img class="icon-insta comment" src="/img/cmt_insta.png" alt="Picture" data-id="'+ data[i].id +'">'+
+												'<img class="icon-insta comment" src="/img/cmt_insta.png" alt="Picture" data-id="'+ data[i].id +'" data-link ="'+ data[i].link +'" >'+
 												'<span class="number-insta">' +data[i].comments.count+ '</span>'+
 											'</div>'+
 											'<span class="cd-date">'+location+'</span>'+
@@ -60,7 +60,7 @@ $().ready(function(){
 											'<div id="'+ data[i].id +'" class="addComment">'+
 												'<input placeholder="Add Comment" class="form-control" data-id="'+ data[i].id +'" data-link ="'+ data[i].link +'" >'+
 											'</div>'+
-                    					'</div>'+
+                    	'</div>'+
 									'</div>';
             $('#cd-timeline').append(html);
             $('.loadMore').html('Load More');
@@ -101,7 +101,7 @@ $().ready(function(){
               num_likes: like_count
             },
             success: function(data){
-              // console.log(data);
+              console.log("success");
             },
             error: function(jqXHR, textStatus, errorThrown) {
               console.log(textStatus, errorThrown);
@@ -142,7 +142,7 @@ $().ready(function(){
 							$('#'+id+'.addComment').show();
 						}
 					});
-					
+
 				});
 				// ajax send comment
 					$('.form-control').keyup(function(e){
@@ -163,7 +163,7 @@ $().ready(function(){
 									 $("<p>"+v['user']['username']+': '+v['text']+"</p>").appendTo("#"+id+".bodyComment");
 								})
 								$('#'+id+'.bodyComment').show();
-			                    return;
+                return;
 							}
 						});
 
