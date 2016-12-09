@@ -48,7 +48,7 @@ $().ready(function(){
 												'<span class="number-insta'+id+'">'+ numberOfLike+'</span>'+
 											'</div>'+
 											'<div>'+
-												'<img class="icon-insta" src="/img/cmt_insta.png" alt="Picture">'+
+												'<img class="icon-insta" src="/img/cmt_insta.png" alt="Picture" data-id="'+ data[i].id +'">'+
 												'<span class="number-insta">' +data[i].comments.count+ '</span>'+
 											'</div>'+
 											'<span class="cd-date">'+location+'</span>'+
@@ -135,25 +135,21 @@ $().ready(function(){
 				$('.form-control').keyup(function(e){
 					if(e.keyCode ==13 && $(this).val() != ""){
 						var id = $(this).attr('data-id');
+						var link = $(this).attr('data-link');
 						var text = $(this).val().trim();
 					$.ajax({
+							method: "POST",
 							url: '/media/postComment',
-							type: 'post',
-							data: {id:id,text:text},
+							dataType: 'json',
+						    data: {id:id,text:text,link:link},
 							success: function (data) {
-								if(data == 400){
-								 alert('error');
-								 e.preventDefault();
-								}
-							 	else{
-							 		$('.form-control').val('');
-							 		var html = '<li>'+
-													'<a href="' +'https://www.instagram.com/'+data+'/' +'">'+ data + '</a>'+
-													'<label>'+ text + '</label>'+
-												'</li>';
-									$('.'+id).append(html);
-							 	}
-			
+								$('.bodyComment').remove();
+								$( ".listComment" ).append('<div class="bodyComment">'+'</div>');
+								$('.form-control').val('');
+								$.each(data, function(k,v) {
+									 $("<p>"+v['user']['username']+': '+v['text']+"</p>").appendTo(".bodyComment");
+								})
+			                    return;
 							}
 						});
 
