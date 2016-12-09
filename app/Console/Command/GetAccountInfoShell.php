@@ -5,18 +5,18 @@ class GetAccountInfoShell extends AppShell {
 	const ACCOUNT_GET = "account_info";
 	const ACCOUNT_ORIGIN = "account_username";
 	public $countReSend = 0;
-	
+
 	// public function initialize() {
 	// 	parent::initialize();
 	// 	$this->m = new MongoClient;
 	// 	$this->db = $this->m->instagram_account_info;
-	// } 
+	// }
 	public function initialize() {
 		parent::initialize();
 	}
-	public function main() { 
-		$this->_instagram->login();
-		$data = $this->_instagram->getReelsTrayFeed();
+	public function main() {
+		// $this->_instagram->login();
+		// $data = $this->_instagram->getReelsTrayFeed();
 		print_r($data);die;
 		$time_start = microtime(true);
 		// get all instagram's username
@@ -35,24 +35,24 @@ class GetAccountInfoShell extends AppShell {
 		foreach ($acc_before as $acc) {
 			$acc_change[$acc['id']]['before'] = $acc['is_private'];
 		}
-		
+
 		$date  = date('dmY');
 		// write data into json file
 		$acc_missing = $this->__writeToJson($all_account, $date);
 		// check account if all account is got
 		$checkAcc = $this->__checkAccount($date);
 		$checkAccCount = 0;
-		
+
 		// re-get missing account (maximum 5 times)
 		while (!$checkAcc && $checkAccCount < 5) {
 			$checkAcc = $this->__reGetAccount($acc_missing, $date);
 		}
 		// save account info into db
 		$this->__saveIntoDb($date);
-		
+
 		// check if any account has changed it's status
 		$this->__checkChangeStatus($acc_change);
-		
+
 		$time_end = microtime(true);
 		echo "Time to get all account: " . ($time_end - $time_start) . " seconds" . PHP_EOL;
 	}
@@ -66,7 +66,7 @@ class GetAccountInfoShell extends AppShell {
 		$data = $this->cURLInstagram('https://www.instagram.com/' . $username . '/?__a=1');
 		return $data;
 	}
-	
+
 	private function __writeToJson($all_account, $date) {
 		$acc_missing = array();
 		$count = 1;
@@ -86,7 +86,7 @@ class GetAccountInfoShell extends AppShell {
 		fclose($myfile);
 		return $acc_missing;
 	}
-	
+
 	private function __checkAccount($date) {
 		$filename = APP . "Vendor/Data/" . $date . ".acc.json";
 		$fp = file($filename);
@@ -102,7 +102,7 @@ class GetAccountInfoShell extends AppShell {
 			return false;
 		}
 	}
-	
+
 	private function __reGetAccount($acc_missing, $date) {
 		$myfile = fopen(APP."Vendor/Data/".$date.".acc.json", "a") or die("Unable to open file!");
 		foreach ($acc_missing as $name) {
@@ -118,7 +118,7 @@ class GetAccountInfoShell extends AppShell {
 		fclose($myfile);
 		return $this->__checkAccount($date);
 	}
-	
+
 	private function __saveIntoDb($date) {
 		// name of file which store account info's data
 		$filename = APP."Vendor/Data/".$date.".acc.json";
@@ -136,14 +136,14 @@ class GetAccountInfoShell extends AppShell {
 		echo "Inserting into mongo..." . PHP_EOL;
 		// insert new data
 		$this->db->{self::ACCOUNT_GET}->batchInsert($data, array('timeout' => -1));
-	
+
 		// indexing
 		echo "Indexing account_info ..." . PHP_EOL;
 		$this->db->{self::ACCOUNT_GET}->createIndex(array('id' => 1));
 		echo "Indexing account_info completed!" . PHP_EOL;
 		echo "Total documents: " . $this->db->{self::ACCOUNT_GET}->count() . PHP_EOL;
 	}
-	
+
 	private function __checkChangeStatus($acc_change) {
 		$flag = true;
 		// collect information of account after update
@@ -172,14 +172,14 @@ class GetAccountInfoShell extends AppShell {
 			echo PHP_EOL . "No one has changed account's status!!!" . PHP_EOL;
 		}
 	}
-	
+
 	private function __sendMsg($user_id) {
 		$url = "http://118.70.151.39:8080/";
 		$message = "Hello, I'm TMH-test. I just want to make see your lovely pictures to make a survey.\n Please follow this link if you are intersted in \n ".$url;
 		try {
 			$this->_instagram->login();
 			$result = $this->_instagram->direct_message(array($user_id), $message);
-			
+
 			if(isset($result['http_code'])){
 				if (strpos($result['http_code'], '200 OK') !== false) {
 					echo "Send message to " . $user_id . " successfull!" . PHP_EOL;
