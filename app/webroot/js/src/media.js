@@ -48,7 +48,7 @@ $().ready(function(){
 												'<span class="number-insta'+id+'">'+ numberOfLike+'</span>'+
 											'</div>'+
 											'<div>'+
-												'<img class="icon-insta" src="/img/cmt_insta.png" alt="Picture" data-id="'+ data[i].id +'">'+
+												'<img class="icon-insta comment" src="/img/cmt_insta.png" alt="Picture" data-id="'+ data[i].id +'">'+
 												'<span class="number-insta">' +data[i].comments.count+ '</span>'+
 											'</div>'+
 											'<span class="cd-date">'+location+'</span>'+
@@ -128,7 +128,18 @@ $().ready(function(){
 				$('.addComment').hide();
 				$('.comment').click(function(){
 					var id = $(this).attr('data-id');
-					$('#'+id+'.addComment').show();
+					$.ajax({
+					    method: "POST",
+					    url: './media/showComment',
+					    dataType: 'json',
+						success: function (data) {
+							$.each(data, function(k,v) {
+								 $("<p>"+v['user']['username']+': '+v['text']+"</p>").appendTo(".bodyComment");
+							})
+							$('#'+id+'.addComment').show();
+						}
+					});
+					
 				});
 
 				// ajax send comment
