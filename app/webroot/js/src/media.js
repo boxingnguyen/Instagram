@@ -135,6 +135,8 @@ $().ready(function(){
 					    dataType: 'json',
 					    data: {link:link},
 						success: function (data) {
+							$('#'+id+'.bodyComment').remove();
+                            $( "#"+id+ ".listComment" ).append('<div id="'+ id +'" class="bodyComment">'+'</div>');
 							$('#'+id+'.bodyComment').show();
 							$.each(data, function(k,v) {
 								 $("<p>"+v['user']['username']+': '+v['text']+"</p>").appendTo("#"+id+ ".bodyComment");
