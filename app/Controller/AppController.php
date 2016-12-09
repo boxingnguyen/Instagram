@@ -41,8 +41,8 @@ class AppController extends Controller {
 	
 	protected $_instagram;
 	
-	private $__apiKey = '9a0eb7b3e06949b98980256fccf93599';
-	private $__apiSecret = 'eeaeda3bc5774eb196e53d064e41c7b5'; // QuyenAnhTMH
+	private $__apiKey = '38c0b7dbaec9477dbf4e88bcb6899071';
+	private $__apiSecret = '2cd7341fe2704279a47db32fad98b1b1'; // QuyenAnhTMH
 	
 	// private $__apiKey = '6d34b43b41bd42a09f0762cd23363358';
 	// private $__apiSecret = '532e8a5dc85346358104046673bf5376';

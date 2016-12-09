@@ -47,12 +47,20 @@ $().ready(function(){
 												'<span id="'+id+'" class = "like"></span>'+
 												'<span class="number-insta'+id+'">'+ numberOfLike+'</span>'+
 											'</div>'+
-										'<div>'+
-											'<img class="icon-insta" src="/img/cmt_insta.png" alt="Picture">'+
-											'<span class="number-insta">' +data[i].comments.count+ '</span>'+
+											'<div>'+
+												'<img class="icon-insta" src="/img/cmt_insta.png" alt="Picture">'+
+												'<span class="number-insta">' +data[i].comments.count+ '</span>'+
+											'</div>'+
+											'<span class="cd-date">'+location+'</span>'+
+											'<div class="listComment">'+
+												'<div class="bodyComment">'+
+									
+												'</div>'+
+											'</div>'+
+											'<div id="'+ data[i].id +'" class="addComment">'+
+												'<input placeholder="Add Comment" class="form-control" data-id="'+ data[i].id +'" data-link ="'+ data[i].link +'" >'+
+											'</div>'+	
 										'</div>'+
-										'<span class="cd-date">'+location+'</span>'+
-									'</div>'+
 									'</div>';
             $('#cd-timeline').append(html);
             $('.loadMore').html('Load More');
@@ -120,7 +128,7 @@ $().ready(function(){
 				$('.addComment').hide();
 				$('.comment').click(function(){
 					var id = $(this).attr('data-id');
-					$('#'+id).show();
+					$('#'+id+'.addComment').show();
 				});
 
 				// ajax send comment
