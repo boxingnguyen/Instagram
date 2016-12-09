@@ -48,7 +48,7 @@ $().ready(function(){
 												'<span class="number-insta'+id+'">'+ numberOfLike+'</span>'+
 											'</div>'+
 											'<div>'+
-												'<img class="icon-insta comment" src="/img/cmt_insta.png" alt="Picture" data-id="'+ data[i].id +'">'+
+												'<img class="icon-insta comment" src="/img/cmt_insta.png" alt="Picture" data-id="'+ data[i].id +'" data-link ="'+ data[i].link +'" >'+
 												'<span class="number-insta">' +data[i].comments.count+ '</span>'+
 											'</div>'+
 											'<span class="cd-date">'+location+'</span>'+
@@ -129,10 +129,12 @@ $().ready(function(){
 				$('.bodyComment').hide();
 				$('.comment').click(function(){
 					var id = $(this).attr('data-id');
+					var link = $(this).attr('data-link');
 					$.ajax({
 					    method: "POST",
-					    url: './media/showComment',
+					    url: '/media/showComment',
 					    dataType: 'json',
+					    data: {link:link},
 						success: function (data) {
 							$('#'+id+'.bodyComment').show();
 							$.each(data, function(k,v) {
