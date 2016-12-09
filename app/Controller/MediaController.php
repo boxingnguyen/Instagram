@@ -119,7 +119,7 @@ class MediaController extends AppController {
 					array('id' => $id),
 					array('$set' => array('user_has_liked' => 'true', 'likes.count' => $numLikes +1))
 				);
-			 	echo json_encode("Success! The image was liked ");
+			 	return json_encode("Success! The image was liked ");
 			} else if($unlike->meta->code === 200){
 				$collection->update(
 					array('id' => $id),

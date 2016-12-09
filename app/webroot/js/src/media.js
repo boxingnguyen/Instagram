@@ -37,7 +37,7 @@ $().ready(function(){
 						}
 			            var numberOfLike = data[i].likes.count;
 			            var id = data[i].id;
-						var html = '<div class="cd-timeline-block">'+
+						var html = '<div class="cd-timeline-block">'+ 
 										typeOfPost+
 										'<div class="cd-timeline-content">'+
 											'<a href="'+ data[i].link +'" target="_blank"><h2>'+ myDate.toUTCString().substr(5, 11)+'</h2></a>'+
@@ -48,10 +48,17 @@ $().ready(function(){
 												'<span class="number-insta'+id+'">'+ numberOfLike+'</span>'+
 											'</div>'+
 										'<div>'+
-											'<img class="icon-insta" src="/img/cmt_insta.png" alt="Picture">'+
+											'<img class="icon-insta comment" src="/img/cmt_insta.png" alt="Picture" data-id="'+ data[i].id +'">'+
 											'<span class="number-insta">' +data[i].comments.count+ '</span>'+
 										'</div>'+
 										'<span class="cd-date">'+location+'</span>'+
+                    '<div class="listComment">'+
+                      '<ul class="'+data[i].id+'">'+
+                      '</ul>'+
+                    '</div>'+
+                    '<div id="'+ data[i].id +'" class="addComment">'+
+                      '<input placeholder="Add Comment" class="form-control" data-id="'+ data[i].id +'">'+
+                    '</div>'+
 									'</div>'+
 									'</div>';
             $('#cd-timeline').append(html);
@@ -69,43 +76,6 @@ $().ready(function(){
               ).attr('like', 'false');
             }
 					}
-          // like
-          // have to check and get from mongodb
-          $('.like').click(function(){
-            id = this.id;
-            liked = $(this).attr('like');
-            like_count = parseInt($('.number-insta'+id).text());
-            // console.log("media id: "+id + " and like_count: " + like_count);
-            $.ajax({
-              method: "POST",
-              url: '/media/postLike',
-              data: {
-                media_id:id,
-                like_status: liked,
-                num_likes: like_count
-              },
-              success: function(data){
-                // console.log(data);
-              },
-              error: function(jqXHR, textStatus, errorThrown) {
-                console.log(textStatus, errorThrown);
-                alert('Sorry, Ajax has a problem!');
-                $('.loadMore').remove();
-              }
-            });
-            if(liked == 'true'){
-              $(this).attr('like', 'false');
-              dislike = like_count-1;
-              $('.number-insta'+id).text(dislike);
-              $('#'+id+' img').attr('src', unlike_img);
-            }
-            else{
-              $(this).attr('like', 'true');
-              add_like = like_count+1;
-              $('.number-insta'+id).text(add_like);
-              $('#'+id+' img').attr('src', like_img);
-            }
-          });
 					if(data.length < limit){
 						$('.loadMore').remove();
 					}
@@ -115,12 +85,48 @@ $().ready(function(){
 					$('#cd-timeline').remove();
 				}
 
+        // like post
+        $('.like').click(function(){
+          id = this.id;
+          liked = $(this).attr('like');
+          like_count = parseInt($('.number-insta'+id).text());
+          // console.log("media id: "+id + " and like_count: " + like_count);
+          $.ajax({
+            method: "POST",
+            url: '/media/postLike',
+            data: {
+              media_id:id,
+              like_status: liked,
+              num_likes: like_count
+            },
+            success: function(data){
+              // console.log(data);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              console.log(textStatus, errorThrown);
+              alert('Sorry, Ajax has a problem!');
+              $('.loadMore').remove();
+            }
+          });
+          if(liked == 'true'){
+            $(this).attr('like', 'false');
+            dislike = like_count-1;
+            $('.number-insta'+id).text(dislike);
+            $('#'+id+' img').attr('src', unlike_img);
+          }
+          else{
+            $(this).attr('like', 'true');
+            add_like = like_count+1;
+            $('.number-insta'+id).text(add_like);
+            $('#'+id+' img').attr('src', like_img);
+          }
+        });
 
 				//show form comment
 				$('.addComment').hide();
 				$('.comment').click(function(){
 					var id = $(this).attr('data-id');
-					$('#'+id).show();
+					$('#'+id+' .addComment').show();
 				});
 
 				// ajax send comment
@@ -145,15 +151,11 @@ $().ready(function(){
 												'</li>';
 									$('.'+id).append(html);
 							 	}
-			
 							}
 						});
-
 					}
 					else e.preventDefault();
 				});
-
-
 				$.ajax({
 					method: "POST",
 					url: '/media/total',
