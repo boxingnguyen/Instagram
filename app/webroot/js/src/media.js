@@ -66,7 +66,7 @@ $().ready(function(){
             $('.loadMore').html('Load More');
             $img = $('<img class="icon-insta" alt="Picture">');
 
-            if(data[i].user_has_liked == "true"){
+            if(data[i].check_like == 1){
               $('#'+id).append(
                 $img.attr('src', like_img)
               ).attr('like', 'true');
@@ -139,7 +139,7 @@ $().ready(function(){
                             $( "#"+id+ ".listComment" ).append('<div id="'+ id +'" class="bodyComment">'+'</div>');
 							$('#'+id+'.bodyComment').show();
 							$.each(data, function(k,v) {
-								 $("<p>"+v['user']['username']+': '+v['text']+"</p>").appendTo("#"+id+ ".bodyComment");
+								$("<p>"+v['user']['username']+': '+v['text']+"</p>").appendTo("#"+id+ ".bodyComment");
 							})
 							$('#'+id+'.addComment').show();
 						}

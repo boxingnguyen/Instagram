@@ -48,11 +48,26 @@ class MediaController extends AppController {
 
 		$query = array('user.id' => $id);
 		$cursor = $collections->find($query,array())->sort(array('created_time'=>-1))->skip($start)->limit($limit);
+		$access_token = $this->Session->read('access_token');
+		$this->_instagram->setAccessToken($access_token);
 
 		$data= array();
 		foreach ($cursor as $value){
 			$value['likes']['count'] = number_format($value['likes']['count']);
 			$value['comments']['count'] = number_format($value['comments']['count']);
+            $id_media=$value['id'];
+			$user_like = $this->_instagram->getMediaLikes($id_media);
+	        $check_like =0;
+	        foreach ($user_like->data as $val) {
+	        	if($id==$val->id){
+	        		$check_like =1;
+	        	}
+	        	else{
+	        		$check_like=0;
+	        	}
+
+	        }
+	        $value['check_like'] = $check_like;
 			$data[]=$value;
 		}
 		return json_encode($data);
