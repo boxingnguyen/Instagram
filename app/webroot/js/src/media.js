@@ -1,6 +1,6 @@
 $().ready(function(){
 	var page = 0;
-	var limit = 20;
+	var limit = 5;
   var like_img = "/img/like_insta.png";
   var unlike_img = "/img/unlike_insta.png";
 	$('.loadMore').click(function(){
@@ -17,7 +17,6 @@ $().ready(function(){
 					for(var i=0;i<data.length;i++){
 				    var myDate = new Date(1000*data[i].created_time);
 				    // console.log(myDate.toLocaleString());
-
 						var textmess = '';
 						if(typeof(data[i].caption) != "undefined" && data[i].caption !== null){
 						 textmess = data[i].caption.text;
@@ -35,48 +34,57 @@ $().ready(function(){
 							typeOfPost = '<div class="cd-timeline-img cd-location"><img src="/img/cd-icon-location.svg" alt="Location"></div>';
 							var location = data[i].location.name;
 						}
-            			var numberOfLike = data[i].likes.count;
-            			var id = data[i].id;
+      			var numberOfLike = data[i].likes.count;
+      			var id = data[i].id;
+            img = $('<img class="icon-insta" alt="Picture">');
 						var html = '<div class="cd-timeline-block">'+
-										typeOfPost+
-										'<div class="cd-timeline-content">'+
-											'<a href="'+ data[i].link +'" target="_blank"><h2>'+ myDate.toUTCString().substr(5, 11)+'</h2></a>'+
-											post+
-											'<p>'+textmess+'</p>'+
-											'<div class="div-like-insta">'+
-												'<span id="'+id+'" class = "like"></span>'+
-												'<span class="number-insta'+id+'">'+ numberOfLike+'</span>'+
-											'</div>'+
-										  '<div>'+
-												'<img class="icon-insta comment" src="/img/cmt_insta.png" alt="Picture" data-id="'+ data[i].id +'" data-link ="'+ data[i].link +'" >'+
-												'<span class="number-insta">' +data[i].comments.count+ '</span>'+
-											'</div>'+
-											'<span class="cd-date">'+location+'</span>'+
-											'<div id="'+ data[i].id +'" class="listComment">'+
-												'<div id="'+ data[i].id +'" class="bodyComment">'+
+									typeOfPost+
+									'<div class="cd-timeline-content">'+
+										'<a href="'+ data[i].link +'" target="_blank"><h2>'+ myDate.toUTCString().substr(5, 11)+'</h2></a>'+
+										post+
+										'<p>'+textmess+'</p>'+
+										'<div class="div-like-insta">'+
+											'<span id="'+id+'" class = "like"></span>'+
+											'<span class="number-insta'+id+'">'+ numberOfLike+'</span>'+
+										'</div>'+
+									  '<div>'+
+											'<img class="icon-insta comment" src="/img/cmt_insta.png" alt="Picture" data-id="'+ data[i].id +'" data-link ="'+ data[i].link +'" >'+
+											'<span class="number-insta">' +data[i].comments.count+ '</span>'+
+										'</div>'+
+										'<span class="cd-date">'+location+'</span>'+
+										'<div id="'+ data[i].id +'" class="listComment">'+
+											'<div id="'+ data[i].id +'" class="bodyComment">'+
 
-												'</div>'+
 											'</div>'+
-											'<div id="'+ data[i].id +'" class="addComment">'+
-												'<input placeholder="Add Comment" class="form-control" data-id="'+ data[i].id +'" data-link ="'+ data[i].link +'" >'+
-											'</div>'+
-                    	'</div>'+
-									'</div>';
+										'</div>'+
+										'<div id="'+ data[i].id +'" class="addComment">'+
+											'<input placeholder="Add Comment" class="form-control" data-id="'+ data[i].id +'" data-link ="'+ data[i].link +'" >'+
+										'</div>'+
+                  	'</div>'+
+								'</div>';
             $('#cd-timeline').append(html);
             $('.loadMore').html('Load More');
+<<<<<<< HEAD
+            // check current user like media or not
+            if(data[i].current_user_has_liked == 1){
+                $('#'+id).append(
+                  img.attr('src', like_img)
+                ).attr('like', 'true');
+=======
             $img = $('<img class="icon-insta" alt="Picture">');
 
             if(data[i].check_like == 1){
               $('#'+id).append(
                 $img.attr('src', like_img)
               ).attr('like', 'true');
+>>>>>>> refs/remotes/origin/master
             }
             else{
               $('#'+id).append(
-                $img.attr('src', unlike_img)
+                img.attr('src', unlike_img)
               ).attr('like', 'false');
             }
-					}
+					} // end for
 					if(data.length < limit){
 						$('.loadMore').remove();
 					}
@@ -105,7 +113,7 @@ $().ready(function(){
             },
             error: function(jqXHR, textStatus, errorThrown) {
               console.log(textStatus, errorThrown);
-              alert('Sorry, Ajax has a problem!');
+              alert('Sorry! Ajax has a problem!');
               $('.loadMore').remove();
             }
           });
@@ -122,7 +130,6 @@ $().ready(function(){
             $('#'+id+' img').attr('src', like_img);
           }
         });
-
 				//show form comment
 				$('.addComment').hide();
 				$('.bodyComment').hide();
@@ -159,10 +166,10 @@ $().ready(function(){
 						    data: {id:id,text:text,link:link},
 							success: function (data) {
 								$('#'+id+'.bodyComment').remove();
-                                $( "#"+id+ ".listComment" ).append('<div id="'+ id +'" class="bodyComment">'+'</div>');
+                $( "#"+id+ ".listComment" ).append('<div id="'+ id +'" class="bodyComment">'+'</div>');
 								$('.form-control').val('');
 								$.each(data, function(k,v) {
-									 $("<p>"+v['user']['username']+': '+v['text']+"</p>").appendTo("#"+id+".bodyComment");
+								$("<p>"+v['user']['username']+': '+v['text']+"</p>").appendTo("#"+id+".bodyComment");
 								})
 								$('#'+id+'.bodyComment').show();
                 return;
@@ -177,7 +184,7 @@ $().ready(function(){
 					url: '/media/total',
 					dataType: 'json',
 					success: function(data){
-						console.log(data);
+						// console.log(data);
 						if(data%limit == 0){
 							if(page == data/limit){
 								$('.loadMore').remove();
@@ -190,8 +197,8 @@ $().ready(function(){
 					}
 				});
 			},
-			error: function(){
-				alert('Sorry, Ajax has some problem!');
+			error: function(jqXHR, textStatus, errorThrown) {
+        console.log(textStatus, errorThrown);
 				$('.loadMore').remove();
 			}
 		})

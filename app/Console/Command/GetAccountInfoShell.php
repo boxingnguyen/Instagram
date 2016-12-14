@@ -6,13 +6,10 @@ class GetAccountInfoShell extends AppShell {
 	const ACCOUNT_ORIGIN = "account_username";
 	public $countReSend = 0;
 
-	// public function initialize() {
-	// 	parent::initialize();
-	// 	$this->m = new MongoClient;
-	// 	$this->db = $this->m->instagram_account_info;
-	// }
 	public function initialize() {
 		parent::initialize();
+		$this->m = new MongoClient;
+		$this->db = $this->m->instagram_account_info;
 	}
 	public function main() {
 		// $this->_instagram->login();
