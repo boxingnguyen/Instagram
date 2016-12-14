@@ -1,7 +1,8 @@
 <?php
 class HashtagController extends AppController {
 	public function index () {
-		$db = $this->m->hashtag;
+		$m = new MongoClient();
+		$db = $m->hashtag;
 		$c = $db->media_daily;
 		$count_hashtag = $db->tags->find()->count();
 		$date = date('d-m-Y');
@@ -13,11 +14,11 @@ class HashtagController extends AppController {
 		$this->autoRender= false;
 		if ($this->request->is('post')) {
 			$tag = $this->request->data['hashtag'];
-			
+
 			// connect to mongo
 			$db = $this->m->hashtag;
 			$c = $db->tags;
-			
+
 			if ($c->count(array('tag' => $tag)) > 0) {
 				return json_encode('This tag has been registered before!');
 			} else {
@@ -26,15 +27,14 @@ class HashtagController extends AppController {
 					return true;
 				} else {
 					return false;
-				}	
+				}
 			}
 		}
 	}
-	
+
 	public function getDataRegister(){
 		$this->layout = false;
 		$this->autoRender = false;
-
 		if(isset($_POST['hashtag'])){
 			$tag = $_POST['hashtag'];
 			$tag = substr($tag, 1); //remove # of first character of hashtag
@@ -46,14 +46,14 @@ class HashtagController extends AppController {
 				$acc['totalMedia'] = number_format($infor['total_media']);
 			}else {
 				$acc['error'] = $infor;
-			}	
+			}
 			$acc['name'] = $tag;
 			return json_encode($acc);
 		}else{
 			return false;
 		}
 	}
-	
+
 	public function getMediaRegister() {
 		$this->layout = false;
 		$this->autoRender = false;
@@ -61,12 +61,12 @@ class HashtagController extends AppController {
 			$tag = $_POST['hashtag'];
 			$tag = substr($tag, 1);
 			$media = array();
-			
+
 			$mediaJson = $this->getMediaTag($tag);
 			if (!$mediaJson) {
 				return json_encode('Getting media of hashtag #'.$tag.' is not full');
 			}
-			
+
 			$m = new MongoClient();
 			$db = $m->hashtag;
 			$c_media = $db->media;
@@ -74,15 +74,15 @@ class HashtagController extends AppController {
 			$save = $this->saveIntoDb($tag, $c_media, $date);
 			if (!$save) {
 				return json_encode('Error when save media of hashtag #'.$tag);
-			} 
-			
+			}
+
 			return true;
-			
+
 		}else {
 			return false;
 		}
 	}
-	
+
 	public function getInformationTag($tag) {
 		$m = new MongoClient();
 		$db = $m->hashtag;
@@ -106,7 +106,7 @@ class HashtagController extends AppController {
 			return json_encode($media);
 		}
 	}
-	
+
 	public function getMediaHashtag($tag, $max_id) {
 		if ($max_id != null) {
 			$media = $this->cURLInstagram('https://www.instagram.com/explore/tags/'.$tag.'/?__a=1&max_id=' . $max_id);
@@ -115,15 +115,15 @@ class HashtagController extends AppController {
 		}
 		return $media;
 	}
-	
-	public function getMediaTag($tag) {		
+
+	public function getMediaTag($tag) {
 		$m = new MongoClient();
 		$db = $m->hashtag;
 		$c_media = $db->media;
-		
+
 		$date = date('MY');
 		$previous_month = intval(date('m')) - 1;
-		
+
 		$max_id = null;
 		// write data into json file
 		$count = 0;
@@ -131,7 +131,7 @@ class HashtagController extends AppController {
 		$myfile = fopen(APP . "Vendor/Hashtag/" . $date . "." . $tag . ".media_hashtag.json", "w+") or die("Unable to open file!");
 		do {
 			$media = $this->getMediaHashtag($tag, $max_id);
-				
+
 			if (!isset($media->tag->media->nodes) || empty($media->tag->media->nodes)) {
 				return false;
 			}
@@ -156,7 +156,7 @@ class HashtagController extends AppController {
 		} while ($media->tag->media->page_info->has_next_page == 1);
 		return true;
 	}
-	
+
 	public function saveIntoDb($tag, $collection, $date) {
 		$filename = APP . "Vendor/Hashtag/" . $date . "." . $tag . ".media_hashtag.json";
 		$all_lines = file($filename);
@@ -180,7 +180,7 @@ class HashtagController extends AppController {
 				$count_get = count($all_lines) % 1000;
 			}
 		}
-	
+
 		for ($i = 0; $i < $part ; $i++) {
 			foreach ($my[$i] as $value) {
 				$data[] = json_decode($value);
@@ -190,13 +190,14 @@ class HashtagController extends AppController {
 		}
 		return true;
 	}
-	
-	public function detail() {	
+
+	public function detail() {
 	}
-	
+
 	public function media() {
 		$tag = $_GET['hashtag'];
-		$db = $this->m->hashtag;
+		$m = new MongoClient();
+		$db = $m->hashtag;
 		$c = $db->media_daily;
 		$statistic = $c->find(array('tag' =>$tag))->sort(array('_id'=>-1))->limit(10);
 		$sort_date = array();
@@ -224,26 +225,26 @@ class HashtagController extends AppController {
 			$tam = $sort_date[$i]['total_media'];
 		}
 		$this->set('data', $data);
-		
+
 	}
-	
+
 	public function more() {
 		$this->layout = false;
 		$this->autoRender = false;
-		
+
 		if (isset($_POST['tag'])){
 			$tag = $_POST['tag'];
 		}else {
 			return false;
 		}
-		
+
 		$db = $this->m->hashtag;
 		$c = $db->media;
-		
+
 		$page = isset($_POST['page']) ? $_POST['page'] : 1;
 		$limit = 20;
 		$start= ($page*$limit)-$limit;
-		
+
 		if ($_POST['sort'] === 'like') {
 			$sort = 'likes.count';
 		}elseif ($_POST['sort'] === 'comment') {
@@ -251,32 +252,32 @@ class HashtagController extends AppController {
 		}else {
 			$sort = 'likes.count';
 		}
- 		
+
 		$query = array('tag_name' => $tag);
 		$cursor = $c->find($query,array())->sort(array($sort=>-1))->skip($start)->limit($limit);
-		
+
 		$data= array();
 		foreach ($cursor as $value){
 			$value['likes']['count'] = number_format($value['likes']['count']);
 			$value['comments']['count'] = number_format($value['comments']['count']);
 			$data[]=$value;
 		}
-		
+
 		return json_encode($data);
 	}
 	public function total(){
 		$this->layout = false;
 		$this->autoRender = false;
-		
+
 		if (isset($_POST['tag'])){
 			$tag = $_POST['tag'];
 		}else {
 			return false;
 		}
-		
+
 		$db = $this->m->hashtag;
 		$c = $db->media;
-		
+
 		$query = array('tag_name' => $tag);
 		$total = $c->find($query,array())->count();
 		return $total;
