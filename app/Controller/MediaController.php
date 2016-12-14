@@ -31,19 +31,20 @@ class MediaController extends AppController {
 	public function more(){
 		$this->layout = false;
 		$this->autoRender = false;
-
 		if($this->Session->check('User.id')){
 			$id = $this->Session->read('User.id');
 		}else{
 			$id = '';
 		}
-
+		$access_token = $this->_token;
+		$this->_instagram->setAccessToken($access_token);
+		$userId = $this->Session->read('id');
 		$m = new MongoClient();
 		$db = $m->instagram;
 		$collections = $db->media;
 
 		$page = isset($_POST['page']) ? $_POST['page'] : 1;
-		$limit = 20;
+		$limit = 5;
 		$start= ($page*$limit)-$limit;
 
 		$query = array('user.id' => $id);
@@ -53,6 +54,17 @@ class MediaController extends AppController {
 		foreach ($cursor as $value){
 			$value['likes']['count'] = number_format($value['likes']['count']);
 			$value['comments']['count'] = number_format($value['comments']['count']);
+			$idMedia = $value['id'];
+			if($this->Session->check('checkLiked'.$idMedia)){
+
+				$checkLiked = $this->Session->read('checkLiked'.$idMedia);
+			}
+			else{
+				$userLiked = $this->_instagram->getMedia($idMedia);
+		    	$checkLiked = $userLiked->data->user_has_liked;
+	        	$this->Session->write('checkLiked'.$idMedia, $checkLiked);
+			}
+	        $value['current_user_has_liked'] = $checkLiked;
 			$data[]=$value;
 		}
 		return json_encode($data);
@@ -110,7 +122,6 @@ class MediaController extends AppController {
 			}
 		}
 		return json_encode($data);
-
 	}
 	public function total(){
 		$this->layout = false;
@@ -134,38 +145,55 @@ class MediaController extends AppController {
 		return $total;
 	}
 	public function postLike(){
-			$this->layout = false;
-			$this->autoRender = false;
-			$token = $this->_token;
-			$this->_instagram->setAccessToken($token);
-// 			print_r($token);
-			$like_status = $_POST['like_status'];
-			$id = $_POST['media_id'];
-			$numLikes = $_POST['num_likes'];
-			$m = new MongoClient();
-			$db = $m->instagram;
-			$collection = $db->media;
-			if($like_status == "false"){
-				$like = $this->_instagram->likeMedia($id);
-			}
-			else{
-				$unlike = $this->_instagram->deleteLikedMedia($id);
-			}
-			if ($like->meta->code === 200) {
-				$collection->update(
-					array('id' => $id),
-					array('$set' => array('user_has_liked' => 'true', 'likes.count' => $numLikes +1))
-				);
-			 	echo json_encode("Success! The image was liked ");
-			} else if($unlike->meta->code === 200){
-				$collection->update(
-					array('id' => $id),
-					array('$set' => array('user_has_liked' => 'false', 'likes.count' => $numLikes -1))
-				);
-				echo json_encode("Success! The image was unliked");
-			}
-			else {
-			  echo json_encode("Something's wrong");
-			}
+		$this->layout = false;
+		$this->autoRender = false;
+		$token = $this->_token;
+		$this->_instagram->setAccessToken($token);
+		//print_r($token);
+		$like_status = $_POST['like_status'];
+		$id = $_POST['media_id'];
+		$numLikes = $_POST['num_likes'];
+		$m = new MongoClient();
+		$db = $m->instagram;
+		$collection = $db->media;
+		if($like_status == "false"){
+			$like = $this->_instagram->likeMedia($id);
+		}
+		else{
+			$unlike = $this->_instagram->deleteLikedMedia($id);
+		}
+		if ($like->meta->code === 200) {
+			$collection->update(
+				array('id' => $id),
+				array('$set' => array('likes.count' => $numLikes +1))
+			);
+			$this->Session->write('checkLiked'.$id, 1);
+		 	echo json_encode("Success! The image was liked ");
+		} else if($unlike->meta->code === 200){
+			$collection->update(
+				array('id' => $id),
+				array('$set' => array('likes.count' => $numLikes -1))
+			);
+			$this->Session->write('checkLiked'.$id, 0);
+			echo json_encode("Success! The image was unliked");
+		}
+		else {
+		  echo json_encode("Something's wrong");
+		}
+	}
+	public function testUserLike(){
+		$this->layout = false;
+		$this->autoRender = false;
+		$access_token = $this->_token;
+		$this->_instagram->setAccessToken($access_token);
+		$idMedia = '1357859302744084395_4025731782';
+		$userLiked = $this->_instagram->getMedia($idMedia);
+			echo "<pre>";
+		var_dump($userLiked->data->user_has_liked);
+		foreach ($userLiked as $value) {
+
+		}
+		$id = $this->Session->read('id');
+		// print_r($id);
 	}
 }
