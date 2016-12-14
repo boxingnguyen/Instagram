@@ -49,11 +49,14 @@ class MediaController extends AppController {
 
 		$query = array('user.id' => $id);
 		$cursor = $collections->find($query,array())->sort(array('created_time'=>-1))->skip($start)->limit($limit);
+		$access_token = $this->Session->read('access_token');
+		$this->_instagram->setAccessToken($access_token);
 
 		$data= array();
 		foreach ($cursor as $value){
 			$value['likes']['count'] = number_format($value['likes']['count']);
 			$value['comments']['count'] = number_format($value['comments']['count']);
+<<<<<<< HEAD
 			$idMedia = $value['id'];
 			if($this->Session->check('checkLiked'.$idMedia)){
 
@@ -65,6 +68,21 @@ class MediaController extends AppController {
 	        	$this->Session->write('checkLiked'.$idMedia, $checkLiked);
 			}
 	        $value['current_user_has_liked'] = $checkLiked;
+=======
+            $id_media=$value['id'];
+			$user_like = $this->_instagram->getMediaLikes($id_media);
+	        $check_like =0;
+	        foreach ($user_like->data as $val) {
+	        	if($id==$val->id){
+	        		$check_like =1;
+	        	}
+	        	else{
+	        		$check_like=0;
+	        	}
+
+	        }
+	        $value['check_like'] = $check_like;
+>>>>>>> refs/remotes/origin/master
 			$data[]=$value;
 		}
 		return json_encode($data);
@@ -100,7 +118,7 @@ class MediaController extends AppController {
 		$idAccount = $this->Session->read('id');
 		$username = $this->Session->read('username');
 		$text = $_POST['text'];
-		$access_token = $this->_token;
+		$access_token = $this->Session->read('access_token');
 		$this->_instagram->setAccessToken($access_token);
 		$selectt = $this->_instagram->addMediaComment($idMedia,$text);
 		$link = $_POST['link'];
@@ -145,6 +163,7 @@ class MediaController extends AppController {
 		return $total;
 	}
 	public function postLike(){
+<<<<<<< HEAD
 		$this->layout = false;
 		$this->autoRender = false;
 		$token = $this->_token;
@@ -195,5 +214,39 @@ class MediaController extends AppController {
 		}
 		$id = $this->Session->read('id');
 		// print_r($id);
+=======
+			$this->layout = false;
+			$this->autoRender = false;
+			$token = $this->Session->read('access_token');
+			$this->_instagram->setAccessToken($token);
+			$like_status = $_POST['like_status'];
+			$id = $_POST['media_id'];
+			$numLikes = $_POST['num_likes'];
+			$m = new MongoClient();
+			$db = $m->instagram;
+			$collection = $db->media;
+			if($like_status == "false"){
+				$like = $this->_instagram->likeMedia($id);
+			}
+			else{
+				$unlike = $this->_instagram->deleteLikedMedia($id);
+			}
+			if ($like->meta->code === 200) {
+				$collection->update(
+					array('id' => $id),
+					array('$set' => array('user_has_liked' => 'true', 'likes.count' => $numLikes +1))
+				);
+			 	echo json_encode("Success! The image was liked ");
+			} else if($unlike->meta->code === 200){
+				$collection->update(
+					array('id' => $id),
+					array('$set' => array('user_has_liked' => 'false', 'likes.count' => $numLikes -1))
+				);
+				echo json_encode("Success! The image was unliked");
+			}
+			else {
+			  echo json_encode("Something's wrong");
+			}
+>>>>>>> refs/remotes/origin/master
 	}
 }

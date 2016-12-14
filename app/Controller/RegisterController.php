@@ -107,6 +107,9 @@ class RegisterController extends AppController {
 			if($this->Session->check('id')){
 				$this->Session->delete('id');
 			}
+			if($this->Session->check('access_token')){
+				$this->Session->delete('access_token');
+			}
 			$this->Session->write('username', $username);
 			$this->Session->write('id', $id);
 
@@ -130,7 +133,7 @@ class RegisterController extends AppController {
 						'username' => $username
 				));
 			}
-
+			$this->Session->write('access_token', $data->access_token);
 			// get account info
 			$acc_info = $this->__getAccountInfo($username);
 

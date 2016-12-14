@@ -64,11 +64,20 @@ $().ready(function(){
 								'</div>';
             $('#cd-timeline').append(html);
             $('.loadMore').html('Load More');
+<<<<<<< HEAD
             // check current user like media or not
             if(data[i].current_user_has_liked == 1){
                 $('#'+id).append(
                   img.attr('src', like_img)
                 ).attr('like', 'true');
+=======
+            $img = $('<img class="icon-insta" alt="Picture">');
+
+            if(data[i].check_like == 1){
+              $('#'+id).append(
+                $img.attr('src', like_img)
+              ).attr('like', 'true');
+>>>>>>> refs/remotes/origin/master
             }
             else{
               $('#'+id).append(
@@ -133,6 +142,8 @@ $().ready(function(){
 					    dataType: 'json',
 					    data: {link:link},
 						success: function (data) {
+							$('#'+id+'.bodyComment').remove();
+                            $( "#"+id+ ".listComment" ).append('<div id="'+ id +'" class="bodyComment">'+'</div>');
 							$('#'+id+'.bodyComment').show();
 							$.each(data, function(k,v) {
 								$("<p>"+v['user']['username']+': '+v['text']+"</p>").appendTo("#"+id+ ".bodyComment");
