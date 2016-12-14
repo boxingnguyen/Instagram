@@ -52,6 +52,8 @@ class RegisterController extends AppController {
 			$this->Session->delete('id');
 			return true;
 		}
+			$this->Session->delete('username');
+			$this->Session->delete('id');
 	}
 
 	public function register(){
@@ -98,6 +100,7 @@ class RegisterController extends AppController {
 			$username = $data->user->username;
 
 			//write username into session
+			$this->Session->destroy();
 			if($this->Session->check('username')){
 				$this->Session->delete('username');
 			}
