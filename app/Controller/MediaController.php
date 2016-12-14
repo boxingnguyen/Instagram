@@ -56,7 +56,7 @@ class MediaController extends AppController {
 		foreach ($cursor as $value){
 			$value['likes']['count'] = number_format($value['likes']['count']);
 			$value['comments']['count'] = number_format($value['comments']['count']);
-<<<<<<< HEAD
+
 			$idMedia = $value['id'];
 			if($this->Session->check('checkLiked'.$idMedia)){
 
@@ -68,7 +68,6 @@ class MediaController extends AppController {
 	        	$this->Session->write('checkLiked'.$idMedia, $checkLiked);
 			}
 	        $value['current_user_has_liked'] = $checkLiked;
-=======
             $id_media=$value['id'];
 			$user_like = $this->_instagram->getMediaLikes($id_media);
 	        $check_like =0;
@@ -82,7 +81,6 @@ class MediaController extends AppController {
 
 	        }
 	        $value['check_like'] = $check_like;
->>>>>>> refs/remotes/origin/master
 			$data[]=$value;
 		}
 		return json_encode($data);
@@ -163,7 +161,6 @@ class MediaController extends AppController {
 		return $total;
 	}
 	public function postLike(){
-<<<<<<< HEAD
 		$this->layout = false;
 		$this->autoRender = false;
 		$token = $this->_token;
@@ -214,7 +211,6 @@ class MediaController extends AppController {
 		}
 		$id = $this->Session->read('id');
 		// print_r($id);
-=======
 			$this->layout = false;
 			$this->autoRender = false;
 			$token = $this->Session->read('access_token');
@@ -247,6 +243,5 @@ class MediaController extends AppController {
 			else {
 			  echo json_encode("Something's wrong");
 			}
->>>>>>> refs/remotes/origin/master
 	}
 }
