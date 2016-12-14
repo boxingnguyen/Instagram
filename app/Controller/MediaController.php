@@ -68,19 +68,6 @@ class MediaController extends AppController {
 	        	$this->Session->write('checkLiked'.$idMedia, $checkLiked);
 			}
 	        $value['current_user_has_liked'] = $checkLiked;
-            $id_media=$value['id'];
-			$user_like = $this->_instagram->getMediaLikes($id_media);
-	        $check_like =0;
-	        foreach ($user_like->data as $val) {
-	        	if($id==$val->id){
-	        		$check_like =1;
-	        	}
-	        	else{
-	        		$check_like=0;
-	        	}
-
-	        }
-	        $value['check_like'] = $check_like;
 			$data[]=$value;
 		}
 		return json_encode($data);
@@ -204,44 +191,6 @@ class MediaController extends AppController {
 		$this->_instagram->setAccessToken($access_token);
 		$idMedia = '1357859302744084395_4025731782';
 		$userLiked = $this->_instagram->getMedia($idMedia);
-			echo "<pre>";
 		var_dump($userLiked->data->user_has_liked);
-		foreach ($userLiked as $value) {
-
-		}
-		$id = $this->Session->read('id');
-		// print_r($id);
-			$this->layout = false;
-			$this->autoRender = false;
-			$token = $this->Session->read('access_token');
-			$this->_instagram->setAccessToken($token);
-			$like_status = $_POST['like_status'];
-			$id = $_POST['media_id'];
-			$numLikes = $_POST['num_likes'];
-			$m = new MongoClient();
-			$db = $m->instagram;
-			$collection = $db->media;
-			if($like_status == "false"){
-				$like = $this->_instagram->likeMedia($id);
-			}
-			else{
-				$unlike = $this->_instagram->deleteLikedMedia($id);
-			}
-			if ($like->meta->code === 200) {
-				$collection->update(
-					array('id' => $id),
-					array('$set' => array('user_has_liked' => 'true', 'likes.count' => $numLikes +1))
-				);
-			 	echo json_encode("Success! The image was liked ");
-			} else if($unlike->meta->code === 200){
-				$collection->update(
-					array('id' => $id),
-					array('$set' => array('user_has_liked' => 'false', 'likes.count' => $numLikes -1))
-				);
-				echo json_encode("Success! The image was unliked");
-			}
-			else {
-			  echo json_encode("Something's wrong");
-			}
 	}
 }
