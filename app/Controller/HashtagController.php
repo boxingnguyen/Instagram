@@ -1,7 +1,8 @@
 <?php
 class HashtagController extends AppController {
 	public function index () {
-		$db = $this->m->hashtag;
+		$m = new MongoClient();
+		$db = $m->hashtag;
 		$c = $db->media_daily;
 		$count_hashtag = $db->tags->find()->count();
 		$date = date('d-m-Y');
@@ -196,7 +197,8 @@ class HashtagController extends AppController {
 	
 	public function media() {
 		$tag = $_GET['hashtag'];
-		$db = $this->m->hashtag;
+		$m = new MongoClient();
+		$db = $m->hashtag;
 		$c = $db->media_daily;
 		$statistic = $c->find(array('tag' =>$tag))->sort(array('_id'=>-1))->limit(10);
 		$sort_date = array();
