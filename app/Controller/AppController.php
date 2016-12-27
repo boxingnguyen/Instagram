@@ -47,26 +47,7 @@ class AppController extends Controller {
 	// private $__apiSecret = '532e8a5dc85346358104046673bf5376'; // SocialAnalysis reviewed
 
 	public function beforeFilter() {
-		//get accessToken
-		$m = new MongoClient;
-		$db = $m->instagram_account_info;
-		$colLogin = $db->account_login;
-		$colUsername = $db->account_username;
-		$usename = $this->Session->read('username');
-		$id = $this->Session->read('id');
-		$listToken = $colUsername->find(array('access_token' => array('$exists' => true)));
-		if($listToken->count()>0){
-			$accountLogin = $colUsername->find(array('id' => $id));
-			foreach ($accountLogin as $value) {
-				$this->_token = $value['access_token'];
-			}
-		}
-		else{
-			$accountLogin = $colLogin->find(array('id' => $id));
-			foreach ($accountLogin as $value) {
-				$this->_token = $value['access_token'];
-			}
-		}
+
 		$apiCallback = "http://$_SERVER[HTTP_HOST]/Register/detail";
 		//$apiCallback = "http://192.168.33.110/Test/detail";
 
