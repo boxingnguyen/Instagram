@@ -150,7 +150,7 @@ class MediaController extends AppController {
 	public function postLike(){
 		$this->layout = false;
 		$this->autoRender = false;
-		$token = $this->_token;
+		$token = $this->Session->read('access_token');
 		$this->_instagram->setAccessToken($token);
 		//print_r($token);
 		$like_status = $_POST['like_status'];
