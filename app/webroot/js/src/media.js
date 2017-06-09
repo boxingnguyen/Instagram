@@ -137,7 +137,7 @@ $().ready(function(){
                             $( "#"+id+ ".listComment" ).append('<div id="'+ id +'" class="bodyComment">'+'</div>');
 							$('#'+id+'.bodyComment').show();
 							$.each(data, function(k,v) {
-								$("<p>"+v['user']['username']+': '+v['text']+"</p>").appendTo("#"+id+ ".bodyComment");
+								$("<p>"+v.node.owner.username+': '+v.node.text+"</p>").appendTo("#"+id+ ".bodyComment");
 							})
 							$('#'+id+'.addComment').show();
 						}
@@ -157,13 +157,12 @@ $().ready(function(){
 						    data: {id:id,text:text,link:link},
 							success: function (data) {
 								$('#'+id+'.bodyComment').remove();
-                $( "#"+id+ ".listComment" ).append('<div id="'+ id +'" class="bodyComment">'+'</div>');
-								$('.form-control').val('');
-								$.each(data, function(k,v) {
-								$("<p>"+v['user']['username']+': '+v['text']+"</p>").appendTo("#"+id+".bodyComment");
-								})
+	                            $( "#"+id+ ".listComment" ).append('<div id="'+ id +'" class="bodyComment">'+'</div>');
 								$('#'+id+'.bodyComment').show();
-                return;
+								$.each(data, function(k,v) {
+									$("<p>"+v.node.owner.username+': '+v.node.text+"</p>").appendTo("#"+id+ ".bodyComment");
+								})
+								$('#'+id+'.addComment').show();
 							}
 						});
 
