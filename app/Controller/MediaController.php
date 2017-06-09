@@ -76,7 +76,7 @@ class MediaController extends AppController {
 		$this->layout = false;
 		$this->autoRender = false;
 		$link = $_POST['link'];
-		$result = $this->cURLInstagram($link."?__a=1")->media->comments->nodes;;
+		$result = $this->cURLInstagram($link."?__a=1")->graphql->shortcode_media->edge_media_to_comment->edges;
 		$data = array();
 		$t=0;
 		foreach ($result as $value) {
@@ -107,7 +107,7 @@ class MediaController extends AppController {
 		$this->_instagram->setAccessToken($access_token);
 		$selectt = $this->_instagram->addMediaComment($idMedia,$text);
 		$link = $_POST['link'];
-		$result = $this->cURLInstagram($link."?__a=1")->media->comments->nodes;;
+		$result = $this->cURLInstagram($link."?__a=1")->graphql->shortcode_media->edge_media_to_comment->edges;
 		$data = array();
 		$t=0;
 		foreach ($result as $value) {
