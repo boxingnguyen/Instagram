@@ -99,32 +99,45 @@ class MediaController extends AppController {
 		$this->layout = false;
 		$this->autoRender = false;
 
+        $m = new MongoClient();
+        $db = $m->instagram;
+        $collection = $db->media;
+
 		$idMedia = $_POST['id'];
-		$idAccount = $this->Session->read('id');
-		$username = $this->Session->read('username');
 		$text = $_POST['text'];
+		$numCmt = $_POST['num_cmt'];
 		$access_token = $this->Session->read('access_token');
 		$this->_instagram->setAccessToken($access_token);
-		$selectt = $this->_instagram->addMediaComment($idMedia,$text);
-		$link = $_POST['link'];
-		$result = $this->cURLInstagram($link."?__a=1")->graphql->shortcode_media->edge_media_to_comment->edges;
-		$data = array();
-		$t=0;
-		foreach ($result as $value) {
-			if(count($result)<6){
-				$data[]=$value;
-			}
-			else{
-				if($t>count($result)-6){
-					$data[]=$value;
-					$t++;
-				}
-				else{
-					$t++;
-				}
-			}
-		}
-		return json_encode($data);
+		$postCmt = $this->_instagram->addMediaComment($idMedia, $text);
+		if($postCmt->meta->code === 200) {
+            $link = $_POST['link'];
+            $result = $this->cURLInstagram($link."?__a=1")->graphql->shortcode_media->edge_media_to_comment->edges;
+            $data = array();
+            $t = 0;
+            foreach ($result as $value) {
+                if(count($result) < 6){
+                    $data[] = $value;
+                }
+                else{
+                    if($t > count($result) - 6){
+                        $data[] = $value;
+                        $t ++;
+                    }
+                    else{
+                        $t ++;
+                    }
+                }
+            }
+            // update database
+            $collection->update(
+                array('id' => $idMedia),
+                array('$set' => array('comments.count' => $numCmt + 1))
+            );
+            return json_encode($data);
+        }
+		else {
+		    return json_encode("Something's wrong");
+        }
 	}
 	public function total(){
 		$this->layout = false;
