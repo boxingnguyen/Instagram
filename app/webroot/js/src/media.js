@@ -1,8 +1,8 @@
 $().ready(function(){
-    var page = 0;
-    var limit = 5;
-    var like_img = "/img/like_insta.png";
-    var unlike_img = "/img/unlike_insta.png";
+	var page = 0;
+	var limit = 5;
+  var like_img = "/img/like_insta.png";
+  var unlike_img = "/img/unlike_insta.png";
 	$('.loadMore').click(function(){
 		page++;
 		$('.loadMore').html('Loading...');
@@ -155,40 +155,36 @@ $().ready(function(){
                         success: function (data) {
                             $('#'+id+'.bodyComment').remove();
                             $( "#"+id+ ".listComment" ).append('<div id="'+ id +'" class="bodyComment">'+'</div>');
-                            $('#'+id+'.bodyComment').show();
-                            $.each(data, function(k,v) {
-                                $("<p>"+v['user']['username']+': '+v['text']+"</p>").appendTo("#"+id+ ".bodyComment");
-                            })
-                            $('#'+id+'.addComment').show();
-                        },
-                        error: function(jqXHR, textStatus, errorThrown) {
-                            console.log(textStatus, errorThrown);
-                            alert('Sorry! Ajax has a problem!');
-                        }
-                    });
-                });
-                // ajax send comment
-                $('.form-control').keyup(function(e){
-                    if(e.keyCode ==13 && $(this).val() != ""){
-                        var id = $(this).attr('data-id');
-                        var link = $(this).attr('data-link');
-                        var text = $(this).val().trim();
-                        $.ajax({
-                            method: "POST",
-                            url: '/media/postComment',
-                            dataType: 'json',
-                            data: {id:id,text:text,link:link},
-                            success: function (data) {
-                                $('#'+id+'.bodyComment').remove();
-                                $( "#"+id+ ".listComment" ).append('<div id="'+ id +'" class="bodyComment">'+'</div>');
-                                $('.form-control').val('');
-                                $.each(data, function(k,v) {
-                                $("<p>"+v['user']['username']+': '+v['text']+"</p>").appendTo("#"+id+".bodyComment");
-                                })
-                                $('#'+id+'.bodyComment').show();
-                                return;
-                            }
-                        });
+							$('#'+id+'.bodyComment').show();
+							$.each(data, function(k,v) {
+								$("<p>"+v.node.owner.username+': '+v.node.text+"</p>").appendTo("#"+id+ ".bodyComment");
+							})
+							$('#'+id+'.addComment').show();
+						}
+					});
+
+				});
+				// ajax send comment
+					$('.form-control').keyup(function(e){
+					if(e.keyCode ==13 && $(this).val() != ""){
+						var id = $(this).attr('data-id');
+						var link = $(this).attr('data-link');
+						var text = $(this).val().trim();
+					$.ajax({
+							method: "POST",
+							url: '/media/postComment',
+							dataType: 'json',
+						    data: {id:id,text:text,link:link},
+							success: function (data) {
+								$('#'+id+'.bodyComment').remove();
+	                            $( "#"+id+ ".listComment" ).append('<div id="'+ id +'" class="bodyComment">'+'</div>');
+								$('#'+id+'.bodyComment').show();
+								$.each(data, function(k,v) {
+									$("<p>"+v.node.owner.username+': '+v.node.text+"</p>").appendTo("#"+id+ ".bodyComment");
+								})
+								$('#'+id+'.addComment').show();
+							}
+						});
 
                     }
                     else e.preventDefault();
@@ -216,7 +212,7 @@ $().ready(function(){
                 $('.loadMore').remove();
             }
 		})
-    });
+	});
 	$('.loadMore').click();
 
 	var amountScrolled = 300;
