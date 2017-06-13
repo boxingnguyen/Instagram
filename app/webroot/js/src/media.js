@@ -62,7 +62,7 @@ $().ready(function(){
                                     '</div>'+
                                   '<div>'+
                                         '<img class="icon-insta comment" src="/img/cmt_insta.png" alt="Picture" data-id="'+ data[i].id +'" data-link ="'+ data[i].link +'" >'+
-                                        '<span class="number-insta">' +data[i].comments.count+ '</span>'+
+                                        '<span id = "'+id+'" class="number-insta">' +data[i].comments.count+ '</span>'+
                                     '</div>'+
                                     '<span class="cd-date">'+location+'</span>'+
                                     '<div id="'+ data[i].id +'" class="listComment">'+
@@ -132,7 +132,7 @@ $().ready(function(){
                     }
                     else{
                         $(this).attr('like', 'true');
-                        add_like = like_count+1;
+                        add_like = like_count + 1;
                         $('.number-insta'+id).text(add_like);
                         $('#'+id+' img').attr('src', like_img);
                     }
@@ -147,11 +147,14 @@ $().ready(function(){
                 $('.comment').click(function(){
                     var id = $(this).attr('data-id');
                     var link = $(this).attr('data-link');
+                    cmt_count = parseInt($('#'+id+'.number-insta').text());
                     $.ajax({
                         method: "POST",
                         url: '/media/showComment',
                         dataType: 'json',
-                        data: {link:link},
+                        data: {
+                            link : link
+                        },
                         success: function (data) {
                             $('#'+id+'.bodyComment').remove();
                             $( "#"+id+ ".listComment" ).append('<div id="'+ id +'" class="bodyComment">'+'</div>');
@@ -170,12 +173,20 @@ $().ready(function(){
 						var id = $(this).attr('data-id');
 						var link = $(this).attr('data-link');
 						var text = $(this).val().trim();
-					$.ajax({
+                        add_cmt = cmt_count + 1;
+                        $('#'+id+'.number-insta').text(add_cmt);
+					    $.ajax({
 							method: "POST",
 							url: '/media/postComment',
 							dataType: 'json',
-						    data: {id:id,text:text,link:link},
+						    data: {
+							    id : id,
+                                text : text,
+                                link : link,
+                                num_cmt : cmt_count
+                            },
 							success: function (data) {
+                                $('.form-control').val('');
 								$('#'+id+'.bodyComment').remove();
 	                            $( "#"+id+ ".listComment" ).append('<div id="'+ id +'" class="bodyComment">'+'</div>');
 								$('#'+id+'.bodyComment').show();
