@@ -41,8 +41,8 @@ class AppController extends Controller {
 
 	protected $_instagram;
 
-	private $__apiKey = '38c0b7dbaec9477dbf4e88bcb6899071';
-	private $__apiSecret = '2cd7341fe2704279a47db32fad98b1b1'; // new app TribalMediaHouseAnalysis
+	private $__apiKey = '411a767ed25a494293d6b55692fe97b1';
+	private $__apiSecret = '12431979d1654166b3043bd2d58d7a3e'; // new app
 	// private $__apiKey = '6d34b43b41bd42a09f0762cd23363358';
 	// private $__apiSecret = '532e8a5dc85346358104046673bf5376'; // SocialAnalysis reviewed
 
@@ -56,6 +56,7 @@ class AppController extends Controller {
 		'apiSecret'   => $this->__apiSecret,
 		'apiCallback' => $apiCallback
 		));
+        $this->_token = $this->Session->read('access_token');
 
 		//get information of param id from url
 		if (isset($this->request->query['id'])){

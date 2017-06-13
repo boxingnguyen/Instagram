@@ -29,84 +29,81 @@ use MetzWeb\Instagram\Instagram;
  */
 class AppShell extends Shell {
 
-	protected $_instagram;
-	const DEBUG = false;
+    protected $_instagram;
+    const DEBUG = false;
 
-	protected $_insta;
-	private $__apiKey = '38c0b7dbaec9477dbf4e88bcb6899071';
-	private $__apiSecret = '2cd7341fe2704279a47db32fad98b1b1'; // new app TribalMediaHouseAnalysis
-	// private $__apiKey = '6d34b43b41bd42a09f0762cd23363358';
-	// private $__apiSecret = '532e8a5dc85346358104046673bf5376'; // SocialAnalysis reviewed
-	private $__apiCallback = '';
-// 	private $__apiCallback = "http://192.168.33.20/PHPInstagram/Register/detail";
+    protected $_insta;
+    private $__apiKey = '411a767ed25a494293d6b55692fe97b1';
+    private $__apiSecret = '12431979d1654166b3043bd2d58d7a3e'; // new app
+    private $__apiCallback = '';
 
-	public function initialize() {
-		parent::initialize();
-		ini_set('memory_limit', '1G');
-		$this->_insta = new Instagram(array(
-				'apiKey'      => $this->__apiKey,
-				'apiSecret'   => $this->__apiSecret,
-				'apiCallback' => $this->__apiCallback,
-		));
-	}
+    public function initialize() {
+        parent::initialize();
+        ini_set('memory_limit', '1G');
+        $this->_insta = new Instagram(array(
+                'apiKey'      => $this->__apiKey,
+                'apiSecret'   => $this->__apiSecret,
+                'apiCallback' => $this->__apiCallback,
+        ));
+    }
 
-	public function cURLInstagram($url) {
-		$headerData = array('Accept: application/json');
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, $headerData);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 300);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($ch, CURLOPT_HEADER, true);
+    public function cURLInstagram($url) {
+        $headerData = array('Accept: application/json');
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headerData);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 300);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_HEADER, true);
 
-		$i = 0;
-		do {
-			if ($i >= 1) {
-				$this->out($i . ': ' . $url);
-			}
-			if ($i > 10) {
-				$this->out('Stop get data of ' . $url);
-				break;
-			}
-			$jsonData = curl_exec($ch);
-			list($headerContent, $jsonData) = array_pad(explode("\r\n\r\n", $jsonData, 2), 2, null);
+        $i = 0;
+        do {
+            if ($i >= 1) {
+                $this->out($i . ': ' . $url);
+            }
+            if ($i > 10) {
+                $this->out('Stop get data of ' . $url);
+                break;
+            }
+            $jsonData = curl_exec($ch);
+            list($headerContent, $jsonData) = array_pad(explode("\r\n\r\n", $jsonData, 2), 2, null);
 
-			// convert header content into an array
-			$headers = $this->__processHeaders($headerContent);
-			$i ++;
-		} while (!$this->isJSON($jsonData));
+            // convert header content into an array
+            $headers = $this->__processHeaders($headerContent);
+            $i ++;
+        } while (!$this->isJSON($jsonData));
 
-		curl_close($ch);
-		return json_decode($jsonData);
-	}
+        curl_close($ch);
+        return json_decode($jsonData);
+    }
 
-	public function getMediaHashtag($tag, $max_id) {
-		if ($max_id != null) {
-			$media = $this->cURLInstagram('https://www.instagram.com/explore/tags/'.$tag.'/?__a=1&max_id=' . $max_id);
-		} else {
-			$media = $this->cURLInstagram('https://www.instagram.com/explore/tags/'.$tag.'/?__a=1');
-		}
-		return $media;
-	}
+    public function getMediaHashtag($tag, $max_id) {
+        if ($max_id != null) {
+            $media = $this->cURLInstagram('https://www.instagram.com/explore/tags/'.$tag.'/?__a=1&max_id=' . $max_id);
+        } else {
+            $media = $this->cURLInstagram('https://www.instagram.com/explore/tags/'.$tag.'/?__a=1');
+        }
+        return $media;
+    }
 
-	private function __processHeaders($headerContent) {
-		$headers = array();
+    private function __processHeaders($headerContent) {
+        $headers = array();
 
-		foreach (explode("\r\n", $headerContent) as $i => $line) {
-			if ($i === 0) {
-				$headers['http_code'] = $line;
-				continue;
-			}
+        foreach (explode("\r\n", $headerContent) as $i => $line) {
+            if ($i === 0) {
+                $headers['http_code'] = $line;
+                continue;
+            }
 
-			list($key, $value) = explode(':', $line);
-			$headers[$key] = $value;
-		}
+            list($key, $value) = explode(':', $line);
+            $headers[$key] = $value;
+        }
 
-		return $headers;
-	}
-	public function isJSON($string){
-		return is_string($string) && is_array(json_decode($string, true)) && (json_last_error() == JSON_ERROR_NONE) ? true : false;
-	}
+        return $headers;
+    }
+    public function isJSON($string){
+        return is_string($string) && is_array(json_decode($string, true)) && (json_last_error() == JSON_ERROR_NONE) ? true : false;
+    }
 }
