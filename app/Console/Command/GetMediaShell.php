@@ -1,6 +1,6 @@
 <?php
 class GetMediaShell extends AppShell {
-	const TMHTEST_ACCESS_TOKEN = '4025731782.6d34b43.643eaa621adf4c2cac062281eec11612';
+	const TMHTEST_ACCESS_TOKEN = '4025731782.411a767.95c9bb96eb6d4e7f8b6d06e5e2d4109e';
 
 	public function main() {
 		$start_time = microtime(true);
@@ -197,7 +197,7 @@ class GetMediaShell extends AppShell {
 		$missing_account = file(APP."Vendor/Data/tmp_missing_acc.json");
 		foreach ($missing_account as $name) {
 			$name = trim(preg_replace('/\s\s+/', ' ', $name));
-			echo "Account " . $name . " has missing mediaaaaaaaaaaa" . PHP_EOL;
+			echo "Account " . $name . " has missing media" . PHP_EOL;
 			$check_count = 0;
 			$checkMedia = false;
 			while (!$checkMedia && $check_count < 5) {
