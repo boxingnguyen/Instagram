@@ -63,7 +63,8 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
         	<?php }elseif (strtolower($this->params['controller']) == 'ranking') {?>
         		<h1>Ranking <?php echo $this->Html->image('/img/icon_ranking.png', array('class' => 'icon-ranking')); ?> </h1>
         	<?php } else {?>
-        		<h1>Instagram Analysis</h1>
+        		<h1>Tribal Media House Analysis</h1>
+                <h4 style="margin-left: 25%; text-align: center; width: 50%"> We have brands or     advertisers analysis their interaction and find potential target audience</h4>
         	<?php } ?>
     	</header>
 		<div id="content">
