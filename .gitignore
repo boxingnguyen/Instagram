@@ -1,7 +1,5 @@
 /.project
 /app/tmp/*
-/.idea/
-/app/Console/Command/GetInfoShell.php
 
 !/app/tmp/empty
 /app/Vendor/Data/*
