@@ -12,7 +12,7 @@ class TopController extends AppController {
 		}
 		$m = new MongoClient();
 		$db = $m->instagram_account_info;
-		
+
 		$currentDate = (new DateTime())->modify('-1 day')->format('Y-m-d');
 		$time = date('Y-m', strtotime($currentDate));
 		$collection = $db->selectCollection($time);
@@ -23,16 +23,13 @@ class TopController extends AppController {
 		}else {
 			$data = $collection->find(array('time' => new MongoDate(strtotime($currentDate)) ))->sort(array('followers' => -1));
 		}
-		
+
 		$this->set(compact('data'));
 	}
-	public function story(){
-		$this->layout=false;
-		$this->autoRender=false;
-		$instagram = new \InstagramAPI\Instagram("tmh_techlab","!!tmhtechlab20150123",self::DEBUG);
-		$this->_Instagram->login();
-		$data = $this->_Instagram->getReelsTrayFeed();
-		//$data = $this->_Instagram->aaa();
-		print_r($data);die;
+	public function MostInteractedPosts(){
+        $m = new MongoClient();
+        $db = $m->instagram;
+        $media_col = $db->media;
+        $media = $media_col->find();
 	}
 }

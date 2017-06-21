@@ -16,7 +16,8 @@ class HashtagController extends AppController {
 			$tag = $this->request->data['hashtag'];
 
 			// connect to mongo
-			$db = $this->m->hashtag;
+            $m = new MongoClient();
+            $db = $m->hashtag;
 			$c = $db->tags;
 
 			if ($c->count(array('tag' => $tag)) > 0) {
@@ -205,24 +206,8 @@ class HashtagController extends AppController {
 			$sort_date[]=$val;
 		}
 		$data = array();
-		for($i=count($sort_date)-1;$i>=0;$i--){
-			if($i==count($sort_date)-1) {
-				if(isset($sort_date[$i]['date']->sec)){
-					$data[]= array("date"=>date("d-m-Y",$sort_date[$i]['date']->sec),"total_media"=>0);
-				}
-				else{
-					$data[]= array("date"=>$sort_date[$i]['date'],"total_media"=>0);
-				}
-			} else {
-					$total = $sort_date[$i]['total_media'] - $tam;
-					if(isset($sort_date[$i]['date']->sec)){
-						$data[]= array("date"=>date("d-m-Y",$sort_date[$i]['date']->sec),"total_media"=>$total);
-					}
-					else{
-						$data[]= array("date"=>$sort_date[$i]['date'],"total_media"=>$total);
-					}
-			}
-			$tam = $sort_date[$i]['total_media'];
+        for($i=0;$i<count($sort_date);$i++){
+            $data[]= array("date"=>date("d-m-Y",$sort_date[$i]['date']->sec),"total_media"=>$sort_date[$i]['total_media']);
 		}
 		$this->set('data', $data);
 
