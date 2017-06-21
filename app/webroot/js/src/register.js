@@ -287,11 +287,5 @@ $().ready(function(){
 	       var vars = query.split("/");
 	       return vars[3];
 	}
-	$('i.glyphicon').hover(
-	    function () {
-            $('.fade').addClass('in');
-        }, function () {
-            $('.fade').removeClass('in');
-        }
-    )
+	$('i.glyphicon').tooltip()
 });

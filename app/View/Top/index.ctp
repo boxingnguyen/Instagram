@@ -46,15 +46,10 @@
 			<th class='center'>Total likes</th>
 			<th class='center'>Total comments</th>
             <th class='center'>Engagement Rate
-                <i class="glyphicon glyphicon-question-sign"></i>
+                <i class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="top" title="Engagement rate is calculated by adding the total likes and comments from total your posts, and dividing that by your total followers."></i>
             </th>
 		</tr>
-        <div class="tooltip fade top">
-            <div class="tooltip-arrow"></div>
-            <div class="tooltip-inner">
-                Engagement rate is calculated by adding the total likes and comments from total your posts, and dividing that by your total followers.
-            </div>
-        </div>
+
 
 		<?php
 		$count = 1;
