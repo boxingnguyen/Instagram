@@ -170,7 +170,7 @@ class GetAccountInfoShell extends AppShell {
 	}
 
 	private function __sendMsg($user_id) {
-		$url = "http://118.70.151.39:8080/";
+		$url = "http://118.70.151.39:9999";
 		$message = "Hello, I'm TMH-test. I just want to make see your lovely pictures to make a survey.\n Please follow this link if you are intersted in \n ".$url;
 		try {
 			$this->_instagram->login();

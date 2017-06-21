@@ -22,7 +22,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 <head>
 	<?php echo $this->Html->charset(); ?>
 	<title>
-		<?php $this->assign('title', 'Analysis | TMH Techlab');?>
+		<?php $this->assign('title', 'Instagram Analysis | TMH Techlab');?>
 		<?php echo $this->fetch('title'); ?>
 	</title>
 
@@ -64,9 +64,6 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
         		<h1>Ranking <?php echo $this->Html->image('/img/icon_ranking.png', array('class' => 'icon-ranking')); ?> </h1>
         	<?php } else {?>
         		<h1>Tribal Media House Analysis</h1>
-
-                <h4 style="margin-left: 25%; text-align: center; width: 50%"> We have brands or advertisers analysis their interaction
-                    and find potential target audience</h4>
         	<?php } ?>
     	</header>
 		<div id="content">

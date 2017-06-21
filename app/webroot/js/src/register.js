@@ -163,7 +163,7 @@ $().ready(function(){
 			$('button.modalRegTag').prop('disabled', true);
 		} else {
 			//remove spaces in string input
-			hashtag = input.replace(/\s/g, '');
+			hashtag = input.replace(/\s/g,'');
 			console.log(hashtag);
 			
 			$('#myModal').modal('hide');
@@ -175,7 +175,7 @@ $().ready(function(){
 			
 			$.ajax({
 				method: "POST",
-				url: controller + '/register',
+				url: './hashtag/register',
 				data: {hashtag:hashtag},
 				dataType: 'json',
 				success: function(data) {
@@ -185,7 +185,7 @@ $().ready(function(){
 						//get data of registered hashtag
 						$.ajax({
 							method: "POST",
-							url: '/hashtag/getDataRegister',
+							url: './hashtag/getDataRegister',
 							data: {hashtag:hashtag},
 							dataType: 'json',
 							success: function(data){
