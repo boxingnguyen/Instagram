@@ -29,7 +29,7 @@ class GetInfoShell extends AppShell {
                     $start = $start + 1000;
                     $count_get = count($totalLines) % 1000;
                 }
-            }
+            } //xx
             $listUsername = array();
             for ($i = 0; $i < $part; $i++) {
                 foreach ($my[$i] as $value) {

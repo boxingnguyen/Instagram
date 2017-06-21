@@ -12,7 +12,7 @@ class QAShell extends AppShell {
             ++ $num;
             echo $key . ' ' . $value . PHP_EOL;
         }
-        $this->__saveJson($arr[$key]);
+        $this->__saveJson($arr[$key]); //xx
         echo "Number of follower get: " . $num . PHP_EOL;
     }
 
