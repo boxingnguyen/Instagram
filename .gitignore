@@ -6,3 +6,4 @@
 !/app/Vendor/Data/Hashtag
 /app/Vendor/Hashtag/*
 !/app/Vendor/Hashtag/empty
+!/.idea/

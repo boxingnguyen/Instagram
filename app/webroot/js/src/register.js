@@ -2,7 +2,7 @@ $().ready(function(){
 	$('.loader').hide();
 	$('button.modalReg').prop('disabled', true);
 	$('button.modalRegTag').prop('disabled', true);
-	
+
 	$('.buttonReg').click(function(){
 		$('#myModal').show();
 		initModal();
@@ -32,17 +32,17 @@ $().ready(function(){
 			$('button.modalRegTag').prop('disabled', true);
 		}
 	});
-	
+
 	$('button.modalReg').click(function(){
 		var input = $('input[type=text]').val();
-		
+
 		if(input == ''){
 			$('p.message').text('Please input the link of instagram!').css("color",'red');
 			$('button.modalReg').prop('disabled', true);
 		}else{
 			//remove spaces in string input
 			input = input.replace(/\s/g, '');
-			
+
 			var username = '';
 			if (input.match(/^http([s]?):\/\/.*/)) {
 				username = getQueryVariable(input);
@@ -52,12 +52,12 @@ $().ready(function(){
 			if(username.slice(-1) == '/'){
 				username = username.slice(0, -1);
 			}
-			
+
 			$('#myModal').modal('hide');
 			$('.loader').show();
 			$('.modal-body').css('opacity','0.4');
 			$('button.cancel').prop('disabled', true);
-			
+
 			$.ajax({
 				method: "POST",
 				url: '/register/register',
@@ -68,7 +68,7 @@ $().ready(function(){
 					console.log(data);
 					if(data == 1){
 						$('p.messRegis').text('You have successfully registered');
-						
+
 						//get information of registered account
 						$.ajax({
 							method: "POST",
@@ -77,8 +77,8 @@ $().ready(function(){
 							dataType: 'json',
 							success: function(infor){
 								console.log(infor);
-								
-								var no = $('table.table-top tr').length; 
+
+								var no = $('table.table-top tr').length;
 								var tr = '<tr class="center"><td><a class="badge inst_order">'+no+
 											'</a></td><td><a href="https://www.instagram.com/'+username+'" target="_blank">'+ infor.fullname +
 											'</a></td><td><a href="/Chart/follower?id='+ infor.id +'" target="_blank">'+ infor.follower +'</a><a href="/FollowRanking?id='+ infor.id +
@@ -87,7 +87,7 @@ $().ready(function(){
 								$('table.table-top').append(tr);
 								var trLast = $('table.table-top tr').last();
 								trLast.css('opacity', '0.4');
-								
+
 								//get media of registered account
 								$.ajax({
 									method: "POST",
@@ -96,21 +96,21 @@ $().ready(function(){
 									dataType: 'json',
 									success: function(data){
 										console.log(data);
-										
+
 										var no = $('table.table-top tr').length-1;
 										var percentage = (infor.totalMedia != 0) ? Math.round(data.mediaGet / infor.totalMedia * 100, 2) : 'N/A';
-										
+
 										var miss_count = Math.abs(infor.totalMedia - data.mediaGet);
 										var classColor = '';
-										if (miss_count > 10){ 
+										if (miss_count > 10){
 											classColor = "hard_missing";
-										} else if (miss_count > 0) {	
+										} else if (miss_count > 0) {
 											classColor = "light_missing";
 										}
-										
+
 										var imageStatus = 'wrong.png';
 										if (percentage == 100) {
-											imageStatus = 'right.png';				
+											imageStatus = 'right.png';
 										} else if (percentage >= 90) {
 											imageStatus = 'warning.png';
 										}
@@ -129,13 +129,13 @@ $().ready(function(){
 										alert('Error when getting media');
 									}
 								});
-								
+
 							},
 							error: function(){
 								alert('Error when getting information');
 							}
 						});
-						
+
 					}else{
 						if($.type(data) === "string"){
 							$('p.messRegis').text(data);
@@ -154,10 +154,10 @@ $().ready(function(){
 			});
 		}
 	});
-	
+
 	$('button.modalRegTag').click(function(){
 		var input = $('input[type=text]').val();
-		
+
 		if (input == '') {
 			$('p.message').text('Please input hastag!').css("color",'red');
 			$('button.modalRegTag').prop('disabled', true);
@@ -165,14 +165,14 @@ $().ready(function(){
 			//remove spaces in string input
 			hashtag = input.replace(/\s/g,'');
 			console.log(hashtag);
-			
+
 			$('#myModal').modal('hide');
 			$('.loader').show();
 			$('.modal-body').css('opacity','0.4');
 			$('button.cancel').prop('disabled', true);
-			
+
 			var controller = window.location.pathname.split("/")[1];
-			
+
 			$.ajax({
 				method: "POST",
 				url: './hashtag/register',
@@ -181,7 +181,7 @@ $().ready(function(){
 				success: function(data) {
 					if (data == 1) {
 						$('p.messRegis').text('You have successfully registered');
-						
+
 						//get data of registered hashtag
 						$.ajax({
 							method: "POST",
@@ -190,7 +190,7 @@ $().ready(function(){
 							dataType: 'json',
 							success: function(data){
 								console.log(data);
-								
+
 								var no = $('table.table-hashtag tr').length;
 
 								var tr = '<tr class="center"><td>'+no+
@@ -198,14 +198,14 @@ $().ready(function(){
 											'</a></td><td><a href="/hashtag/media?hashtag='+ data.name +'" target="_blank">'+ data.totalMedia +
 											'</a></td></tr>';
 								$('table.table-hashtag').append(tr);
-								
-								
+
+
 //								var trLast = $('table.table-hashtag tr').last();
 //								trLast.css('opacity', '0.4');
 //								trLast.find(">td >a.mediaHashtag").bind('click', function(e){
 //							        e.preventDefault();
 //								})
-								
+
 //								$.ajax({
 //									method: "POST",
 //									url: '/hashtag/getMediaRegister',
@@ -224,17 +224,17 @@ $().ready(function(){
 //										alert('Error');
 //									}
 //								});
-								
+
 							},
 							error: function(){
 								alert('Error');
 							}
 						});
-						
-						
+
+
 					} else {
 						if ($.type(data) === "string") {
-							$('p.messRegis').text(data);	
+							$('p.messRegis').text(data);
 						}
 					}
 					$('.loader').hide();
@@ -268,13 +268,13 @@ $().ready(function(){
 //				}
 //		  }
 //		});
-	
+
 	$('button.cancel').click(function(){
 		$('#regisForm').modal('hide');
 		$('.modal-backdrop, .modal-backdrop.fade.in').css('opacity',"0");
 		$('p.messRegis').text("This is mess");
 	});
-	
+
 	function initModal(){
 		$('#inputUserName').val('');
 		$('#inputHashtag').val('');
@@ -287,4 +287,11 @@ $().ready(function(){
 	       var vars = query.split("/");
 	       return vars[3];
 	}
+	$('i.glyphicon').hover(
+	    function () {
+            $('.fade').addClass('in');
+        }, function () {
+            $('.fade').removeClass('in');
+        }
+    )
 });
