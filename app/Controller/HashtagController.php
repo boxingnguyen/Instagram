@@ -193,6 +193,10 @@ class HashtagController extends AppController {
 	}
 
 	public function detail() {
+        $tag = $_GET['hashtag'];
+        $infoTag = $this->cURLInstagram('https://www.instagram.com/explore/tags/'.$tag.'/?__a=1');
+        $topPost = $infoTag->tag->top_posts->nodes;
+        $this->set(compact('topPost'));
 	}
 
 	public function media() {
