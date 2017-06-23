@@ -4,11 +4,11 @@
 		<div id='notification'></div>
 		<table class="table responstable hashtag-detail">
 			<tr>
-				<th class='center'>No.</th>
-				<th class='center'>Media</th>
+				<th class='center' style="width: 5%;">No.</th>
+				<th class='center' style="width: 20%;">Media</th>
 				<th class='center'>Caption</th>
-				<th class='center hashtag-sort'><a class="hashtag_href" href='?hashtag=<?php echo $this->request->query['hashtag'] . '&sort=like'?>'>Likes <span class="caret"></a></th>
-				<th class='center hashtag-sort'><a class="hashtag_href" href='?hashtag=<?php echo $this->request->query['hashtag'] . '&sort=comment'?>'>Comments <span class="caret"></a></th>
+				<th class='center hashtag-sort' style="width: 10% ;"><a class="hashtag_href" href='?hashtag=<?php echo $this->request->query['hashtag'] . '&sort=like'?>'>Likes <span class="caret"></a></th>
+				<th class='center hashtag-sort' style="width: 12%;"><a class="hashtag_href" href='?hashtag=<?php echo $this->request->query['hashtag'] . '&sort=comment'?>'>Comments <span class="caret"></a></th>
 			</tr>
 
             <?php
@@ -18,7 +18,7 @@
             ?>
             <tr>
                 <td><?php echo $count; ?></td>
-                <td><img src="<?php echo $value->display_src; ?>" alt="" style="width: 30%; margin: 0 auto; display: block;"></td>
+                <td><img src="<?php echo $value->display_src; ?>" alt="" style="width: 60%; margin: 0 auto; display: block;"></td>
                 <td><?php echo $value->caption; ?></td>
                 <td><?php echo $value->likes->count; ?></td>
                 <td><?php echo $value->comments->count; ?></td>
